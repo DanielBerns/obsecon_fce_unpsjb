@@ -12,7 +12,6 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 from pathlib import Path
-import logging
 import os
 import subprocess
 import shlex
@@ -43,30 +42,22 @@ from telegram.ext import (
     filters,
 )
 
+from components.config import Config
+from components.logs import LOGS
+from components.core import TreeStore
+from components.mytelegram import get_telegram_token
 
-from core import (start_filesystem, 
-                  get_token, 
-                  data_path, update_code_path)
-from treestore import TreeStore
-
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
 
 # The [ExtBot, dict, dict, dict] is for type checkers like mypy
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
 
     def __init__(self, application: Application, chat_id: int = None, user_id: int = None):
         super().__init__(application=application, chat_id=chat_id, user_id=user_id)
-        self._treestore = TreeStore(data_path, 'messages')
+        self._treestore = TreeStore(Config.FILESYSTEM.data, 'telegram')
 
     @property
     def treestore(self) -> TreeStore:
         return self._treestore
-
 
 
 async def start(update: Update, context: CustomContext) -> None:
@@ -88,18 +79,18 @@ async def process_text(update: Update, context: CustomContext) -> None:
     if update.message:
         if update.message.text:
             sample = context.treestore.new_sample()
-            logger.info(f"Created sample {str(sample):s}!")            
+            LOGS.info(f"Created sample {str(sample):s}!")            
             # Log text
             user = update.effective_user
-            logger.info(
+            LOGS.info(
                 f"Found text {update.message.text:s} from {user.full_name:s}")
             await update.message.reply_text(f"Text: {update.message.text:s} from {user.full_name:s}")
         else:
             # None
-            logger.info("Not found update.message.text!")
+            LOGS.info("Not found update.message.text!")
             await update.message.reply_text("None")
     else:
-        logger.info("Not found update.message!")
+        LOGS.info("Not found update.message!")
 
 
 async def process_photo(update: Update, context: CustomContext) -> None:
@@ -107,7 +98,7 @@ async def process_photo(update: Update, context: CustomContext) -> None:
     if update.message:
         if update.message.photo:
             sample = context.treestore.new_sample()
-            logger.info(f"Created sample {str(sample):s}!")           
+            LOGS.info(f"Created sample {str(sample):s}!")           
             file_id = update.message.photo[-1].file_id
             new_file = await context.bot.get_file(file_id)
             image_id = Path(sample, 'photo.jpeg')
@@ -118,31 +109,30 @@ async def process_photo(update: Update, context: CustomContext) -> None:
                       f"PhotoSize == {len(update.message.photo):d} ",
                       f"image_id = {str(image_id):s} ",
                       f"from {user.full_name:s}!"]
-            logger.info(''.join(remark))            
+            LOGS.info(''.join(remark))            
             if update.message.caption:
                 # Log caption
-                logger.info(f"Found caption {update.message.caption:s}!")
+                LOGS.info(f"Found caption {update.message.caption:s}!")
             else:
                 # None
-                logger.info("Not found update.message.caption!")
-            
-            await update.message.reply_text(f"Photo from {user.full_name:s}")
+                LOGS.info("Not found update.message.caption!")
+           await update.message.reply_text(f"Photo from {user.full_name:s}")
         else:
             # None
-            logger.info("Not found update.message.photo!")
+            LOGS.info("Not found update.message.photo!")
             await update.message.reply_text("No photo nor caption")
     else:
-        logger.info("Not found update.message!")
+        LOGS.info("Not found update.message!")
 
 
 async def shutdown(update: Update, context: CustomContext) -> None:
-    logger.info(f"PID {os.getpid():d}")
+    LOGS.info(f"PID {os.getpid():d}")
     flag = context.bot_data.get('shutdown', False)
     if flag:
-        logging.info("pending shutdown")
+        LOGS.info("pending shutdown")
         await update.message.reply_text("pending shutdown")            
         return
-    logging.info("start shutdown")
+    LOGS.info("start shutdown")
     await update.message.reply_text("start shutdown")    
     context.bot_data['shutdown'] = True
     # https://phoenixnap.com/kb/linux-at-command
@@ -153,47 +143,49 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     os.chmod(command_path, 0o700)
     cp = subprocess.run(["at", "now", "+1", "minutes", "-f", str(command_path),])
     if cp.returncode:
-        logging.info(f"at returncode {cp.returncode:d}")
-    logging.info("executing shutdown")    
+        LOGS.info(f"at returncode {cp.returncode:d}")
+    LOGS.info("executing shutdown")    
     await update.message.reply_text("executing shutdown")    
+
 
 async def _update_code() -> None:
    cwd = os.getcwd()
-   os.chdir(update_code_path)
+   os.chdir(Config.FILESYSTEM.update_code_path)
    cp = subprocess.run(["git", "pull"])
    os.chdir(cwd)
+
 
 async def update_code(update: Update, context: CustomContext) -> None:
     flag = context.bot_data.get('update_code', False)
     if flag:
-        logging.info("updating code")
+        LOGS.info("updating code")
         await update.message.reply_text("updating code")            
         return
-    logging.info("start code update")
+    LOGS.info("start code update")
     await update.message.reply_text("start code update")    
     context.bot_data['update_code'] = True
     await _update_code()
     context.bot_data['update_code'] = False
     if cp.returncode:
-        logging.info(f"returncode {cp.returncode:d}")
-    logging.info("end code update")    
+        LOGS.info(f"returncode {cp.returncode:d}")
+    LOGS.info("end code update")    
     await update.message.reply_text("end code update")
+
 
 def main() -> None:
     """Start the bot."""
-    start_filesystem()
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
-    builder.token(get_token())
+    telegram_token = get_telegram_token(Config.FILESYSTEM)
+    builder.token(telegram_token)
     builder.context_types(context_types)    
     application = builder.build()
 
-    logger.info(f"PID {os.getpid():d}")
+    LOGS.info(f"PID {os.getpid():d}")
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("shutdown", shutdown))
-    # testing this
+    application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("uc", update_code))
     
     
@@ -208,6 +200,3 @@ def main() -> None:
     # Run the bot until the user presses Ctrl-C
     application.run_polling()
 
-
-if __name__ == "__main__":
-    main()

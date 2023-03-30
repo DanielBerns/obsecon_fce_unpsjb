@@ -8,9 +8,9 @@ from components.core import FileSystem
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-APPLICATION = os.environ.get("APPLICATION") or "App"
+APPLICATION = os.environ.get("APPLICATION") or "India"
 VERSION = os.environ.get("VERSION") or "alpha"
-
+INSTANCE = os.environ.get("INSTANCE") or "Test"
 
 def get_args(base: Path) -> Dict[str, str]:
     """Construct the argument parser and parse the arguments"""
@@ -34,14 +34,19 @@ def write_dotenv_example(
     See https://pypi.org/project/python-dotenv/
     """
     with open(dotenv_directory, "w") as target:
-        target.write("SECRET_KEY=11111111\n")
         target.write("LOG_TO_STDOUT=YES\n")
+        target.write("TWITTER_USERS_FILENAME = \n")
+        target.write("TWITTER_TARGET = \n")
+        target.write("TELEGRAM_TARGET = \n")
 
 
-def set_environment_variables(application: str, version: str) -> None:
+def set_environment_variables(application: str, 
+                              version: str,
+                              instance: str,
+                              base: str = '~') -> None:
     print("set_environment_variables start")
-    base = Path('~', 'Apps', application, version).expanduser()
-    args = get_args(base)
+    home = FileSystem.get_home(application, version, instance, base=base)
+    args = get_args(home)
     print("set_environment_variables args")
     for key, value in args.items():
         print('    {key:s}: {value:s}')
@@ -55,15 +60,12 @@ def set_environment_variables(application: str, version: str) -> None:
     print("set_environment_variables done")
 
 
-set_environment_variables(APPLICATION, VERSION)
+set_environment_variables(APPLICATION, VERSION, INSTANCE)
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "11235813213455"
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
-    FILESYSTEM = FileSystem(APPLICATION, VERSION)
-    TWITTER_BEARER_TOKEN = ""
-    TWITTER_USERS_FILENAME = ""
+    FILESYSTEM = FileSystem(APPLICATION, VERSION, INSTANCE)
+    TWITTER_USERS_FILENAME = "users.json"
     TWITTER_TARGET = ""
-    TELEGRAM_CREDENTIALS = ""
     TELEGRAM_TARGET = ""
