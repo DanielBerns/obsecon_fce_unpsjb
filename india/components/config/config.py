@@ -3,12 +3,14 @@ from pathlib import Path
 import argparse
 from pathlib import Path
 from typing import Dict
+from components.core import FileSystem
 
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-APPLICATION = "Observatorio-FCE"
-VERSION = "alpha"
+APPLICATION = os.environ.get("APPLICATION") or "App"
+VERSION = os.environ.get("VERSION") or "alpha"
+
 
 def get_args(base: Path) -> Dict[str, str]:
     """Construct the argument parser and parse the arguments"""
@@ -59,7 +61,9 @@ set_environment_variables(APPLICATION, VERSION)
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "11235813213455"
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
+    FILESYSTEM = FileSystem(APPLICATION, VERSION)
     TWITTER_BEARER_TOKEN = ""
     TWITTER_USERS_FILENAME = ""
     TWITTER_TARGET = ""
+    TELEGRAM_CREDENTIALS = ""
     TELEGRAM_TARGET = ""

@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Protocol
 
-from helpers import get_directory
+from components.helpers import get_directory
 
 
 class JSONSource(Protocol):

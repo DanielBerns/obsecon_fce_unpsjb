@@ -4,7 +4,9 @@ import os
 from pathlib import Path
 from typing import List, Dict, Protocol, Union, Optional, Tuple, DefaultDict
 
-from helpers import get_directory
+from components.helpers import get_directory
+
+from components.core.json_document import JSONDocument
 
 class JSON2CSVError(Exception):
     pass
@@ -73,5 +75,5 @@ class CSVDocument:
         with open(self.store, 'w') as target:
             target.write(header + '\n')
             for event in source.get_events():
-                row = '|'.[CSVDocument.function(event[k]) for k in keys]
+                row = '|'.join([CSVDocument.function(event[k]) for k in keys])
 

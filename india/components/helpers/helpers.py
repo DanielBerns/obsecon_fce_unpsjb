@@ -8,9 +8,6 @@ from typing import List, Dict, Union
 from shutil import rmtree
 
 
-import pandas as pd
-
-
 indentation = '    '
 
 

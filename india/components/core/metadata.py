@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple, DefaultDict
 
-from helpers import save_json, get_directory, get_timestamp
+from components.helpers import save_json, get_directory, get_timestamp
 
 
 class Metadata:
@@ -39,7 +39,7 @@ class Metadata:
         with open(self.store, 'r') as source:
             for line in source:
                 event = json.loads(line)
-                self.add_value(event['first_key'], 
+                self.add_item(event['first_key'], 
                            event['second_key'], 
                            event['value'])
 

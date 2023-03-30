@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-
+from components.helpers import remove_directory
 
 class FileSystem:
     def __init__(self, 
@@ -14,6 +14,7 @@ class FileSystem:
         self._data: Path = Path(home, 'Data')
         self._results: Path = Path(home, 'Results')
         self._reports: Path = Path(home, 'Reports')
+        self._logs: Path = Path(home, 'logs')
         self._secrets: Path = Path(home, '.secrets')
         
     @property
@@ -33,6 +34,10 @@ class FileSystem:
         return self._secrets
 
     @property
+    def logs(self) -> Path:
+        return self._logs
+
+    @property
     def application(self) -> str:
         return self.home.parts[-2]
         
@@ -43,10 +48,12 @@ class FileSystem:
     def clear(self) -> None:
         if self.data.exists():
             remove_directory(self.data)
-        if self.docs.exists():
-            remove_directory(self.docs)
+        if self.results.exists():
+            remove_directory(self.results)
         if self.reports.exists():
             remove_directory(self.reports)
+        if self.logs.exists():
+            remove_directory(self.logs)            
         if self.secrets.exists():
             remove_directory(self.secrets)
     
