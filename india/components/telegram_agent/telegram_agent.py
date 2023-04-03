@@ -15,6 +15,7 @@ from pathlib import Path
 import os
 import subprocess
 import shlex
+import json
 
 from telegram import __version__ as TG_VER
 
@@ -45,7 +46,23 @@ from telegram.ext import (
 from components.config import Config
 from components.logs import LOGS
 from components.core import TreeStore
-from components.mytelegram import get_telegram_token
+
+def start(token_file: Path) -> None:
+    with open(token_file, 'w') as target:
+        print(f"You must edit {str(token_file):s} "
+              "and replace the default token "
+              "with a valid telegram token"
+             )
+        secrets = {"token": "112358132134"}  
+        json.dump(secrets, target)
+
+def get_secrets(secrets: Path) -> Dict[str, str]:
+    token_file = Path(secrets, 'telegram').with_suffix('.json')
+    if not token_file.exists():
+        start(token_file)
+    with open(token_file, 'r') as source:
+        secrets = json.load(source)
+    return secrets
 
 
 # The [ExtBot, dict, dict, dict] is for type checkers like mypy
@@ -172,12 +189,12 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
-def main() -> None:
+def run() -> None:
     """Start the bot."""
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
-    telegram_token = get_telegram_token(Config.FILESYSTEM)
-    builder.token(telegram_token)
+    secrets = get_secrets(Config.FILESYSTEM.secrets)
+    builder.token(secrets['token'])
     builder.context_types(context_types)    
     application = builder.build()
 
