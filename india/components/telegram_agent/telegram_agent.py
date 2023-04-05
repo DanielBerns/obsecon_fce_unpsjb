@@ -16,6 +16,7 @@ import os
 import subprocess
 import shlex
 import json
+from typing import Dict
 
 from telegram import __version__ as TG_VER
 
@@ -47,7 +48,7 @@ from components.config import Config
 from components.logs import LOGS
 from components.core import TreeStore
 
-def start(token_file: Path) -> None:
+def create(token_file: Path) -> None:
     with open(token_file, 'w') as target:
         print(f"You must edit {str(token_file):s} "
               "and replace the default token "
@@ -59,7 +60,7 @@ def start(token_file: Path) -> None:
 def get_secrets(secrets: Path) -> Dict[str, str]:
     token_file = Path(secrets, 'telegram').with_suffix('.json')
     if not token_file.exists():
-        start(token_file)
+        create(token_file)
     with open(token_file, 'r') as source:
         secrets = json.load(source)
     return secrets
@@ -133,7 +134,7 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             else:
                 # None
                 LOGS.info("Not found update.message.caption!")
-           await update.message.reply_text(f"Photo from {user.full_name:s}")
+            await update.message.reply_text(f"Photo from {user.full_name:s}")
         else:
             # None
             LOGS.info("Not found update.message.photo!")

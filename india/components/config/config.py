@@ -12,60 +12,50 @@ APPLICATION = os.environ.get("APPLICATION") or "India"
 VERSION = os.environ.get("VERSION") or "alpha"
 INSTANCE = os.environ.get("INSTANCE") or "Test"
 
-def get_args(base: Path) -> Dict[str, str]:
+def get_args() -> Dict[str, str]:
     """Construct the argument parser and parse the arguments"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-d",
-        "--dotenv_path",
+        "--log_to_stdout",
         type=str,
-        default=base,
-        help="path where dotenv lives",
+        choices=["no", "yes"],
+        default="yes",
+        help="log to stdout? [yes] or no",
     )
     args = vars(parser.parse_args())
     return args
 
 
 def write_dotenv_example(
-    dotenv_directory: Path
+    dotenv_full_filename: Path
     ) -> None:
     """Write an example dotenv file, with expected keys.
     User may modify the values, and add remarks.
     See https://pypi.org/project/python-dotenv/
     """
-    with open(dotenv_directory, "w") as target:
-        target.write("LOG_TO_STDOUT=YES\n")
-        target.write("TWITTER_USERS_FILENAME = \n")
-        target.write("TWITTER_TARGET = \n")
-        target.write("TELEGRAM_TARGET = \n")
+    with open(dotenv_full_filename, "w") as target:
+        target.write("LOG_TO_STDOUT=yes\n")
 
 
-def set_environment_variables(application: str, 
-                              version: str,
-                              instance: str,
-                              base: str = '~') -> None:
+def set_environment_variables(fs: FileSystem) -> None:
     print("set_environment_variables start")
-    home = FileSystem.get_home(application, version, instance, base=base)
-    args = get_args(home)
-    print("set_environment_variables args")
+    args = get_args()
+    print("  args")
     for key, value in args.items():
-        print('    {key:s}: {value:s}')
-    base = Path(args["dotenv_path"]).resolve()
-    base.mkdir(mode=0o700, parents=True, exist_ok=True)
-    print("set_environment_variables dotenv_path", str(base))
-    dotenv_path = Path(base, ".env")
-    if not dotenv_path.exists():
-        write_dotenv_example(dotenv_path)
-    load_dotenv(dotenv_path)
+        print(f"    {key:s}: {str(value):s}")
+    dotenv_full_filename = Path(fs.home, ".env")
+    if not dotenv_full_filename.exists():
+        print(f"  dotenv_full_filename:", str(dotenv_full_filename))
+        write_dotenv_example(dotenv_full_filename)
+    load_dotenv(dotenv_full_filename)
     print("set_environment_variables done")
 
 
-set_environment_variables(APPLICATION, VERSION, INSTANCE)
+fs = FileSystem(APPLICATION, VERSION, INSTANCE)
+set_environment_variables(fs)
 
 
 class Config:
-    LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
-    FILESYSTEM = FileSystem(APPLICATION, VERSION, INSTANCE)
+    LOG_TO_STDOUT = os.environ.get("log_to_stdout")
+    FILESYSTEM = fs
     TWITTER_USERS_FILENAME = "users.json"
-    TWITTER_TARGET = ""
-    TELEGRAM_TARGET = ""

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from components.config import Config, APPLICATION, VERSION
-from components.helpers import get_directory
+from components.helpers import get_directory, get_resource_identifier
 
 
 def add_stream_handler(
@@ -19,10 +19,12 @@ def add_stream_handler(
 
 
 def add_rotating_file_handler(
-    logger: logging.Logger, reports_directory: Path, logging_level: int = logging.DEBUG
+    logger: logging.Logger, 
+    logs_txt: Path, 
+    logging_level: int = logging.DEBUG
 ) -> None:
     file_handler = logging.handlers.RotatingFileHandler(
-        Path(logs_path(reports_directory), "logs.txt"), maxBytes=1024*32, backupCount=10
+        logs_txt, maxBytes=1024*32, backupCount=10
     )
     file_handler.setFormatter(
         logging.Formatter(
@@ -50,11 +52,11 @@ def start_logs() -> None:
         print('STDOUT logging')
         log_handler = lambda logger: add_stream_handler(logger)
     else:
-        fs = get_directory(Config.FILESYSTEM)
-        logs_txt = get_resource_identifier(fs.logs, 'logs.txt')
+        fs = Config.FILESYSTEM
+        logs_txt = get_resource_identifier(fs.logs, 'logs', '.txt')
         print('Text File logging :', str(logs_txt))
         log_handler = lambda logger: add_rotating_file_handler(
-            logger, reports_directory=logs_txt
+            logger, logs_txt
         )
     identifier = f"{APPLICATION:s}-{VERSION:s}"
     return get_logger(identifier, log_handler)

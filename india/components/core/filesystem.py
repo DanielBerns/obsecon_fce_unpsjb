@@ -31,7 +31,16 @@ class FileSystem:
         self._logs: Path = Path(home, 'logs')
         self._secrets: Path = Path(home, '.secrets')
 
-        
+        self.data.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.results.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.reports.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.logs.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.secrets.mkdir(mode=0o700, parents=True, exist_ok=True)        
+
+    @property
+    def home(self):
+        return self._home
+    
     @property
     def data(self) -> Path:
         return self._data

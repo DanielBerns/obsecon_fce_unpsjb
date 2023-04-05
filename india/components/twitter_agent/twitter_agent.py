@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
 import json
-
+from typing import Dict, List
 import requests
 
 from components.config import Config
-
+from components.core import Metadata, TreeStore
 
 class TwitterAgent:
     def __init__(self, bearer_token):
@@ -76,7 +77,7 @@ def grab_user_tweets(agent: TwitterAgent, usernames: List[str]):
             user_id = this_user['id']
             url_user_tweets = agent.create_url_user_tweets(user_id)
             response = agent.connect_to_endpoint(url_user_tweets, {})
-            user_data = 
+            # user_data = 
             user_meta = response['meta']
             event['events'] = response['data']
             event['metadata'] = response['meta']
@@ -85,7 +86,7 @@ def grab_user_tweets(agent: TwitterAgent, usernames: List[str]):
         print(str(message)) 
 
 
-def start(bearer_token_file: Path) -> None:
+def create(bearer_token_file: Path) -> None:
     with open(bearer_token_file, 'w') as target:
         print(f"You must edit {str(bearer_token_file):s} "
               "and replace the default token "
@@ -97,9 +98,9 @@ def start(bearer_token_file: Path) -> None:
 def get_secrets(secrets: Path) -> Dict[str, str]:
     bearer_token_file = Path(secrets, 'twitter').with_suffix('.json')
     if not bearer_token_file.exists():
-        start(bearer_token_file)
+        create(bearer_token_file)
     with open(bearer_token_file, 'r') as source:
-        secrets = json.load(bearer_token_file)
+        secrets = json.load(source)
     return secrets
 
 def grab_tweets(usernames: List[str], store: TreeStore):

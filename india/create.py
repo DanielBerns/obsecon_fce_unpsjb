@@ -1,11 +1,13 @@
 from components.config import Config
+from components.core import Metadata, FileSystem
+from components.helpers import get_container
 import components.telegram_agent as telegram
 import components.twitter_agent as twitter
 
 
-def create_metadata(fs: core.FileSystem):
+def create_metadata(fs: FileSystem):
     container = get_container(fs.data, 'metadata')
-    metadata = core.Metadata(container)
+    metadata = Metadata(container)
     metadata.start()
     metadata.stop()
 

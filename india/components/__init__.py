@@ -1,1 +1,1 @@
-from components import config, logs, core, twitter 
+from components import config, logs, core, telegram_agent, twitter_agent
