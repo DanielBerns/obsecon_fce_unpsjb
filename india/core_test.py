@@ -1,10 +1,11 @@
 import random
 
-import components.core as core
+
 from components.config import Config
+from components.core import FileSystem
 from components.helpers import save_json, get_container, get_resource_identifier
 
-def create_metadata(fs: core.FileSystem):
+def create_metadata(fs: FileSystem):
     container = get_container(fs.data, 'metadata')
     metadata = core.Metadata(container)
     metadata.start()
@@ -14,7 +15,7 @@ def create_metadata(fs: core.FileSystem):
     metadata.stop()
 
 
-def read_metadata(fs: core.FileSystem):
+def read_metadata(fs: FileSystem):
     container = get_container(fs.data, 'metadata')
     metadata = core.Metadata(container)
     metadata.start()
@@ -57,7 +58,7 @@ def create_event():
         event[key] = value
     return event
 
-def create_json_document(fs: core.FileSystem) -> None:
+def create_json_document(fs: FileSystem) -> None:
     container = get_container(fs.data, 'json_document')
     document = core.JSONDocument(container)
     document.start()
@@ -67,7 +68,7 @@ def create_json_document(fs: core.FileSystem) -> None:
     document.stop()    
 
 
-def read_json_document(fs: core.FileSystem) -> None:
+def read_json_document(fs: FileSystem) -> None:
     container = get_container(fs.data, 'json_document')
     document = core.JSONDocument(container)
     document.start()

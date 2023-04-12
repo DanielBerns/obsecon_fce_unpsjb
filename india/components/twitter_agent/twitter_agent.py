@@ -4,7 +4,6 @@ import json
 from typing import Dict, List
 import requests
 
-from components.config import Config
 from components.core import Metadata, TreeStore
 
 class TwitterAgent:
@@ -121,7 +120,8 @@ def grab_tweets(usernames: List[str], store: TreeStore):
 
 def run():
     # users_filename = os.environ.get("USERS_FILENAME") or 'users.json'
-    fs = Config.FILESYSTEM
+    # fs = Config.FILESYSTEM
+    fs = None
     twitter_root = Path(fs.data, 'twitter')
     store = TreeStore(twitter, 'tweets_from_api')
     store.start()

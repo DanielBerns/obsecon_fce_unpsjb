@@ -1,1 +1,4 @@
-from components import config, logs, core, telegram_agent, twitter_agent
+from components import core, telegram_agent, twitter_agent
+
+# TODO: erase logs
+

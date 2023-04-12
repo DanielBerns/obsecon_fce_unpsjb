@@ -3,9 +3,6 @@ from pathlib import Path
 
 from typing import Callable, Optional
 
-from components.config import Config, APPLICATION, VERSION
-from components.helpers import get_directory, get_resource_identifier
-
 
 def add_stream_handler(
     logger: logging.Logger, logging_level: int = logging.INFO
@@ -46,20 +43,13 @@ def get_logger(
     return logger
 
 
-def start_logs() -> None:
-    log_handler = None
-    if Config.LOG_TO_STDOUT == "YES":
-        print('STDOUT logging')
-        log_handler = lambda logger: add_stream_handler(logger)
-    else:
-        fs = Config.FILESYSTEM
-        logs_txt = get_resource_identifier(fs.logs, 'logs', '.txt')
-        print('Text File logging :', str(logs_txt))
-        log_handler = lambda logger: add_rotating_file_handler(
-            logger, logs_txt
-        )
-    identifier = f"{APPLICATION:s}-{VERSION:s}"
+def get_stdout_logger(identifier: str)  -> logging.Logger:
+    log_handler = lambda logger: add_stream_handler(logger)    
     return get_logger(identifier, log_handler)
 
 
-LOGS = start_logs()
+def get_file_logger(identifier: str, log_txt: str)  -> logging.Logger:
+    log_handler = lambda logger: add_rotating_file_handler(
+            logger, logs_txt
+        )
+    return get_logger(identifier, log_handler)
