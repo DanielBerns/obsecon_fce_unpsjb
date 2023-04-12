@@ -5,6 +5,8 @@ from typing import Dict, List
 import requests
 
 from components.core import Metadata, TreeStore
+from components.helpers import get_resource_identifier
+
 
 class TwitterAgent:
     def __init__(self, bearer_token):
@@ -102,7 +104,10 @@ def get_secrets(secrets: Path) -> Dict[str, str]:
         secrets = json.load(source)
     return secrets
 
-def grab_tweets(usernames: List[str], store: TreeStore):
+def grab_tweets(
+    usernames: List[str], 
+    store: TreeStore
+    ):
     # To set your environment variables in your terminal run the following line:
     # export 'BEARER_TOKEN'='<your_bearer_token>'
     # bearer_token = os.environ.get("BEARER_TOKEN")
@@ -112,20 +117,16 @@ def grab_tweets(usernames: List[str], store: TreeStore):
     secrets = get_secrets(fs.secrets)
     agent = TwitterAgent(secrets['bearer_token'])
     new_sample = store.new_sample()
-    target_filename = Path(new_sample, 'tweets').with_suffix('.json')
+    target_filename = get_resource_identifier(new_sample, 'tweets', '.json')
     with open(target_filename, 'w') as target:
         for event in grab_user_tweets(agent, usernames):
             store.write(f'{event:s}\n')
 
 
-def run():
-    # users_filename = os.environ.get("USERS_FILENAME") or 'users.json'
-    # fs = Config.FILESYSTEM
-    fs = None
-    twitter_root = Path(fs.data, 'twitter')
-    store = TreeStore(twitter, 'tweets_from_api')
+def run(twitter_home: Path):
+    store = TreeStore(twitter_home, 'tweets_from_api')
     store.start()
-    users_filename = Path(twitter_root, 'users.json')    
+    users_filename = get_resource_identifier(twitter_home, 'users', '.json')    
     with open(users_filename, 'r') as source:
         users = json.load(source)
         usernames = [u['username'] for u in users['users']]

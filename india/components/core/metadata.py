@@ -39,15 +39,15 @@ class Metadata:
         with open(self.store, 'r') as source:
             for line in source:
                 event = json.loads(line)
-                self.add_item(event['first_key'], 
-                           event['second_key'], 
+                self.add_item(event['identifier'], 
+                           event['attribute'], 
                            event['value'])
 
     def save_events(self) -> None:
         with open(self.store, 'w') as target:
-            for first_key, second_key, value in self.items():
-                event = {'first_key': first_key,
-                         'second_key': second_key,
+            for identifier, attribute, value in self.items():
+                event = {'identifier': identifier,
+                         'attribute': attribute,
                          'value': value}
                 target.write(f"{json.dumps(event):s}\n")
     
@@ -58,9 +58,9 @@ class Metadata:
         self.save_events()
 
     def items(self) -> Tuple[str, str, Dict]:
-        for first_key, sample in self.events.items():
-            for second_key, value in sample.items():
-                yield first_key, second_key, value 
+        for identifier, sample in self.events.items():
+            for attribute, value in sample.items():
+                yield identifier, attribute, value 
 
-    def add_item(self, first_key: str, second_key: str, value: Dict) -> None:
-        self.events[first_key][second_key] = value
+    def add_item(self, identifier: str, attribute: str, value: Dict) -> None:
+        self.events[identifier][attribute] = value
