@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 import sys
 from pathlib import Path
 
@@ -15,7 +16,7 @@ def add_stdout_handler(
     logger.addHandler(stdout_handler)
 
 
-def add_rotating_file_handler(
+def add_file_handler(
     logger: logging.Logger, 
     logs_txt: Path, 
     logging_level: int = logging.DEBUG

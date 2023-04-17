@@ -48,7 +48,7 @@ def get_container(base: Path, identifier: str):
     return get_directory(Path(base, identifier))
 
 def get_resource_identifier(base: Path, name: str, suffix: str) -> Path:
-    return get_directory(Path(base, name)).with_suffix(suffix)
+    return Path(base, name).with_suffix(suffix)
 
 def remove_directory(base: Path) -> None:
     rmtree(base)

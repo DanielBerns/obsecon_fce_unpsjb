@@ -10,7 +10,7 @@ from typing import Dict, Tuple
 from dotenv import load_dotenv
 
 
-APPLICATION = "India"
+CONTEXT = "India"
 VERSION = "alpha"
 
 
@@ -53,11 +53,11 @@ def get_root_instance_dotenv(args: Dict[str, str]) -> Tuple[str, str, str]:
 
 
 def get_home(root: str,
-             instance: str,
-             application: str, 
+             context: str,
              version: str,
+             instance: str,
              ) -> Path:
-    home = Path(root, application, version, instance).expanduser()
+    home = Path(root, context, version, instance).expanduser()
     home.mkdir(mode=0o700, parents=True, exist_ok=True)    
     return home
 
@@ -68,8 +68,9 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
     See https://pypi.org/project/python-dotenv/
     """
     with open(dotenv_full_filename, "w") as target:
-        target.write("LOG_TARGET=STDOUT\n")
-        target.write("LOG_LEVEL=DEBUG\n")        
+        target.write("LOG_STDOUT=YES\n")
+        target.write("LOG_STDOUT_LEVEL=DEBUG\n")
+        target.write("LOG_FILE_LEVEL=INFO\n")        
         target.write("TWITTER_BEARER_TOKEN=112358132134\n")        
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
@@ -85,11 +86,13 @@ class Config:
     def __init__(self):
         args = get_args()
         root, instance, dotenv = get_root_instance_dotenv(args)
-        home = get_home(root, instance, APPLICATION, VERSION)        
+        home = get_home(root, CONTEXT, VERSION, instance)        
         load_environment_variables(home, dotenv)
         self._home = home
-        self._log_target = os.environ.get("LOG_TARGET") or "STDOUT"
-        self._log_level = os.environ.get("LOG_LEVEL") or "NOTSET"
+        self._log_stdout = os.environ.get("LOG_STDOUT") or "YES"
+        self._log_stdout_level = os.environ.get("LOG_STDOUT_LEVEL") or "DEBUG"
+        self._log_filename = "logs.txt" 
+        self._log_file_level = os.environ.get("LOG_FILE_LEVEL") or "INFO"        
         self._telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
         self._twitter_bearer_token = os.environ.get("TWITTER_BEARER_TOKEN") or "112358132134"
 
@@ -98,13 +101,25 @@ class Config:
         return self._home
 
     @property
-    def log_target(self):
-        return self._log_target
+    def log_stdout(self):
+        return self._log_stdout
     
     @property
-    def log_level(self) -> int:
-        return getattr(logging, self._log_level)
+    def log_stdout_level(self) -> int:
+        return getattr(logging, self._log_stdout_level)
 
+    @property
+    def log_file(self) -> str:
+        return self._log_file
+    
+    @property
+    def log_file_level(self) -> int:
+        return getattr(logging, self._log_file_level)
+
+    @property
+    def log_filename(self) -> str:
+        return self._log_filename
+    
     @property
     def telegram_token(self):
         return self._telegram_token

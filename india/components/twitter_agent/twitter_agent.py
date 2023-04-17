@@ -87,48 +87,41 @@ def grab_user_tweets(agent: TwitterAgent, usernames: List[str]):
         print(str(message)) 
 
 
-def create(bearer_token_file: Path) -> None:
-    with open(bearer_token_file, 'w') as target:
-        print(f"You must edit {str(bearer_token_file):s} "
-              "and replace the default token "
-              "with a valid twitter bearer_token"
-             )
-        secrets = {'bearer_token': "112358132134"}
-        json.dump(secrets, target)
-
-def get_secrets(secrets: Path) -> Dict[str, str]:
-    bearer_token_file = Path(secrets, 'twitter').with_suffix('.json')
-    if not bearer_token_file.exists():
-        create(bearer_token_file)
-    with open(bearer_token_file, 'r') as source:
-        secrets = json.load(source)
-    return secrets
+# def create(bearer_token_file: Path) -> None:
+#     with open(bearer_token_file, 'w') as target:
+#         print(f"You must edit {str(bearer_token_file):s} "
+#               "and replace the default token "
+#               "with a valid twitter bearer_token"
+#              )
+#         secrets = {'bearer_token': "112358132134"}
+#         json.dump(secrets, target)
+# 
+# def get_secrets(secrets: Path) -> Dict[str, str]:
+#     bearer_token_file = Path(secrets, 'twitter').with_suffix('.json')
+#     if not bearer_token_file.exists():
+#         create(bearer_token_file)
+#     with open(bearer_token_file, 'r') as source:
+#         secrets = json.load(source)
+#     return secrets
 
 def grab_tweets(
+    agent: TwitterAgent,
     usernames: List[str], 
     store: TreeStore
     ):
-    # To set your environment variables in your terminal run the following line:
-    # export 'BEARER_TOKEN'='<your_bearer_token>'
-    # bearer_token = os.environ.get("BEARER_TOKEN")
-    # agent = TwitterAgent(bearer_token)
-    # usernames = [u['username'] for u in users['users']] 
-
-    secrets = get_secrets(fs.secrets)
-    agent = TwitterAgent(secrets['bearer_token'])
     new_sample = store.new_sample()
     target_filename = get_resource_identifier(new_sample, 'tweets', '.json')
     with open(target_filename, 'w') as target:
         for event in grab_user_tweets(agent, usernames):
-            store.write(f'{event:s}\n')
+            target.write(f'{event:s}\n')
 
-
-def run(twitter_home: Path):
+def run(twitter_home: Path, bearer_token: str):
     store = TreeStore(twitter_home, 'tweets_from_api')
     store.start()
     users_filename = get_resource_identifier(twitter_home, 'users', '.json')    
     with open(users_filename, 'r') as source:
         users = json.load(source)
         usernames = [u['username'] for u in users['users']]
-        grab_tweets(usernames, store)
+        agent = TwitterAgent(bearer_token)        
+        grab_tweets(agent, usernames, store)
     store.stop()         

@@ -91,7 +91,10 @@ class TreeStore:
         sample.mkdir(mode=0o700, parents=True, exist_ok=False)
         return sample
 
-    def close(self):
+    def start(self):
+        pass
+        
+    def stop(self):
         self.write_metadata()
         
     def samples(self, top: int =-1) -> Path:
