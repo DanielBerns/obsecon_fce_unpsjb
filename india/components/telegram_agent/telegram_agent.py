@@ -46,22 +46,22 @@ from telegram.ext import (
 
 from components.core import TreeStore
 
-def create(token_file: Path) -> None:
-    with open(token_file, 'w') as target:
-        print(f"You must edit {str(token_file):s} "
-              "and replace the default token "
-              "with a valid telegram token"
-             )
-        secrets = {"token": "112358132134"}  
-        json.dump(secrets, target)
-
-def get_secrets(secrets: Path) -> Dict[str, str]:
-    token_file = Path(secrets, 'telegram').with_suffix('.json')
-    if not token_file.exists():
-        create(token_file)
-    with open(token_file, 'r') as source:
-        secrets = json.load(source)
-    return secrets
+# def create(token_file: Path) -> None:
+#     with open(token_file, 'w') as target:
+#         print(f"You must edit {str(token_file):s} "
+#               "and replace the default token "
+#               "with a valid telegram token"
+#              )
+#         secrets = {"token": "112358132134"}  
+#         json.dump(secrets, target)
+# 
+# def get_secrets(secrets: Path) -> Dict[str, str]:
+#     token_file = Path(secrets, 'telegram').with_suffix('.json')
+#     if not token_file.exists():
+#         create(token_file)
+#     with open(token_file, 'r') as source:
+#         secrets = json.load(source)
+#     return secrets
 
 
 # The [ExtBot, dict, dict, dict] is for type checkers like mypy
@@ -187,6 +187,8 @@ async def update_code(update: Update, context: CustomContext) -> None:
     LOGS.info("end code update")    
     await update.message.reply_text("end code update")
 
+
+IDENTIFIER = "telegram"
 
 def run() -> None:
     """Start the bot."""

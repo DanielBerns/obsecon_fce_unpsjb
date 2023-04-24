@@ -7,13 +7,14 @@ import requests
 from components.core import Metadata, TreeStore
 from components.helpers import get_resource_identifier
 
+IDENTIFIER = "twitter"
 
 class TwitterAgent:
-    def __init__(self, bearer_token):
+    def __init__(self, bearer_token: str) -> None:
         self._bearer_token = bearer_token
         
     @property
-    def bearer_token(self):
+    def bearer_token(self) -> str:
         return self._bearer_token
 
     def bearer_oauth(self, r):
@@ -61,7 +62,7 @@ class TwitterAgent:
         if response.status_code != 200:
             print('HTTP Response Status Code', response.status_code)
             raise Exception(
-                "Request returned an error: {response.status_code} {response.text}"
+                f"Request returned an error: {response.status_code} {response.text}"
                 )
         return response.json()
 
@@ -115,7 +116,7 @@ def grab_tweets(
         for event in grab_user_tweets(agent, usernames):
             target.write(f'{event:s}\n')
 
-def run(twitter_home: Path, bearer_token: str):
+def run(twitter_home: Path, bearer_token: str) -> None:
     store = TreeStore(twitter_home, 'tweets_from_api')
     store.start()
     users_filename = get_resource_identifier(twitter_home, 'users', '.json')    

@@ -1,7 +1,6 @@
 import logging
 
 import argparse
-from dataclasses import dataclass
 import os
 from pathlib import Path
 from typing import Dict, Tuple
@@ -71,7 +70,7 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
         target.write("LOG_STDOUT=YES\n")
         target.write("LOG_STDOUT_LEVEL=DEBUG\n")
         target.write("LOG_FILE_LEVEL=INFO\n")        
-        target.write("TWITTER_BEARER_TOKEN=112358132134\n")        
+        target.write("TWITTER_TOKEN=112358132134\n")        
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
 
@@ -93,8 +92,9 @@ class Config:
         self._log_stdout_level = os.environ.get("LOG_STDOUT_LEVEL") or "DEBUG"
         self._log_filename = "logs.txt" 
         self._log_file_level = os.environ.get("LOG_FILE_LEVEL") or "INFO"        
-        self._telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
-        self._twitter_bearer_token = os.environ.get("TWITTER_BEARER_TOKEN") or "112358132134"
+        telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
+        twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"
+        self._authorization_token = {"telegram": telegram_token, "twitter": twitter_token}
 
     @property
     def home(self):
@@ -119,11 +119,8 @@ class Config:
     @property
     def log_filename(self) -> str:
         return self._log_filename
-    
-    @property
-    def telegram_token(self):
-        return self._telegram_token
-    
-    @property
-    def twitter_bearer_token(self):
-        return self._twitter_bearer_token
+
+    @property    
+    def authorization_token(self) -> Dict[str, str]:
+        return self._authorization_token
+        
