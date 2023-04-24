@@ -5,12 +5,12 @@ Bot to access websites
 """
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 import requests
 import json
 
 from components.core import TreeStore
-from components.helpers import get_timestamp
+from components.helpers import get_timestamp, get_resource_identifier
 
 
 class WebsiteAgent:
@@ -28,11 +28,12 @@ class WebsiteAgent:
             return
         if response.status_code == 200:
             sample = self.store.new_sample()
-            page_html = Path(sample, 'page').with_suffix('.html')
+            page_html = get_resource_identifier(sample, 'page', '.html')
             with open(page_html, 'w') as target:
                 target.write(response.text)
-            attributes_json = Path(sample, 'attributes').with_suffix('.json')
-            attributes = {'timestamp': get_timestamp(), 'url': url}
+            attributes_json = get_resource_identifier(sample, 'attributes', '.json')
+            attributes = {'timestamp': get_timestamp(), 
+                          'url': response.url}
             with open(attributes_json, 'w') as target:
                 json.dump(attributes, target)
         else:

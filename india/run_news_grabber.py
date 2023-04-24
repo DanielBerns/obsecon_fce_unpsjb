@@ -36,10 +36,10 @@ def main():
         "https://www.elchubut.com.ar/seccion/esquel"]
     logger.info("start main")    
     logger.info(f">  home: {str(fs.home):s}")
-    news_home = get_container(fs.home, 'news')
+    news_home = get_container(fs.data, 'news')
     for identifier, urls in websites.items():
         agent = WebsiteAgent(news_home, identifier)
-        agent.get_urls(urls)        
+        agent.grab_urls(urls)        
     logger.info("done main")
 
     
