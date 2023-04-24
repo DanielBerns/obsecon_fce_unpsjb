@@ -1,7 +1,5 @@
 import logging
 
-import sys 
-
 from components.config import Config
 from components.core import Metadata, FileSystem
 from components.helpers import get_container, get_resource_identifier
