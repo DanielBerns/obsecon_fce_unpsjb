@@ -67,9 +67,7 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
     See https://pypi.org/project/python-dotenv/
     """
     with open(dotenv_full_filename, "w") as target:
-        target.write("LOG_STDOUT=YES\n")
-        target.write("LOG_STDOUT_LEVEL=DEBUG\n")
-        target.write("LOG_FILE_LEVEL=INFO\n")        
+        target.write("LOG_LEVEL=DEBUG\n")        
         target.write("TWITTER_TOKEN=112358132134\n")        
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
@@ -88,10 +86,7 @@ class Config:
         home = get_home(root, CONTEXT, VERSION, instance)        
         load_environment_variables(home, dotenv)
         self._home = home
-        self._log_stdout = os.environ.get("LOG_STDOUT") or "YES"
-        self._log_stdout_level = os.environ.get("LOG_STDOUT_LEVEL") or "DEBUG"
-        self._log_filename = "logs.txt" 
-        self._log_file_level = os.environ.get("LOG_FILE_LEVEL") or "INFO"        
+        self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"        
         telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
         twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"
         self._authorization_token = {"telegram": telegram_token, "twitter": twitter_token}
@@ -101,24 +96,8 @@ class Config:
         return self._home
 
     @property
-    def log_stdout(self):
-        return self._log_stdout
-    
-    @property
-    def log_stdout_level(self) -> int:
-        return getattr(logging, self._log_stdout_level)
-
-    @property
-    def log_file(self) -> str:
-        return self._log_file
-    
-    @property
-    def log_file_level(self) -> int:
-        return getattr(logging, self._log_file_level)
-
-    @property
-    def log_filename(self) -> str:
-        return self._log_filename
+    def log_level(self) -> int:
+        return getattr(logging, self._log_level)
 
     @property    
     def authorization_token(self) -> Dict[str, str]:
