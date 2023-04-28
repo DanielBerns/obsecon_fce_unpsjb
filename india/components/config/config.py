@@ -12,25 +12,17 @@ from dotenv import load_dotenv
 CONTEXT = "India"
 VERSION = "alpha"
 
-
-default_root_folder = str(Path('~', 'Apps').expanduser())
-
+default_data_folder = str(Path('~', 'Data').expanduser())
+default_apps_folder = str(Path('~', 'Apps').expanduser())
 
 def get_args() -> Dict[str, str]:
     """Construct the argument parser and parse the arguments"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-r",
-        "--root",
-        type=str,
-        default=default_root_folder,
-        help="root folder",
-    )
-    parser.add_argument(
         "-i",
         "--instance",
         type=str,
-        default="Test",
+        default="test",
         help="instance name",
     )
     parser.add_argument(
@@ -44,19 +36,26 @@ def get_args() -> Dict[str, str]:
     return args
 
 
-def get_root_instance_dotenv(args: Dict[str, str]) -> Tuple[str, str, str]:
-    root = str(Path(args["root"]).expanduser())
+def get_instance_dotenv(args: Dict[str, str]) -> Tuple[str, str, str]:
     instance = args["instance"]
     dotenv = args["dotenv"]
-    return root, instance, dotenv
+    return instance, dotenv
 
 
-def get_home(root: str,
-             context: str,
+def get_data_home(context: str,
              version: str,
              instance: str,
              ) -> Path:
-    home = Path(root, context, version, instance).expanduser()
+    home = Path(default_data_folder, context, version, instance).expanduser()
+    home.mkdir(mode=0o700, parents=True, exist_ok=True)    
+    return home
+
+
+def get_application_home(context: str,
+             version: str,
+             instance: str,
+             ) -> Path:
+    home = Path(default_apps_folder, context, version, instance).expanduser()
     home.mkdir(mode=0o700, parents=True, exist_ok=True)    
     return home
 
@@ -82,18 +81,24 @@ def load_environment_variables(home: str, dotenv: str) -> None:
 class Config:
     def __init__(self):
         args = get_args()
-        root, instance, dotenv = get_root_instance_dotenv(args)
-        home = get_home(root, CONTEXT, VERSION, instance)        
-        load_environment_variables(home, dotenv)
-        self._home = home
+        instance, dotenv = get_instance_dotenv(args)
+        data_home = get_data_home(CONTEXT, VERSION, instance)        
+        load_environment_variables(data_home, dotenv)
+        application_home = get_application_home(CONTEXT, VERSION, instance)
+        self._data_home = data_home
+        self._application_home = application_home
         self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"        
         telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
         twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"
         self._authorization_token = {"telegram": telegram_token, "twitter": twitter_token}
 
     @property
-    def home(self):
-        return self._home
+    def data_home(self) -> Path:
+        return self._data_home
+
+    @property
+    def application_home(self) -> Path:
+        return self._application_home
 
     @property
     def log_level(self) -> int:

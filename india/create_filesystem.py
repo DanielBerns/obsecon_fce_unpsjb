@@ -8,17 +8,7 @@ from components.helpers import get_container, get_resource_identifier
 from components.logs import add_stdout_handler, add_file_handler
 
 
-def start():
-    logger = logging.getLogger(__name__)    
-    config = Config()
-    fs = FileSystem(config.home)
-    logs_txt = get_resource_identifier(fs.logs, "logs", ".txt")    
-    if config.log_stdout == "YES":    
-        add_stdout_handler(logger, logging_level=config.log_stdout_level)
-    add_file_handler(logger, logs_txt, logging_level=config.log_file_level)            
-    logger.setLevel(logging.DEBUG)
-    logger.info("Start")
-    return config, fs, logger
+IDENTIFIER = "create"
 
 
 def create_metadata(fs: FileSystem):
@@ -30,8 +20,13 @@ def create_metadata(fs: FileSystem):
 
 def main():    
     config, fs, logger = start()    
+    logs_txt = get_resource_identifier(fs.logs, IDENTIFIER, ".txt")
+    logging.basicConfig(filename=logs_txt, level=config.log_level)    
+    logging.info(f"start {IDENTIFIER:s}")
+    
     twitter_home = get_container(fs.data, 'twitter')
     telegram_home = get_container(fs.data, 'telegram')
+    news_home = get_container(fs.data, 'news')
     logger.info("<FileSystem>")
     logger.info(f":  home={str(fs.home):s}")
     logger.info("</Filesystem>")

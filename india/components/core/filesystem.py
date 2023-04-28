@@ -8,10 +8,12 @@ from components.helpers import remove_directory
 class FileSystem:
 
     def __init__(self, 
-                 home: Path
+                 application_home: Path
+                 info_home: Path
                  ) -> None:
-        self._home: Path = home
-        self._data: Path = Path(home, 'Data')
+        self._application_home = application_home        
+        self._info_home: Path = info_home
+        self._data: Path = Path(info_home, 'Data')
         self._results: Path = Path(home, 'Results')
         self._reports: Path = Path(home, 'Reports')
         self._logs: Path = Path(home, 'Logs')
@@ -22,8 +24,12 @@ class FileSystem:
         self.logs.mkdir(mode=0o700, parents=True, exist_ok=True)
 
     @property
-    def home(self):
-        return self._home
+    def application_home(self) -> Path:
+        return self._application_home
+
+    @property
+    def info_home(self) -> Path:
+        return self._info_home
     
     @property
     def data(self) -> Path:
