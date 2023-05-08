@@ -12,10 +12,11 @@ from components.helpers import (get_container,
 
 NO_COMMAND = "*"
 
-IDENTIFIER = "run_news_grabber"
+IDENTIFIER = "edit_crontab"
 
 def main():
     command = os.environ.get("COMMAND") or NO_COMMAND
+    time = os.environ.get("TIME") or "24"
     
     config = Config()
     fs = FileSystem(config.application_home, config.info_home)
@@ -38,7 +39,7 @@ def main():
     logging.info(f"  command {command:s}")
     logging.info(f"  logs_command_txt {str(logs_command_txt):s}")
     with open(crontab_update_txt, 'w') as target:
-         target.write(f'27 * * * * {command:s} >> {str(logs_command_txt):s} 2>&1\n')
+         target.write(f'{time:s} * * * * {command:s} >> {str(logs_command_txt):s} 2>&1\n')
     cp = subprocess.run(['crontab', crontab_update_txt])
     
     if cp.returncode:
