@@ -38,7 +38,7 @@ def main():
     logging.info(f"  command {command:s}")
     logging.info(f"  logs_command_txt {str(logs_command_txt):s}")
     with open(crontab_update_txt, 'w') as target:
-         target.write(f'24 * * * * {command:s} >> {str(logs_command_txt):s} 2>&1\n')
+         target.write(f'27 * * * * {command:s} >> {str(logs_command_txt):s} 2>&1\n')
     cp = subprocess.run(['crontab', crontab_update_txt])
     
     if cp.returncode:
