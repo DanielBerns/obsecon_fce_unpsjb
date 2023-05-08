@@ -11,4 +11,10 @@ $ cd Apps
 $ git clone git@github.com:DanielBerns/observatorio_fce_unpsjb.git
 $ cd observatorio_fce_unpsjb
 $ mkdir ~/.venvs
-$ python -m venv ~/.venvs/pc
+$ python -m venv ~/.venvs/
+
+# How to start
+
+$ cd ~/Apps/observatorio_fce_unpsjb/india
+$ . ~/.venvs/pc/bin/activate
+$ python start.py

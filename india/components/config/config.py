@@ -8,7 +8,7 @@ from typing import Dict, Tuple
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-CONTEXT = "observatorio_fce_unspjb"
+CONTEXT = "observatorio_fce_unpsjb"
 VERSION = "india"
 
 default_info_folder = str(Path('~', 'Info').expanduser())
