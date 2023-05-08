@@ -29,12 +29,12 @@ def erase_directory(base: Path) -> None:
 
 class TreeStore:
     
-    def __init__(self, root: Path, identifier: str) -> None:
+    def __init__(self, home: Path, identifier: str) -> None:
         """
-                 root: path where TreeStore lives
+                 home: path where TreeStore lives
                  identifier: the name of the TreeStore
         """
-        base = Path(root, identifier).expanduser()
+        base = Path(home, identifier).expanduser()
         metadata_store = Path(base, 'index').with_suffix('.json')
         base.mkdir(mode=0o700, parents=True, exist_ok=True)
         self._base = base

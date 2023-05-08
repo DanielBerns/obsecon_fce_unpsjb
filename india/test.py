@@ -7,4 +7,5 @@ logging.info("An info message")
 logging.warning("A warning message")
 logging.error("An error message")
 logging.critical("A critical message")
-
+logging.info(f"{__file__:s}")
+logging.info(f"{__name__:s}")

@@ -7,8 +7,6 @@ import requests
 from components.core import Metadata, TreeStore
 from components.helpers import get_resource_identifier
 
-IDENTIFIER = "twitter"
-
 class TwitterAgent:
     def __init__(self, bearer_token: str) -> None:
         self._bearer_token = bearer_token
@@ -87,24 +85,6 @@ def grab_user_tweets(agent: TwitterAgent, usernames: List[str]):
     except Exception as message:
         print(str(message)) 
 
-
-# def create(bearer_token_file: Path) -> None:
-#     with open(bearer_token_file, 'w') as target:
-#         print(f"You must edit {str(bearer_token_file):s} "
-#               "and replace the default token "
-#               "with a valid twitter bearer_token"
-#              )
-#         secrets = {'bearer_token': "112358132134"}
-#         json.dump(secrets, target)
-# 
-# def get_secrets(secrets: Path) -> Dict[str, str]:
-#     bearer_token_file = Path(secrets, 'twitter').with_suffix('.json')
-#     if not bearer_token_file.exists():
-#         create(bearer_token_file)
-#     with open(bearer_token_file, 'r') as source:
-#         secrets = json.load(source)
-#     return secrets
-
 def grab_tweets(
     agent: TwitterAgent,
     usernames: List[str], 
@@ -116,7 +96,8 @@ def grab_tweets(
         for event in grab_user_tweets(agent, usernames):
             target.write(f'{event:s}\n')
 
-def run(twitter_home: Path, bearer_token: str) -> None:
+def run(data_home: Path, bearer_token: str) -> None:
+    twitter_home = Path(data_home, 'twitter')
     store = TreeStore(twitter_home, 'tweets_from_api')
     store.start()
     users_filename = get_resource_identifier(twitter_home, 'users', '.json')    
