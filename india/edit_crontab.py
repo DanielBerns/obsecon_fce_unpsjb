@@ -24,7 +24,7 @@ def main():
         fs.logs, 
         f"{IDENTIFIER:s}_{timestamp:s}", 
         ".txt")    
-    logging.basicConfig(filename=logs_edit_crontab_txt, level=config.log_level)    
+    logging.basicConfig(filename=logs_txt, level=config.log_level)    
     if command == NO_COMMAND:
         logging.warning("No command to execute.")
         sys.exit(1)
