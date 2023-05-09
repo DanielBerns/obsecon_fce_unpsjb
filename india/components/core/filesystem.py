@@ -3,6 +3,7 @@ import sys
 from typing import Optional
 
 from components.helpers import (remove_directory, 
+                                get_container,
                                 get_resource_identifier, 
                                 get_timestamp)
 
