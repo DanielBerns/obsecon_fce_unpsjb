@@ -29,7 +29,7 @@ def main():
                     if len(this_time_parts) == 5:
                         for p in this_time_parts:
                             target.write(f'{p:s} ')
-                        target.write(f'{this_command:s} >> {str(logs_command_txt):s} 2>&1\n')
+                        target.write(f'{str(this_command):s} >> {str(logs_command_txt):s} 2>&1\n')
                     else:
                         logging.warning(f'Error in {str(fs.commands_file):s} at {line:s}')
                 else:
