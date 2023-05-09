@@ -18,7 +18,7 @@ def main():
     logging.basicConfig(filename=logs_txt, level=config.log_level)    
     logging.info("start crontab edit")
     crontab_update_txt, logs_crontab_txt = fs.get_crontab_resource()
-    with open(fs.get_commands_resource(DEFAULT_COMMANDS), 'r') as source, 
+    with open(fs.get_commands_resource(DEFAULT_COMMANDS), 'r') as source, \
          open(crontab_update_txt, 'w') as target:
             for line in source:
                 line_parts = line.split(':')
