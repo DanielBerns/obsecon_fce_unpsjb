@@ -23,7 +23,7 @@ def main():
             for line in source:
                 line_parts = line.split(':')
                 if len(line_parts) == 2:
-                    this_command = Path(line_parts[0])
+                    this_command = Path(line_parts[0]).expanduser()
                     this_time = line_parts[1]
                     this_time_parts = this_time.split(' ')
                     if len(this_time_parts) == 5:
