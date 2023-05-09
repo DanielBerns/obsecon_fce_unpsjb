@@ -21,7 +21,7 @@ def main():
     with open(fs.get_commands_resource(DEFAULT_COMMANDS), 'r') as source, \
          open(crontab_update_txt, 'w') as target:
             for line in source:
-                line_parts = line.split(':')
+                line_parts = (line[:-1]).split(':')
                 if len(line_parts) == 2:
                     this_command = Path(line_parts[0]).expanduser()
                     this_time = line_parts[1]
