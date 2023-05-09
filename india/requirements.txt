@@ -104,3 +104,4 @@ webencodings
 xhtml2pdf
 XMind
 yarl
+wheel
