@@ -2,7 +2,9 @@ from pathlib import Path
 import sys
 from typing import Optional
 
-from components.helpers import remove_directory
+from components.helpers import (remove_directory, 
+                                get_resource_identifier, 
+                                get_timestamp)
 
 
 class FileSystem:
@@ -13,6 +15,7 @@ class FileSystem:
                  ) -> None:
         self._application_home = application_home        
         self._info_home: Path = info_home
+        self._commands: Path = Path(info_home, 'Commands')
         self._data: Path = Path(info_home, 'Data')
         self._results: Path = Path(info_home, 'Results')
         self._reports: Path = Path(info_home, 'Reports')
@@ -64,3 +67,27 @@ class FileSystem:
             remove_directory(self.reports)
         if self.logs.exists():
             remove_directory(self.logs)            
+
+    def get_commands_resource(self, identifier: str) -> Path:
+        resource = get_resource_identifier(
+            fs.commands, 
+            identifier, 
+            ".txt")
+        return resource
+        
+    def get_logs_resource(self, identifier: str):
+        timestamp = get_timestamp()
+        resource = get_resource_identifier(
+            fs.logs, 
+            f"{identifier:s}_{timestamp:s}", 
+            ".txt")    
+        return resource
+    
+    def get_crontab_resource(self):
+        timestamp = get_timestamp()        
+        crontab_home = get_container(fs.data, 'crontab')        
+        crontab_update_txt = get_resource_identifier(
+            crontab_home, 'crontab', '.txt')
+        logs_crontab_txt = get_resource_identifier(
+            fs.logs, f"crontab_update_{timestamp:s}", ".txt")
+        return crontab_update_txt, logs_crontab_txt
