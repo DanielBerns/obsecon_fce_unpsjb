@@ -14,7 +14,7 @@ IDENTIFIER = "run_news_grabber"
 def main():
     config = Config()
     fs = FileSystem(config.application_home, config.info_home)
-    logs_txt = get_resource_identifier(fs.logs, IDENTIFIER, ".txt")
+    logs_txt = fs.get_logs_resource(IDENTIFIER)
     logging.basicConfig(filename=logs_txt, level=config.log_level)    
     logging.info(f"start {IDENTIFIER:s}")
 
