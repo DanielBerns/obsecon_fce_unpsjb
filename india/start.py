@@ -5,7 +5,6 @@ import sys
 from components.config import Config
 from components.core import Metadata, FileSystem
 from components.helpers import get_container, get_resource_identifier, get_timestamp
-from components.logs import add_stdout_handler, add_file_handler
 
 
 IDENTIFIER = "start"
