@@ -17,8 +17,9 @@ def main():
     logs_txt = fs.get_logs_resource(IDENTIFIER)
     logging.basicConfig(filename=logs_txt, level=config.log_level)    
     logging.info("start crontab edit")
+    commands_txt = fs.get_commands_resource(DEFAULT_COMMANDS)
     crontab_update_txt, logs_crontab_txt = fs.get_crontab_resource()
-    with open(fs.get_commands_resource(DEFAULT_COMMANDS), 'r') as source, \
+    with open(commands_txt, 'r') as source, \
          open(crontab_update_txt, 'w') as target:
             for line in source:
                 line_parts = (line[:-1]).split(':')
@@ -31,9 +32,9 @@ def main():
                             target.write(f'{p:s} ')
                         target.write(f'{str(this_command):s} >> {str(logs_crontab_txt):s} 2>&1\n')
                     else:
-                        logging.warning(f'Error in {str(fs.commands_file):s} at {line:s}')
+                        logging.warning(f'Error in {str(commands_txt):s} at {line:s}')
                 else:
-                    logging.warning(f'Error in {str(fs.commands_file):s} at {line:s}')                    
+                    logging.warning(f'Error in {str(commands_txt):s} at {line:s}')                    
     cp = subprocess.run(['crontab', crontab_update_txt])
     
     if cp.returncode:
