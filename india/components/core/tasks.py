@@ -1,5 +1,7 @@
+from typing import Dict
+
 class Task:
-    def __init__(self, parameters: Dict):
+    def __init__(self, parameters: Dict) -> None:
         self._parameters = parameters
     
     @property
