@@ -39,20 +39,26 @@ class WebsiteAgent:
         else:
             logging.info(f':  status_code: {response.status_code:d}')
 
-    def get_one_url(self, url: str):
-        logging.info(f'start get({url:s})')
+    def grab(self, url: str) -> None:
+        logging.info(f'start grab({url:s})')
         try:
             response = requests.get(url)
+            self.save_response(response)            
         except Exception as message:
             logging.info(f':  exception {str(message):s}')
             response = None
         else:
-            logging.info(f'done get({url:s})')
+            logging.info(f'done grab({url:s})')
         return response
-    
-    def grab_urls(self, urls: List[str]):
-        logging.info('start grab_urls')
-        for one_url in urls:
-            response = self.get_one_url(one_url)
-            self.save_response(response)
-        logging.info('done grab_urls')
+
+def run(
+    home: Path,
+    websites: Dict[str, List[str]) -> None:
+    logging.info(f"start run: {str(home):s}")
+    for identifier, urls in websites.items():
+        logging.info(f"  identifier: {identifier:s}")        
+        agent = WebsiteAgent(home, identifier)
+        for this_url in urls:
+            agent.grab(this_url)
+        logging.info(f"  done: {identifier:s}")                
+    logging.info(f"done run: {str(home):s}")

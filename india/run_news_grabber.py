@@ -1,7 +1,7 @@
 import logging
 
 from app.engine import Engine
-from components.spider import run
+from components.website_agent import run
 
 
 IDENTIFIER = "run_news_grabber"
