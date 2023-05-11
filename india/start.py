@@ -10,11 +10,6 @@ from components.helpers import get_container
 IDENTIFIER = "start"
 
 
-def create_metadata(fs: FileSystem) -> None:
-    container = get_container(fs.data, 'metadata')
-    metadata = Metadata(container)
-    metadata.start()
-    metadata.stop()
 
 DEFAULT_COMMANDS = [
   "~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh:36 * * * *"

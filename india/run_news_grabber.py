@@ -1,22 +1,17 @@
 import logging
 
-from components.config import Config
-from components.core import Metadata, FileSystem
-from components.helpers import get_container, get_resource_identifier
-from components.logs import add_stdout_handler, add_file_handler
-
-from components.website_agent import WebsiteAgent 
+from app.engine import Engine
+from components.spider import run
 
 
 IDENTIFIER = "run_news_grabber"
 
 
 def main():
-    config = Config()
-    fs = FileSystem(config.application_home, config.info_home)
-    logs_txt = fs.get_logs_resource(IDENTIFIER)
-    logging.basicConfig(filename=logs_txt, level=config.log_level)    
-    logging.info(f"start {IDENTIFIER:s}")
+    engine = Engine()
+
+    logs_txt, log_level = engine.start_logs_resource(IDENTIFIER)
+    logging.basicConfig(filename=logs_txt, level=log_level)    
 
     websites = {}
     websites["adnsur"] = ["https://adnsur.com.ar"]
@@ -29,14 +24,10 @@ def main():
         "https://www.elchubut.com.ar/seccion/puerto-madryn",
         "https://www.elchubut.com.ar/seccion/esquel"]
     websites["infobae"] = ["https://www.infobae.com/"]
-    logging.info("start main")    
-    logging.info(f">  data_home: {str(fs.data):s}")
-    news = get_container(fs.data, 'news')
-    for identifier, urls in websites.items():
-        agent = WebsiteAgent(news, identifier)
-        agent.grab_urls(urls)        
-    logging.info("done main")
-
+    
+    logging.info(f"start {IDENTIFIER:s}")
+    run(engine.news, websites)
+    logging.info(f"stop {IDENTIFIER:s}")
     
 if __name__ == "__main__":
     main()
