@@ -1,6 +1,10 @@
-from components.core.filesystem import FileSystem
-from components.core.config import Config
+from pathlib import Path
 import logging
+
+from components.core.filesystem import FileSystem
+from components.config import Config
+from components.helpers import get_container, get_timestamp, get_resource_identifier
+
 
 DEFAULT_COMMANDS = [
   "~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh:36 * * * *",
@@ -57,7 +61,7 @@ class Engine:
             self.crontab, 'crontab', '.txt')
         timestamp = get_timestamp()        
         logs_crontab_txt = get_resource_identifier(
-            self.logs, f"crontab_update_{timestamp:s}", ".txt")
+            self.fs.logs, f"crontab_update_{timestamp:s}", ".txt")
         return crontab_update_txt, logs_crontab_txt
         
     def get_commands_resource(self, identifier: str) -> Path:
@@ -77,6 +81,7 @@ class Engine:
     
     def create_default_commands(self) -> None:
         default_commands = self.get_commands_resource("default_commands")
-        with open(default_commands, 'w') as target:
-            for line in DEFAULT_COMMANDS:
-                target.write(f"{line:s}\n")
+        if not default_commands.exists():
+            with open(default_commands, 'w') as target:
+                for line in DEFAULT_COMMANDS:
+                    target.write(f"{line:s}\n")

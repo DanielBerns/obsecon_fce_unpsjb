@@ -4,21 +4,24 @@ import subprocess
 import logging
 import sys 
 from pathlib import Path
-from components.config import Config
-from components.core import FileSystem
+
+from app.engine import Engine
 
 IDENTIFIER = "edit_crontab"
 
 DEFAULT_COMMANDS = "default_commands"
 
 def main():
-    config = Config()
-    fs = FileSystem(config.application_home, config.info_home)
-    logs_txt = fs.get_logs_resource(IDENTIFIER)
-    logging.basicConfig(filename=logs_txt, level=config.log_level)    
-    logging.info("start crontab edit")
-    commands_txt = fs.get_commands_resource(DEFAULT_COMMANDS)
-    crontab_update_txt, logs_crontab_txt = fs.get_crontab_resource()
+    engine = Engine()
+
+    logging.basicConfig(
+        filename=engine.get_logs_resource(IDENTIFIER), 
+        level=engine.config.log_level)    
+    
+    logging.info(f"start {IDENTIFIER:s}")
+
+    commands_txt = engine.get_commands_resource(DEFAULT_COMMANDS)
+    crontab_update_txt, logs_crontab_txt = engine.get_crontab_resource()
     with open(commands_txt, 'r') as source, \
          open(crontab_update_txt, 'w') as target:
             for line in source:

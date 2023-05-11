@@ -16,11 +16,11 @@ class FileSystem:
                  ) -> None:
         self._application_home = application_home        
         self._info_home: Path = info_home
-        self._commands: Path = get_container(Path(info_home, 'Commands'))
-        self._data: Path = get_container(Path(info_home, 'Data'))
-        self._results: Path = get_container(Path(info_home, 'Results'))
-        self._reports: Path = get_container(Path(info_home, 'Reports'))
-        self._logs: Path = get_container(Path(info_home, 'Logs'))
+        self._commands: Path = get_container(info_home, 'Commands')
+        self._data: Path = get_container(info_home, 'Data')
+        self._results: Path = get_container(info_home, 'Results')
+        self._reports: Path = get_container(info_home, 'Reports')
+        self._logs: Path = get_container(info_home, 'Logs')
 
     @property
     def application_home(self) -> Path:

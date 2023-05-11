@@ -10,8 +10,9 @@ IDENTIFIER = "run_news_grabber"
 def main():
     engine = Engine()
 
-    logs_txt, log_level = engine.start_logs_resource(IDENTIFIER)
-    logging.basicConfig(filename=logs_txt, level=log_level)    
+    logging.basicConfig(
+        filename=engine.get_logs_resource(IDENTIFIER), 
+        level=engine.config.log_level)    
 
     websites = {}
     websites["adnsur"] = ["https://adnsur.com.ar"]
