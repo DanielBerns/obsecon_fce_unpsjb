@@ -1,12 +1,10 @@
-from typing import Dict
-
 class Task:
-    def __init__(self, parameters: Dict) -> None:
-        self._parameters = parameters
+    def __init__(self, identifier: str) -> None:
+        self._identifier = identifier
     
     @property
-    def parameters(self):
-        return self._parameters
+    def identifier(self) -> str:
+        return self._identifier
 
     def execute(self):
         pass
