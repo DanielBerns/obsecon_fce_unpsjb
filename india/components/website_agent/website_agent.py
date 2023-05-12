@@ -51,9 +51,9 @@ class WebsiteAgent:
             logging.info(f'done grab({url:s})')
         return response
 
-def run(
-    home: Path,
-    websites: Dict[str, List[str]]) -> None:
+def run(home: Path,
+        websites: Dict[str, List[str]]
+        ) -> None:
     logging.info(f"start run: {str(home):s}")
     for identifier, urls in websites.items():
         logging.info(f"  identifier: {identifier:s}")        

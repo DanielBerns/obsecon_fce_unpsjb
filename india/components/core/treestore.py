@@ -4,6 +4,7 @@ from shutil import rmtree
 
 from typing import Tuple
 
+from components.helpers import get_container
 
 class TreeStoreError(Exception):
     def __init__(self, message: str):
@@ -34,9 +35,8 @@ class TreeStore:
                  home: path where TreeStore lives
                  identifier: the name of the TreeStore
         """
-        base = Path(home, identifier).expanduser()
-        metadata_store = Path(base, 'index').with_suffix('.json')
-        base.mkdir(mode=0o700, parents=True, exist_ok=True)
+        base = get_container(home, identifier)
+        metadata_store = Path(home, 'index').with_suffix('.json')
         self._base = base
         self._tree = Path(base, 'tree')
         self._metadata_store = metadata_store

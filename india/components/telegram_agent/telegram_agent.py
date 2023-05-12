@@ -59,7 +59,7 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
                  chat_id: int = None, 
                  user_id: int = None):
         super().__init__(application=application, chat_id=chat_id, user_id=user_id)
-        self._treestore = TreeStore(CustomContext.telegram_home)
+        self._treestore = TreeStore(CustomContext.telegram_home, 'messages')
 
     @property
     def treestore(self) -> TreeStore:
@@ -84,12 +84,13 @@ async def process_text(update: Update, context: CustomContext) -> None:
     """Process text message."""
     if update.message:
         if update.message.text:
+            context.treestore.start()
             sample = context.treestore.new_sample()
+            context.treestore.stop()
             logging.info(f"Created sample {str(sample):s}!")            
-            # Log text
             user = update.effective_user
-            logging.info(
-                f"Found text {update.message.text:s} from {user.full_name:s}")
+            with open(Path(sample, 'message').with_suffix('.txt'),'w') as target:
+                target.write(f"{user.full_name:s}:{update.message.text:s}\n")
             await update.message.reply_text(f"Text: {update.message.text:s} from {user.full_name:s}")
         else:
             # None
@@ -103,7 +104,9 @@ async def process_photo(update: Update, context: CustomContext) -> None:
     """Process photo message."""
     if update.message:
         if update.message.photo:
+            context.treestore.start()
             sample = context.treestore.new_sample()
+            context.treestore.stop()
             logging.info(f"Created sample {str(sample):s}!")           
             file_id = update.message.photo[-1].file_id
             new_file = await context.bot.get_file(file_id)
@@ -178,9 +181,9 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
-def run(data_home: Path, telegram_token: str) -> None:
+def run(telegram_home: Path, telegram_token: str) -> None:
     """Start the bot."""
-    CustomContext.telegram_home = get_container(data_home, 'telegram')
+    CustomContext.telegram_home = telegram_home
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)
