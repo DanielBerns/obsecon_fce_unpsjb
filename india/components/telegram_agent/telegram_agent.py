@@ -52,14 +52,15 @@ from components.helpers import get_container
 # The [ExtBot, dict, dict, dict] is for type checkers like mypy
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
 
-    telegram_home: Optional[Path] = None
+    application_home: Optional[Path] = None
+    treestore: Optional[TreeStore] = None
     
     def __init__(self, 
                  application: Application, 
                  chat_id: int = None, 
                  user_id: int = None):
         super().__init__(application=application, chat_id=chat_id, user_id=user_id)
-        self._treestore = TreeStore(CustomContext.telegram_home, 'messages')
+        self._treestore = CustomContext.treestore
 
     @property
     def treestore(self) -> TreeStore:
@@ -157,9 +158,9 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("executing shutdown")    
 
 
-async def _update_code() -> None:
+async def _update_code(update_code_path: Path) -> None:
    cwd = os.getcwd()
-   os.chdir(Config.FILESYSTEM.update_code_path)
+   os.chdir()
    cp = subprocess.run(["git", "pull"])
    os.chdir(cwd)
 
@@ -173,7 +174,7 @@ async def update_code(update: Update, context: CustomContext) -> None:
     logging.info("start code update")
     await update.message.reply_text("start code update")    
     context.bot_data['update_code'] = True
-    await _update_code()
+    await _update_code(CustomContext.application_home)
     context.bot_data['update_code'] = False
     if cp.returncode:
         logging.info(f"returncode {cp.returncode:d}")
@@ -181,9 +182,16 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
-def run(telegram_home: Path, telegram_token: str) -> None:
+
+def run(application_home: Path,
+        telegram_home: Path, 
+        telegram_token: str) -> None:
     """Start the bot."""
-    CustomContext.telegram_home = telegram_home
+    if CustomContext.application_home is None:
+        CustomContext.application_home = application_home
+    if CustomContext.treestore is None:
+        CustomContext.treestore = TreeStore(
+            telegram_home, 'messages')
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)
@@ -196,8 +204,7 @@ def run(telegram_home: Path, telegram_token: str) -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("uc", update_code))
-    
-    
+        
     # on non commands 
     application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, process_text)

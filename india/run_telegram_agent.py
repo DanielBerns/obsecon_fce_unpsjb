@@ -16,7 +16,9 @@ def main():
         level=engine.config.log_level)    
 
     logging.info(f"start {IDENTIFIER:s}")
-    run(engine.telegram, engine.config.authorization_token["telegram"])
+    run(engine.config.application_home,
+        engine.telegram, 
+        engine.config.authorization_token["telegram"])
     logging.info(f"stop {IDENTIFIER:s}")
     
 if __name__ == '__main__':

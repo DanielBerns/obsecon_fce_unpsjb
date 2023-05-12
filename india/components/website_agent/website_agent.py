@@ -58,7 +58,9 @@ def run(home: Path,
     for identifier, urls in websites.items():
         logging.info(f"  identifier: {identifier:s}")        
         agent = WebsiteAgent(home, identifier)
+        agent.store.start()
         for this_url in urls:
             agent.grab(this_url)
+        agent.store.stop()
         logging.info(f"  done: {identifier:s}")                
     logging.info(f"done run: {str(home):s}")

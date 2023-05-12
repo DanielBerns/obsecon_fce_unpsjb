@@ -36,7 +36,7 @@ class TreeStore:
                  identifier: the name of the TreeStore
         """
         base = get_container(home, identifier)
-        metadata_store = Path(home, 'index').with_suffix('.json')
+        metadata_store = Path(base, 'index').with_suffix('.json')
         self._base = base
         self._tree = Path(base, 'tree')
         self._metadata_store = metadata_store
