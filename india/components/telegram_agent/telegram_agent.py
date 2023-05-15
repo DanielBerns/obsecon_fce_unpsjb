@@ -86,9 +86,10 @@ async def process_text(update: Update, context: CustomContext) -> None:
     """Process text message."""
     if update.message:
         if update.message.text:
-            context.treestore.start()
-            sample = context.treestore.new_sample()
-            context.treestore.stop()
+            ts = context.treestore
+            ts.start()
+            sample = ts.new_sample()
+            ts.stop()
             logging.info(f"Created sample {str(sample):s}!")            
             user = update.effective_user
             with open(Path(sample, 'message').with_suffix('.txt'),'w') as target:
