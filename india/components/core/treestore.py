@@ -92,7 +92,7 @@ class TreeStore:
         return sample
 
     def start(self):
-        pass
+        logging.info(f'treestore.start() with index {self.index:d}')
         
     def stop(self):
         self.write_metadata()
