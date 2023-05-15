@@ -190,8 +190,8 @@ def run(application_home: Path,
     """Start the bot."""
     if CustomContext.application_home is None:
         CustomContext.application_home = application_home
-    if CustomContext.telegram_home is None
-        CustomContext.telegram_home = telegram_home:
+    if CustomContext.telegram_home is None:
+        CustomContext.telegram_home = telegram_home
     if CustomContext.treestore is None:
         CustomContext.treestore = TreeStore(
             telegram_home, 'messages')
