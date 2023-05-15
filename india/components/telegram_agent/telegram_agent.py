@@ -53,6 +53,7 @@ from components.helpers import get_container
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
 
     application_home: Optional[Path] = None
+    telegram_home: Optional[Path] = None
     treestore: Optional[TreeStore] = None
     
     def __init__(self, 
@@ -147,7 +148,7 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     context.bot_data['shutdown'] = True
     # https://phoenixnap.com/kb/linux-at-command
     command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
-    command_path = Path(data_path, 'shutdown').with_suffix('.sh')
+    command_path = Path(telegram_home, 'shutdown').with_suffix('.sh')
     with open(command_path, 'w') as target:
         target.write(command)
     os.chmod(command_path, 0o700)
@@ -189,6 +190,8 @@ def run(application_home: Path,
     """Start the bot."""
     if CustomContext.application_home is None:
         CustomContext.application_home = application_home
+    if CustomContext.telegram_home is None
+        CustomContext.telegram_home = telegram_home
     if CustomContext.treestore is None:
         CustomContext.treestore = TreeStore(
             telegram_home, 'messages')
