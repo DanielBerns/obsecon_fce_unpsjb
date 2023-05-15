@@ -61,11 +61,6 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
                  chat_id: int = None, 
                  user_id: int = None):
         super().__init__(application=application, chat_id=chat_id, user_id=user_id)
-        self._treestore = CustomContext.treestore
-
-    @property
-    def treestore(self) -> TreeStore:
-        return self._treestore
 
 
 async def start(update: Update, context: CustomContext) -> None:
@@ -86,7 +81,7 @@ async def process_text(update: Update, context: CustomContext) -> None:
     """Process text message."""
     if update.message:
         if update.message.text:
-            ts = context.treestore
+            ts = CustomContext.treestore
             ts.start()
             sample = ts.new_sample()
             ts.stop()
@@ -107,9 +102,9 @@ async def process_photo(update: Update, context: CustomContext) -> None:
     """Process photo message."""
     if update.message:
         if update.message.photo:
-            context.treestore.start()
-            sample = context.treestore.new_sample()
-            context.treestore.stop()
+            ts = CustomContext.treestore
+            sample = ts.new_sample()
+            ts.stop()
             logging.info(f"Created sample {str(sample):s}!")           
             file_id = update.message.photo[-1].file_id
             new_file = await context.bot.get_file(file_id)
