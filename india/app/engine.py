@@ -7,8 +7,8 @@ from components.helpers import get_container, get_timestamp, get_resource_identi
 
 
 DEFAULT_COMMANDS = [
-  "~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh:36 * * * *",
-  "~/Apps/observatorio_fce_unpsjb/india/update_app.sh:37 * * * *"
+  ("~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh:36 * * * *", "run_news_grabber"),
+  ("~/Apps/observatorio_fce_unpsjb/india/update_app.sh:37 * * * *", "update_app")
 ]
 
 class Engine:
@@ -57,12 +57,9 @@ class Engine:
         return self._fs
 
     def get_crontab_resource(self):
-        crontab_update_txt = get_resource_identifier(
+        crontab_txt = get_resource_identifier(
             self.crontab, 'crontab', '.txt')
-        timestamp = get_timestamp()        
-        logs_crontab_txt = get_resource_identifier(
-            self.fs.logs, f"crontab_update_{timestamp:s}", ".txt")
-        return crontab_update_txt, logs_crontab_txt
+        return crontab_txt
         
     def get_commands_resource(self, identifier: str) -> Path:
         resource = get_resource_identifier(
@@ -83,5 +80,5 @@ class Engine:
         default_commands = self.get_commands_resource("default_commands")
         if not default_commands.exists():
             with open(default_commands, 'w') as target:
-                for line in DEFAULT_COMMANDS:
-                    target.write(f"{line:s}\n")
+                for command, identifier in DEFAULT_COMMANDS:
+                    target.write(f"{command:s},[{identifier:s}]\n")
