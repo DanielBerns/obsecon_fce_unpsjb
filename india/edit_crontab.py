@@ -42,7 +42,7 @@ def update_crontab():
                     else:
                         logging.warning(f'Error in {str(commands_txt):s} at {line:s}')
                         logging.warning('  character ":" not founded')                        
-                            raise UpdateCrontabWarning(f'Check {str(commands_txt):s}')
+                        raise UpdateCrontabWarning(f'Check {str(commands_txt):s}')
                 else:
                     logging.warning(f'Error in {str(commands_txt):s} at {line:s}')             
                     logging.warning('  character "," not founded')                        
