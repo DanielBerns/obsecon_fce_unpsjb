@@ -74,8 +74,19 @@ async def start(update: Update, context: CustomContext) -> None:
 
 async def help_command(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
-    await update.message.reply_text("Help!")
+    await update.message.reply_text("/start, /help, /telegram, /news, /twitter, /sd, /uc")
 
+async def get_telegram(update: Update, context: CustomContext) -> None:
+    """Send a message when the command /help is issued."""
+    await update.message.reply_text("get telegram data")
+
+async def get_news(update: Update, context: CustomContext) -> None:
+    """Send a message when the command /help is issued."""
+    await update.message.reply_text("get news data")
+
+async def get_twitter(update: Update, context: CustomContext) -> None:
+    """Send a message when the command /help is issued."""
+    await update.message.reply_text("get twitter data")
 
 async def process_text(update: Update, context: CustomContext) -> None:
     """Process text message."""
