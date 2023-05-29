@@ -144,7 +144,9 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     context.bot_data['shutdown'] = True
     # https://phoenixnap.com/kb/linux-at-command
     command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
+    logging.info(command)
     command_path = Path(telegram_home, 'shutdown').with_suffix('.sh')
+    logging.info(str(command_path))
     with open(command_path, 'w') as target:
         target.write(command)
     os.chmod(command_path, 0o700)
@@ -156,10 +158,12 @@ async def shutdown(update: Update, context: CustomContext) -> None:
 
 
 async def _update_code(update_code_path: Path) -> None:
-   cwd = os.getcwd()
-   os.chdir()
-   cp = subprocess.run(["git", "pull"])
-   os.chdir(cwd)
+    cwd = os.getcwd()
+    os.chdir()
+    cp = subprocess.run(["git", "pull"])
+    os.chdir(cwd)
+    if cp.returncode:
+        logging.info(f"returncode {cp.returncode:d}")
 
 
 async def update_code(update: Update, context: CustomContext) -> None:
@@ -173,8 +177,6 @@ async def update_code(update: Update, context: CustomContext) -> None:
     context.bot_data['update_code'] = True
     await _update_code(CustomContext.application_home)
     context.bot_data['update_code'] = False
-    if cp.returncode:
-        logging.info(f"returncode {cp.returncode:d}")
     logging.info("end code update")    
     await update.message.reply_text("end code update")
 
