@@ -145,7 +145,7 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     # https://phoenixnap.com/kb/linux-at-command
     command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
     logging.info(command)
-    command_path = Path(telegram_home, 'shutdown').with_suffix('.sh')
+    command_path = Path(CustomContext.telegram_home, 'shutdown').with_suffix('.sh')
     logging.info(str(command_path))
     with open(command_path, 'w') as target:
         target.write(command)
