@@ -14,8 +14,7 @@ DEFAULT_COMMANDS = "default_commands"
 class UpdateCrontabWarning(Exception):
     pass
 
-def update_crontab():
-    engine = Engine()
+def update_crontab(engine: Engine):
     commands_txt = engine.get_commands_resource(DEFAULT_COMMANDS)
     crontab_txt = engine.get_crontab_resource()
     with open(commands_txt, 'r') as source, \
@@ -53,6 +52,8 @@ def update_crontab():
 
 
 def main():
+    engine = Engine()
+    
     logging.basicConfig(
         filename=engine.get_logs_resource(IDENTIFIER), 
         level=engine.config.log_level)    
@@ -60,7 +61,7 @@ def main():
     logging.info(f"start {IDENTIFIER:s}")
 
     try:
-        update_crontab()
+        update_crontab(engine)
     except UpdateCrontabWarning as message:
         logging.warning(str(message))
 
