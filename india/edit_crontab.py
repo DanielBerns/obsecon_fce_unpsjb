@@ -25,7 +25,7 @@ def update_crontab(engine: Engine):
                     command_bash, log_identifier = line_parts[0], line_parts[1]
                     command_bash_parts = command_bash.split(':')
                     if len(command_bash_parts) == 2:
-                        this_command = Path(command_bash_parts).expanduser()
+                        this_command = Path(command_bash_parts[0]).expanduser()
                         this_time = command_bash_parts[1]
                         this_time_parts = this_time.split(' ')
                         command_log = log_identifier[1:-1] if len(log_identifier) > 2 else 'command_log'
