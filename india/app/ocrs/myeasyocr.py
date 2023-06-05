@@ -11,4 +11,4 @@ class EasyOCR:
         self._reader = easyocr.Reader(languages)
         
     def read_text(self, resource: Path) -> List:
-        return self.reader.readtext(str(resource))    
+        return self._reader.readtext(str(resource))    
