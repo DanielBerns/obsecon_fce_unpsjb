@@ -3,4 +3,5 @@ from app.ocrs import EasyOCR
 
 reader = EasyOCR(['es'])
 
-text = 
+resource = Path()
+text = reader.read_text()
