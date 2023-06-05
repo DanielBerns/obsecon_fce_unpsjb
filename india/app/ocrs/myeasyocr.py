@@ -1,5 +1,10 @@
-from app.text_reader import TextReader
+from typing import List
+from pathlib import Path
+
 import easyocr
+
+from app.text_reader import TextReader
+
 
 class EasyOCR:
     def __init__(self, languages: List[str]):
