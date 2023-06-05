@@ -14,7 +14,6 @@ VERSION = "juliet"
 default_info_root = str(Path('~', 'Info').expanduser())
 default_apps_root = str(Path('~', 'Apps').expanduser())
 
-
 class CLI:
     def __init__(self) -> None:
         self._parser = argparse.ArgumentParser()

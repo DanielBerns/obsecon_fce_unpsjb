@@ -4,11 +4,11 @@ import os
 from pathlib import Path
 from typing import List, Dict, Protocol, Union, Optional, Tuple, DefaultDict
 
-from components.helpers import get_directory
+from components.helpers import get_directory, get_resource_identifier
 
 from components.core.json_document import JSONDocument
 
-class JSON2CSVError(Exception):
+class EventsStatsError(Exception):
     pass
 
 class EventsStats:
@@ -29,11 +29,11 @@ class EventsStats:
         p = [count['total'] for key, count in self.counters.items()]
         test_p = all([v == p[0] for v in p])
         if not test_p:
-            raise JSON2CSVError('EventStats.keys: bad stats events (not p).')
+            raise EventsStatsError('EventStats.keys: bad stats events (not p).')
         q = [len(count.keys()) == 2 for key, count in self.counters.items()]
         test_q = all(q)                                                    
         if not test_q:
-            raise JSON2CSVError('EventStats.keys: bad stats events (not q).')
+            raise EventsStatsError('EventStats.keys: bad stats events (not q).')
         return [key for key in self.counters.keys()]
 
 
@@ -43,7 +43,7 @@ class CSVDocument:
     
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = Path(self.directory, 'store').with_suffix('.csv')
+        self._store: Path = get_resource_identifier(self.directory, 'store', '.csv')
         
     @property
     def directory(self) -> Path:
