@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from app.text_reader import TextReader
 
 from typing import List, Tuple
+from pathlib import Path 
 
 class HTMLTextReader:
     def __init__(self):
