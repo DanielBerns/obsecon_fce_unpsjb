@@ -53,15 +53,17 @@ def canny(image):
     return cv2.Canny(image, 100, 200)
 
 #skew correction
- def deskew(image):
-     coords = np.column_stack(np.where(image > 0))
-     angle = cv2.minAreaRect(coords)[-1]
-     angle = -(90 + angle) if angle < -45 else -angle
-     (h, w) = image.shape[:2]
-     center = (w // 2, h // 2)
-     M = cv2.getRotationMatrix2D(center, angle, 1.0)
-     rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-     return rotated
+def deskew(image):
+    coords = np.column_stack(np.where(image > 0))
+    angle = cv2.minAreaRect(coords)[-1]
+    angle = -(90 + angle) if angle < -45 else -angle
+    (h, w) = image.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    rotated = cv2.warpAffine(
+        image, M, (w, h), flags=cv2.INTER_CUBIC, 
+        borderMode=cv2.BORDER_REPLICATE)
+    return rotated
 
 #template matching
 def match_template(image, template):
