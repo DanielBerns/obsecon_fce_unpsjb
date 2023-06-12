@@ -3,10 +3,7 @@ from pathlib import Path
 
 import easyocr
 
-from app.text_reader import TextReader
-
-
-class EasyOCR:
+class EasyOCRTextReader:
     def __init__(self, languages: List[str]):
         self._reader = easyocr.Reader(languages)
         

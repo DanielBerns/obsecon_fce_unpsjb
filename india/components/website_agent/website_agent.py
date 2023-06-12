@@ -10,6 +10,7 @@ import requests
 import json
 
 from components.core import TreeStore
+from components.core import TextReaderHTML
 from components.helpers import get_timestamp, get_resource_identifier
 
 
@@ -29,9 +30,9 @@ class WebsiteAgent:
         if response.status_code == 200:
             sample = self.store.new_sample()
             page_html = get_resource_identifier(sample, 'page', '.html')
+            attributes_json = get_resource_identifier(sample, 'attributes', '.json')            
             with open(page_html, 'w') as target:
                 target.write(response.text)
-            attributes_json = get_resource_identifier(sample, 'attributes', '.json')
             attributes = {'timestamp': get_timestamp(), 
                           'url': response.url}
             with open(attributes_json, 'w') as target:
@@ -51,6 +52,15 @@ class WebsiteAgent:
             logging.info(f'done grab({url:s})')
         return response
 
+    def process_html(self) -> None:
+        text_reader = TextReaderHTML()
+        for sample in self.store.samples():
+            page_html = get_resource_identifier(sample, 'page', '.html')
+            # attributes_json = get_resource_identifier(sample, 'attributes', '.json')            
+            content = html_text_reader.read_text(page_html)
+            yield content
+
+
 def run(home: Path,
         websites: Dict[str, List[str]]
         ) -> None:
@@ -64,3 +74,18 @@ def run(home: Path,
         agent.store.stop()
         logging.info(f"  done: {identifier:s}")                
     logging.info(f"done run: {str(home):s}")
+    
+def process_html(home: Path,
+        websites: Dict[str, List[str]]
+        ) -> None:
+    logging.info(f"start run: {str(home):s}")
+    for identifier, urls in websites.items():
+        logging.info(f"  identifier: {identifier:s}")        
+        agent = WebsiteAgent(home, identifier)
+        agent.store.start()
+        for content in agent.process_html():
+            print(content)
+        agent.store.stop()
+        logging.info(f"  done: {identifier:s}")                
+    logging.info(f"done run: {str(home):s}")
+
