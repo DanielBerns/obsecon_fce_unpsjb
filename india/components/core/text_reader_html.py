@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from typing import List, Tuple
 from pathlib import Path 
 
-class HTMLTextReader:
+class TextReaderHTML:
     def __init__(self):
         pass
         
