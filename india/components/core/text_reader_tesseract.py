@@ -56,7 +56,7 @@ def canny(image):
 def deskew(image):
     coords = np.column_stack(np.where(image > 0))
     angle = cv2.minAreaRect(coords)[-1]
-    angle = -(90 + angle)if angle < -45 else angle = -angle
+    angle = -(90 + angle) if angle < -45 else angle = -angle
     (h, w) = image.shape[:2]
     center = (w // 2, h // 2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
