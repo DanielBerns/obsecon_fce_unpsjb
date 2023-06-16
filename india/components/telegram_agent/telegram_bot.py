@@ -193,7 +193,7 @@ async def update_code(update: Update, context: CustomContext) -> None:
 
 
 
-def run(application_home: Path,
+def bot_run(application_home: Path,
         telegram_home: Path, 
         telegram_token: str) -> None:
     """Start the bot."""

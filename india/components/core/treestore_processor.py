@@ -12,6 +12,7 @@ class TreeStoreProcessor:
     def store(self) -> TreeStore:
         return self._store
     
-    def execute(self, sample_processor: SampleProcessor):
+    def execute(self, sample_processor: SampleProcessor) -> None:
         for sample in self.store.samples():
-            sample_processor.execute(sample)    
+            sample_processor.execute(sample)
+            
