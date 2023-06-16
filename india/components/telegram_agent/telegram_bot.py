@@ -108,8 +108,6 @@ async def process_text(update: Update, context: CustomContext) -> None:
     else:
         logging.info("Not found update.message!")
 
-import pdb
-
 async def process_photo(update: Update, context: CustomContext) -> None:
     """Process photo message."""
     if update.message:
@@ -119,7 +117,6 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             sample = ts.new_sample()
             ts.stop()
             logging.info(f"Created sample {str(sample):s}!")
-            pdb.set_trace()
             file_id = update.message.photo[-1].file_id
             new_file = await context.bot.get_file(file_id)
             image_id = Path(sample, 'photo.jpeg')
