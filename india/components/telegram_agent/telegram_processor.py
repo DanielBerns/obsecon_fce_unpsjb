@@ -30,7 +30,7 @@ class TelegramSampleProcessor:
                 elif filename == "photo.jpeg":
                     print("    ", "photo")
                     text = self.text_reader.read_text(Path(root, filename))
-                    with open(Path(root, "text").with_suffix(".txt"), "wb") as target:
+                    with open(Path(root, "text").with_suffix(".txt"), "w") as target:
                         target.write(str(text))
                         target.write("\n")
                         
