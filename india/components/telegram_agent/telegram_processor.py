@@ -2,6 +2,7 @@ from components.core import TreeStore, TreeStoreProcessor
 from components.core import TextReaderTesseractPIL
 
 from pathlib import Path 
+import os
 
 class TelegramSampleProcessor:
     def __init__(self, results_home: Path):
