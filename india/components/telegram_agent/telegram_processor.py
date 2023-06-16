@@ -30,8 +30,10 @@ class TelegramSampleProcessor:
                 elif filename == "photo.jpeg":
                     print("    ", "photo")
                     text = self.text_reader.read_text(Path(root, filename))
-                    for nn, tt in enumerate(text):
-                        print('  ', nn, tt)
+                    with open(Path(root, "text").with_suffix(".txt"), "wb") as target:
+                        target.write(str(text))
+                        target.write("\n")
+                        
 
 def processor_run(telegram_home: Path, results_home: Path) -> None:
     store = TreeStore(telegram_home, 'messages')
