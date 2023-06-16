@@ -17,7 +17,6 @@ def processor_run(telegram_home: Path, results_home: Path) -> None:
     dataset_processor = TreeStoreProcessor(store)
     sample_processor = TelegramSampleProcessor(results_home)
     dataset_processor.execute(sample_processor)
-    
-    processor.execute(text_reader)
+
     
     
