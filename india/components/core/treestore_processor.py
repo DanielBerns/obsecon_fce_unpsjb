@@ -1,3 +1,6 @@
+from typing import Protocol
+from pathlib import Path 
+
 from components.core import TreeStore 
 
 class SampleProcessor(Protocol):
