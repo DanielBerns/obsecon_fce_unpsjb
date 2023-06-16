@@ -114,6 +114,7 @@ async def process_photo(update: Update, context: CustomContext) -> None:
     if update.message:
         if update.message.photo:
             ts = CustomContext.treestore
+            ts.start()            
             sample = ts.new_sample()
             ts.stop()
             logging.info(f"Created sample {str(sample):s}!")           
@@ -131,6 +132,8 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             if update.message.caption:
                 # Log caption
                 logging.info(f"Found caption {update.message.caption:s}!")
+                with open(Path(sample, 'caption').with_suffix('.txt'),'w') as target:
+                    target.write(f"{user.full_name:s}:{update.message.caption:s}\n")                
             else:
                 # None
                 logging.info("Not found update.message.caption!")
