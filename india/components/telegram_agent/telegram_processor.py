@@ -14,7 +14,12 @@ class TelegramSampleProcessor:
         for root, dirs, files in os.walk(sample, topdown=False):
             for filename in files:
                 print(root, '->', filename)
-
+                if filename == "message.txt":
+                    print("    ", "message")
+                elif filename == "caption.txt":
+                    print("    ", "caption")
+                elif filename == "photo.jpeg":
+                    print("    ", "photo")
 
 def processor_run(telegram_home: Path, results_home: Path) -> None:
     store = TreeStore(telegram_home, 'messages')
