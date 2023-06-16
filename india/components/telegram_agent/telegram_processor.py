@@ -1,5 +1,6 @@
 from components.core import TreeStore, TreeStoreProcessor
 from components.core import TextReaderTesseractPIL
+from components.core import TextReader
 
 from pathlib import Path 
 import os
