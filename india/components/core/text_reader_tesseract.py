@@ -31,7 +31,9 @@ def remove_noise(image):
  
 #thresholding
 def thresholding(image):
-    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    return cv2.threshold(
+        image, 0, 255, 
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 #dilation
 def dilate(image):
@@ -67,7 +69,8 @@ def deskew(image):
 
 #template matching
 def match_template(image, template):
-    return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)        
+    return cv2.matchTemplate(
+        image, template, cv2.TM_CCOEFF_NORMED)        
 
 
 class TextReaderTesseractCV2:
