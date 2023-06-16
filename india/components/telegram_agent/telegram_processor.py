@@ -9,6 +9,14 @@ class TelegramSampleProcessor:
         self._results_home = results_home
         self._text_reader = TextReaderTesseractPIL()
         
+    @property
+    def results_home(self) -> Path:
+        return self._results_home
+    
+    @property
+    def text_reader(self) -> TextReader:
+        return self._text_reader
+    
     def execute(self, sample: Path) -> None:
         print(str(sample))
         for root, dirs, files in os.walk(sample, topdown=False):
@@ -20,6 +28,8 @@ class TelegramSampleProcessor:
                     print("    ", "caption")
                 elif filename == "photo.jpeg":
                     print("    ", "photo")
+                    text = self.text_reader.read_text(Path(root, filename))
+                    print(str(text))
 
 def processor_run(telegram_home: Path, results_home: Path) -> None:
     store = TreeStore(telegram_home, 'messages')
