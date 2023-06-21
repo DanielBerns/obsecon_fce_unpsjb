@@ -35,8 +35,9 @@ class TelegramSampleProcessor:
                         target.write("\n")
                         
 
-def processor_run(telegram_home: Path, results_home: Path) -> None:
-    store = TreeStore(telegram_home, 'messages')
+def processor_run(bot_home: Path, results_home: Path) -> None:
+    bot = TelegramBot(bot_home)
+    store = bot.store
     dataset_processor = TreeStoreProcessor(store)
     sample_processor = TelegramSampleProcessor(results_home)
     dataset_processor.execute(sample_processor)

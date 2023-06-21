@@ -45,7 +45,7 @@ from telegram.ext import (
     filters,
 )
 
-from components.core import TreeStore
+from components.core import TreeStore, Bot
 from components.helpers import get_container
 
 
@@ -194,18 +194,31 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
+class TelegramBot:
+    def __init__(self, telegram_home: Path):
+        self._store = TreeStore(telegram_home, 'messages')
+        
+    @property
+    def store(self) -> TreeStore:
+        return self._store
+    
+    def get_samples(self):
+        for sample in self.store.samples:
+            yield samples
 
-def bot_run(application_home: Path,
-        telegram_home: Path, 
-        telegram_token: str) -> None:
+
+def bot_run(
+    application_home: Path,
+    telegram_home: Path, 
+    telegram_token: str) -> None:
     """Start the bot."""
+    bot = TelegramBot(telegram_home)
     if CustomContext.application_home is None:
         CustomContext.application_home = application_home
     if CustomContext.telegram_home is None:
         CustomContext.telegram_home = telegram_home
     if CustomContext.treestore is None:
-        CustomContext.treestore = TreeStore(
-            telegram_home, 'messages')
+        CustomContext.treestore = bot.store
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)

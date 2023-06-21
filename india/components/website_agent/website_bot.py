@@ -9,20 +9,15 @@ from typing import Dict, List
 import requests
 import json
 
-from components.core import TreeStore
-from components.core import TextReaderHTML
+from components.core import Bot, TreeStore, TextReaderHTML
 from components.helpers import get_timestamp, get_resource_identifier
 
 
-class WebsiteAgent:
+class WebsiteBot(Bot):
     def __init__(self, 
                  home: Path, 
                  name: str) -> None:
-        self._store = TreeStore(home, name)
-
-    @property
-    def store(self):
-        return self._store
+        super().__init__(TreeStore(home, name))
 
     def save_response(self, response: requests.models.Response) -> None:
         if response is None:
@@ -52,40 +47,27 @@ class WebsiteAgent:
             logging.info(f'done grab({url:s})')
         return response
 
-    def process_html(self) -> None:
-        text_reader = TextReaderHTML()
-        for sample in self.store.samples():
-            page_html = get_resource_identifier(sample, 'page', '.html')
-            # attributes_json = get_resource_identifier(sample, 'attributes', '.json')            
-            content = html_text_reader.read_text(page_html)
-            yield content
+    def read_sample(self, sample: Path) -> Tuple[str, Dict]:
+        page_html = get_resource_identifier(sample, 'page', '.html')
+        with open(page_html, 'r') as source:
+            html = source.read()
+        attributes_json = get_resource_identifier(sample, 'attributes', '.json')
+        with open(attributes_json, 'r') as source:
+            attributes = json.load(source)
+        return html, attributes
 
 
-def run(home: Path,
-        websites: Dict[str, List[str]]
+def bot_run(home: Path,
+            websites: Dict[str, List[str]]
         ) -> None:
     logging.info(f"start run: {str(home):s}")
     for identifier, urls in websites.items():
         logging.info(f"  identifier: {identifier:s}")        
-        agent = WebsiteAgent(home, identifier)
-        agent.store.start()
+        bot = WebsiteBot(home, identifier)
+        bot.store.start()
         for this_url in urls:
-            agent.grab(this_url)
-        agent.store.stop()
+            bot.grab(this_url)
+        bot.store.stop()
         logging.info(f"  done: {identifier:s}")                
     logging.info(f"done run: {str(home):s}")
     
-def process_html(home: Path,
-        websites: Dict[str, List[str]]
-        ) -> None:
-    logging.info(f"start run: {str(home):s}")
-    for identifier, urls in websites.items():
-        logging.info(f"  identifier: {identifier:s}")        
-        agent = WebsiteAgent(home, identifier)
-        agent.store.start()
-        for content in agent.process_html():
-            print(content)
-        agent.store.stop()
-        logging.info(f"  done: {identifier:s}")                
-    logging.info(f"done run: {str(home):s}")
-
