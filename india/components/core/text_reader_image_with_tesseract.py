@@ -74,7 +74,7 @@ def match_template(image, template):
         image, template, cv2.TM_CCOEFF_NORMED)        
 
 
-class TextReaderWithTesseractAndCV2:
+class TextReaderImageWithTesseractAndCV2:
     def __init__(self):
         pass
         
