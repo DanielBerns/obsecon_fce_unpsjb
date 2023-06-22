@@ -7,6 +7,6 @@ from components.core.treestore import TreeStore
 from components.core.treestore_processor import TreeStoreProcessor
 from components.core.tasks import Task 
 from components.core.text_reader import TextReader 
-from components.core.text_reader_html import TextReaderHTML
-from components.core.text_reader_easyocr import TextReaderEasyOCR 
-from components.core.text_reader_tesseract import TextReaderTesseractPIL, TextReaderTesseractCV2 
+from components.core.text_reader_html import TextReaderHTMLWithBS4
+from components.core.text_reader_with_easyocr import TextReaderImageWithEasyOCR 
+from components.core.text_reader_with_tesseract import TextReaderWithTesseractAndPIL, TextReaderWithTesseractAndCV2 

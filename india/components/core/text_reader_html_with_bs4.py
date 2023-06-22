@@ -1,7 +1,7 @@
-from bs4 import BeautifulSoup
-
-from typing import List, Tuple
 from pathlib import Path 
+from typing import List, Tuple
+
+from bs4 import BeautifulSoup
 
 class TextReaderHTMLWithBS4:
     def __init__(self):

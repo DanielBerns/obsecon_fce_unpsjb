@@ -8,7 +8,7 @@ import pytesseract
 
 # https://nanonets.com/blog/ocr-with-tesseract/
 
-class TextReaderTesseractPIL:
+class TextReaderWithTesseractAndPIL:
     def __init__(self):
         pass
         
@@ -16,6 +16,7 @@ class TextReaderTesseractPIL:
         image = Image.open(str(resource))
         return pytesseract.pytesseract.image_to_data(image)
 
+import cv2 
 
 # read cv2 image
 def read_image(resource):
@@ -73,7 +74,7 @@ def match_template(image, template):
         image, template, cv2.TM_CCOEFF_NORMED)        
 
 
-class TextReaderTesseractCV2:
+class TextReaderWithTesseractAndCV2:
     def __init__(self):
         pass
         
