@@ -8,7 +8,7 @@ import pytesseract
 
 # https://nanonets.com/blog/ocr-with-tesseract/
 
-class TextReaderWithTesseractAndPIL:
+class TextReaderImageWithTesseractAndPIL:
     def __init__(self):
         pass
         

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import easyocr
 
-class TextReaderWithEasyOCR:
+class TextReaderImageWithEasyOCR:
     def __init__(self, languages: List[str]):
         self._reader = easyocr.Reader(languages)
         
