@@ -5,7 +5,7 @@ Bot to access websites
 """
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import requests
 import json
 
