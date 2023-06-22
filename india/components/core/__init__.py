@@ -9,5 +9,5 @@ from components.core.tasks import Task
 from components.core.text_reader import TextReader 
 from components.core.text_reader_html_with_bs4 import TextReaderHTMLWithBS4
 from components.core.text_reader_html_with_parsel import TextReaderHTMLWithParsel
-from components.core.text_reader_with_easyocr import TextReaderImageWithEasyOCR 
-from components.core.text_reader_with_tesseract import TextReaderWithTesseractAndPIL, TextReaderWithTesseractAndCV2 
+from components.core.text_reader_image_with_easyocr import TextReaderImageWithEasyOCR 
+from components.core.text_reader_image_with_tesseract import TextReaderWithTesseractAndPIL, TextReaderWithTesseractAndCV2 
