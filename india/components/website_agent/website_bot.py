@@ -9,7 +9,7 @@ from typing import Dict, List
 import requests
 import json
 
-from components.core import Bot, TreeStore, TextReaderHTML
+from components.core import Bot, TreeStore
 from components.helpers import get_timestamp, get_resource_identifier
 
 

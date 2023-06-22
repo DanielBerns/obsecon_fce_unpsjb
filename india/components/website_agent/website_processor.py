@@ -1,5 +1,7 @@
-from components.core import TreeStore, TreeStoreProcessor
-from components.core import TextReader
+from components.core import (TreeStore, 
+                             TreeStoreProcessor,
+                             TextReader, 
+                             TextReaderHTMLWithBS4)
 
 from pathlib import Path 
 import os
@@ -58,7 +60,7 @@ def processor_run(
     bot = TreeStore(bot_home, 'messages')
     store = bot.store
     dataset_processor = TreeStoreProcessor(store)
-    text_reader = TextReaderHTML()
+    text_reader = TextReaderHTMLWithBS4()
     sample_processor = WebsiteSampleProcessor(results_home, text_reader)
     dataset_processor.execute(sample_processor)
 
