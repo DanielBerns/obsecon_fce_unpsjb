@@ -1,5 +1,7 @@
 # test_extract_news_with_parsel
 
+import logging
+
 from app.engine import Engine
 from components.core import TextReaderHTMLWithParsel
 from components.website_agent import processor_start, processor_run
