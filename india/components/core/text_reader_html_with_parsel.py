@@ -3,6 +3,8 @@ from typing import List, Tuple
 
 from parsel import Selector
 
+import pdb
+
 class TextReaderHTMLWithParsel:
     def __init__(self):
         pass
@@ -15,6 +17,7 @@ class TextReaderHTMLWithParsel:
             
     def extract_text(self, html: str) -> Tuple[str, str]:
         html_selector = Selector(text=str(html))
+        pdb.set_trace()
         noclean_text = "xxx"
         clean_text = "yyy"
     
