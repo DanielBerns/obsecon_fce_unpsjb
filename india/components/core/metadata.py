@@ -44,9 +44,13 @@ class Metadata:
             for line in source:
                 event = json.loads(line)
                 print(str(event))
-                self.add_item(event['identifier'], 
-                           event['attribute'], 
-                           event['value'])
+                try:
+                    self.add_item(event['identifier'], 
+                               event['attribute'], 
+                               event['value'])
+                except KeyError:
+                    for key, value in event.items():
+                        print(key, str(value))
 
     def save_events(self) -> None:
         with open(self.resource, 'w') as target:
