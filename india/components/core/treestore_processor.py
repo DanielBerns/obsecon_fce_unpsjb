@@ -1,7 +1,7 @@
 from typing import Protocol
 from pathlib import Path 
 
-from components.core import TreeStore. Metadata
+from components.core import TreeStore, Metadata
 
 class SampleProcessor(Protocol):
     def execute(self, sample: Path) -> None:
@@ -43,5 +43,6 @@ class TreeStoreProcessor:
                 ) -> None:
         for sample in self.store.samples(self.metadata.next_to_process):
             sample_processor.execute(sample)
+        self.store.write_metadata()
             
     
