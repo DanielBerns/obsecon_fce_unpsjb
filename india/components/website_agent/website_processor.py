@@ -35,34 +35,19 @@ class WebsiteSampleProcessor:
                 elif filename == "text.txt":
                     print("    ", "text.txt")
                         
-def process_html(bot_home: Path,
-                 results_home: Path,
-                 websites: Dict[str, List[str]]
-        ) -> None:
-    logging.info(f"start run: {str(bot_home):s}")
-    for identifier, urls in websites.items():
-        logging.info(f"  identifier: {identifier:s}")        
-        bot = WebsiteBot(bot_home, identifier)
-        store = bot.store
-        bot.store.start()
-        for content in agent.process_html():
-            print(content)
-        agent.store.stop()
-        logging.info(f"  done: {identifier:s}")                
-    logging.info(f"done run: {str(home):s}")
 
-
-
-
-def processor_run(
-    bot_home: Path, 
-    results_home: Path) -> None:
+def processor_start(
+    bot_home: Path
+    ) -> None:
     bot = TreeStore(bot_home, 'messages')
     store = bot.store
-    dataset_processor = TreeStoreProcessor(store)
-    text_reader = TextReaderHTMLWithBS4()
+    store.start()
+    return TreeStoreProcessor(store)
+
+def processor_run(results_home: Path, 
+                  text_reader: TextReader,
+                  dataset_processor: TreeStoreProcessor
+                  ) -> None:
     sample_processor = WebsiteSampleProcessor(results_home, text_reader)
     dataset_processor.execute(sample_processor)
-
-    
     

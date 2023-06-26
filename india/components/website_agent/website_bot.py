@@ -47,7 +47,11 @@ class WebsiteBot(Bot):
             logging.info(f'done grab({url:s})')
         return response
 
-    def read_sample(self, sample: Path) -> Tuple[str, Dict]:
+    def iterate(self, first: int = 0, top: int= -1):
+        for sample in self.store.samples():
+            yield sample
+            
+    def read(self, sample: Path) -> Tuple[str, Dict]:
         page_html = get_resource_identifier(sample, 'page', '.html')
         with open(page_html, 'r') as source:
             html = source.read()

@@ -4,17 +4,21 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple, DefaultDict
 
-from components.helpers import save_json, get_directory, get_timestamp
+from components.helpers import (save_json, 
+                                get_directory, 
+                                get_timestamp, 
+                                get_resource_identifier)
 
 
 class Metadata:
 
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = Path(self.directory, 'store').with_suffix('.json')
+        self._resource: Path = get_resource_identifier(
+            self.directory, 'metadata').with_suffix('.json')
         self._events: DefaultDict[str, DefaultDict[str, Dict]] = \
             defaultdict(lambda: defaultdict(dict))
-        if self.store.exists():
+        if self.resource.exists():
             self.load_events()
         else:
             self.initialize_events()
@@ -24,8 +28,8 @@ class Metadata:
         return self._directory
     
     @property
-    def store(self) -> Path:
-        return self._store
+    def resource(self) -> Path:
+        return self._resource
 
     @property
     def events(self) -> DefaultDict[str, DefaultDict[str, Dict]]:
@@ -33,7 +37,7 @@ class Metadata:
     
     def initialize_events(self) -> None:
         self.add_item('.', 'creation', {'timestamp': get_timestamp()})
-        save_json(self.store, self.events)
+        save_json(self.resource, self.events)
 
     def load_events(self) -> None:
         with open(self.store, 'r') as source:

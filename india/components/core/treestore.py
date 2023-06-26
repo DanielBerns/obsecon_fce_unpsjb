@@ -97,16 +97,32 @@ class TreeStore:
     def stop(self):
         self.write_metadata()
         
-    def samples(self, top: int =-1) -> Path:
+    def samples(self, first: int = 0, top: int =-1) -> Path:
+        if first < 0:
+            raise TreeStoreError(
+                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+                )            
+        elif self.index > first:
+            raise TreeStoreError(
+                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+                )            
         if top == -1:
-            top = self.index
+            top = self.index            raise TreeStoreError(
+                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+                )            
         elif 0 <= top <= self.index:
             pass
         else:
             raise TreeStoreError(
                 "TreeStore.samples: top {top:d} out of range (-1, {self.index:d})"
                 )
-        for k in range(top):
+        if first <= top:
+            pass
+        else:
+            raise TreeStoreError(
+                "TreeStore.samples: first {first:d} > top {top:d}"
+                )            
+        for k in range(first, top):
             first_digit, second_digit, third_digit = base_256(k)
             sample = Path(self.tree, 
                       f"{first_digit:>03d}", 
