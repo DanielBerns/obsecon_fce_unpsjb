@@ -112,7 +112,7 @@ class TreeStore:
             pass
         else:
             raise TreeStoreError(
-                f"TreeStore.samples: top {top:d} out of range ({-self.index:d}, self.index:d})"
+                f"TreeStore.samples: top {top:d} out of range ({-self.index:d}, {self.index:d})"
                 )
         if first <= top:
             pass
