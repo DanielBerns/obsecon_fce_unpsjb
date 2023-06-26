@@ -36,19 +36,18 @@ class TreeStore:
                  identifier: the name of the TreeStore
         """
         base = get_container(home, identifier)
-        metadata_store = Path(base, 'index').with_suffix('.json')
+        index_resource = Path(base, 'index').with_suffix('.json')
         self._base = base
         self._tree = Path(base, 'tree')
-        self._metadata_store = metadata_store
-        self._index = -1
-        if self.metadata_store.exists():
+        self._index_resource = index_resource
+        self._index = 0
+        if self.index_resource.exists():
             # restarting treestore
-            metadata = self.read_metadata()
-            self._index = metadata["index"]
+            values = self.read()
+            self._index = values["index"]
         else:
             # creating treestore
-            self._index = 0
-            self.write_metadata()
+            self.write()
 
     @property
     def base(self) -> Path:
@@ -59,8 +58,8 @@ class TreeStore:
         return self._tree
     
     @property
-    def metadata_store(self) -> Path:
-        return self._metadata_store
+    def index_resource(self) -> Path:
+        return self._index_resource
 
     @property
     def index(self) -> int:
@@ -69,17 +68,17 @@ class TreeStore:
     @index.setter
     def index(self, value: int) -> None:
         self._index = value
-        self.write_metadata()
+        self.write()
     
-    def write_metadata(self) -> None:
-        metadata = {'index': self.index}
-        with open(self.metadata_store, 'w') as target:
-            json.dump(metadata, target)
+    def write(self) -> None:
+        values = {'index': self.index}
+        with open(self.index_resource, 'w') as target:
+            json.dump(values, target)
 
-    def read_metadata(self) -> dict:
-        with open(self.metadata_store, 'r') as source:
-            metadata = json.load(source)
-        return metadata
+    def read(self) -> dict:
+        with open(self.index_resource, 'r') as source:
+            values = json.load(source)
+        return values
 
     def new_sample(self) -> Path:
         first_digit, second_digit, third_digit = base_256(self.index)
@@ -95,7 +94,7 @@ class TreeStore:
         logging.info(f'treestore.start() with index {self.index:d}')
         
     def stop(self):
-        self.write_metadata()
+        self.write()
         
     def samples(self, first: int = 0, top: int =-1) -> Path:
         if first < 0:

@@ -1,12 +1,13 @@
 from typing import Protocol
 from pathlib import Path 
 
-from components.core import TreeStore 
+from components.core import TreeStore. Metadata
 
 class SampleProcessor(Protocol):
     def execute(self, sample: Path) -> None:
         pass
     
+
 class TreeStoreProcessorMetadata(Metadata):
     def __init__(self, base: Path):
         super().__init__(base)
