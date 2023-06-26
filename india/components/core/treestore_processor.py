@@ -43,6 +43,6 @@ class TreeStoreProcessor:
                 ) -> None:
         for sample in self.store.samples(self.metadata.next_to_process):
             sample_processor.execute(sample)
-        self.store.write_metadata()
+        self.store.write()
             
     

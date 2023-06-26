@@ -40,7 +40,7 @@ class Metadata:
         save_json(self.resource, self.events)
 
     def load_events(self) -> None:
-        with open(self.store, 'r') as source:
+        with open(self.resource, 'r') as source:
             for line in source:
                 event = json.loads(line)
                 self.add_item(event['identifier'], 
@@ -48,7 +48,7 @@ class Metadata:
                            event['value'])
 
     def save_events(self) -> None:
-        with open(self.store, 'w') as target:
+        with open(self.resource, 'w') as target:
             for identifier, attribute, value in self.items():
                 event = {'identifier': identifier,
                          'attribute': attribute,
