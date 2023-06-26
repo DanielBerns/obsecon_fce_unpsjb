@@ -15,7 +15,7 @@ class Metadata:
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
         self._resource: Path = get_resource_identifier(
-            self.directory, 'metadata').with_suffix('.json')
+            self.directory, 'metadata', '.json')
         self._events: DefaultDict[str, DefaultDict[str, Dict]] = \
             defaultdict(lambda: defaultdict(dict))
         if self.resource.exists():
