@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol, Tuple
 from pathlib import Path 
 
 from components.core import TreeStore, Metadata
