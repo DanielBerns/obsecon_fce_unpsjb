@@ -100,27 +100,25 @@ class TreeStore:
     def samples(self, first: int = 0, top: int =-1) -> Path:
         if first < 0:
             raise TreeStoreError(
-                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+                f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
                 )            
-        elif self.index > first:
+        elif self.index < first:
             raise TreeStoreError(
-                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+                f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
                 )            
-        if top == -1:
-            top = self.index            raise TreeStoreError(
-                "TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
-                )            
-        elif 0 <= top <= self.index:
+        if -self.index <= top < 0:
+            top += self.index
+        elif 0 <= top < self.index:
             pass
         else:
             raise TreeStoreError(
-                "TreeStore.samples: top {top:d} out of range (-1, {self.index:d})"
+                f"TreeStore.samples: top {top:d} out of range ({-self.index:d}, self.index:d})"
                 )
         if first <= top:
             pass
         else:
             raise TreeStoreError(
-                "TreeStore.samples: first {first:d} > top {top:d}"
+                f"TreeStore.samples: top {top:d} < first {first:d}"
                 )            
         for k in range(first, top):
             first_digit, second_digit, third_digit = base_256(k)
