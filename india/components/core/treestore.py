@@ -105,13 +105,13 @@ class TreeStore:
             raise TreeStoreError(
                 f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
                 )            
-        if -self.index <= top < 0:
-            top += self.index
-        elif 0 <= top < self.index:
+        if top == -1:
+            top = self.index
+        elif 0 <= top <= self.index:
             pass
         else:
             raise TreeStoreError(
-                f"TreeStore.samples: top {top:d} out of range ({-self.index:d}, {self.index:d})"
+                f"TreeStore.samples: top {top:d} out of range (0, {self.index:d})"
                 )
         if first <= top:
             pass
