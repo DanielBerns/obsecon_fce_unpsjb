@@ -43,6 +43,7 @@ class Metadata:
         with open(self.resource, 'r') as source:
             for line in source:
                 event = json.loads(line)
+                print(str(event))
                 self.add_item(event['identifier'], 
                            event['attribute'], 
                            event['value'])
