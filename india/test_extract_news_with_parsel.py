@@ -23,7 +23,7 @@ def main() -> None:
     logging.info("Executed processor_start")    
     text_reader = TextReaderHTMLWithParsel()
     logging.info("Going to execute processor_run")    
-    processor_run(processor, results_home, text_reader)
+    processor_run(results_home, text_reader, processor)
     logging.info("Executed processor_run")        
 
 
