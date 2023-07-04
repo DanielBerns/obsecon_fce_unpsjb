@@ -27,7 +27,7 @@ def main():
     websites["infobae"] = ["https://www.infobae.com/"]
     
     logging.info(f"start {IDENTIFIER:s}")
-    bot_run(home, websites)
+    bot_run(engine.news, websites)
     logging.info(f"stop {IDENTIFIER:s}")
     
 if __name__ == "__main__":

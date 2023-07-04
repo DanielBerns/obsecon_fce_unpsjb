@@ -4,7 +4,7 @@ import logging
 
 from app.engine import Engine
 from components.core import TextReaderHTMLWithParsel
-from components.website_agent import processor_start, processor_run
+from components.website_agent import processor_run
 
 IDENTIFIER = "test_extract_news_with_parsel"
 
@@ -31,8 +31,11 @@ def main() -> None:
         "https://www.elchubut.com.ar/seccion/esquel"]
     websites["infobae"] = ["https://www.infobae.com/"]
 
+    logging.info(f"start {IDENTIFIER:s}")
     text_reader = TextReaderHTMLWithParsel()
     processor_run(engine.news, websites, engine.fs.results, text_reader)
+    logging.info(f"stop {IDENTIFIER:s}")
+
 
 if __name__ == '__main__':
     main()
