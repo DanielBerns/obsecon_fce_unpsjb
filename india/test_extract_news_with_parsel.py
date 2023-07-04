@@ -8,8 +8,6 @@ from components.website_agent import processor_run
 
 IDENTIFIER = "test_extract_news_with_parsel"
 
-import pdb
-
 def main() -> None:
     engine = Engine()
     logs_txt = engine.get_logs_resource(IDENTIFIER)
