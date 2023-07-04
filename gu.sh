@@ -6,3 +6,4 @@ git commit -m "$1"
 echo "commit"
 git push
 echo "push"
+date
