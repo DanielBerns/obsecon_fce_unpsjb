@@ -13,10 +13,10 @@ import logging
 
 class WebsiteSampleProcessor:
     def __init__(self, 
-                 home: Path, 
+                 processor_home: Path, 
                  identifier: str,
                  text_reader: TextReader):
-        self._results_home = get_container(home, identifier)
+        self._results_home = get_container(processor_home, identifier)
         self._text_reader = text_reader
         
     @property
@@ -46,17 +46,17 @@ class WebsiteSampleProcessor:
 def processor_run(
     bot_home: Path,
     websites: Dict[str, List[str]],
-    results_home: Path,
+    processor_home: Path,
     text_reader: TextReader
     ) -> None:
-    logging.info(f"start run: {str(bot_home):s} -> {str(results_home):s}")
+    logging.info(f"start run: {str(bot_home):s} -> {str(processor_home):s}")
     for identifier, urls in websites.items():
         logging.info(f"  identifier: {identifier:s}")        
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
-        sample_processor = WebsiteSampleProcessor(results_home, identifier, text_reader)
-        dataset_processor = TreeStoreProcessor(store)
+        sample_processor = WebsiteSampleProcessor(processor_home, identifier, text_reader)
+        dataset_processor = TreeStoreProcessor(bot.store)
         dataset_processor.execute(sample_processor)
         bot.store.stop()
         logging.info(f"  done: {identifier:s}")                
-    logging.info(f"done run: {str(bot_home):s} -> {str(results_home):s}")
+    logging.info(f"done run: {str(bot_home):s} -> {str(processor_home):s}")
