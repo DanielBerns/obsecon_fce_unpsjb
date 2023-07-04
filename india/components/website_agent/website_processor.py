@@ -4,6 +4,7 @@ from components.core import (TreeStore,
                              TextReaderHTMLWithBS4)
 
 from components.website_agent.website_bot import WebsiteBot
+from components.helpers import get_container
 
 from pathlib import Path 
 import os
@@ -12,9 +13,10 @@ import logging
 
 class WebsiteSampleProcessor:
     def __init__(self, 
-                 results_home: Path, 
+                 home: Path, 
+                 identifier: str,
                  text_reader: TextReader):
-        self._results_home = results_home
+        self._results_home = get_container(home, identifier)
         self._text_reader = text_reader
         
     @property
