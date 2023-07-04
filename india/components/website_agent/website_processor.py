@@ -8,6 +8,7 @@ from components.website_agent.website_bot import WebsiteBot
 from pathlib import Path 
 import os
 from typing import Dict, List
+import logging
 
 class WebsiteSampleProcessor:
     def __init__(self, 
