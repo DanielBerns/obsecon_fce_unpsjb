@@ -1,7 +1,7 @@
 import logging
 
 from app.engine import Engine
-from components.website_agent import agent_run
+from components.website_agent import bot_run
 
 
 IDENTIFIER = "run_news_grabber"
