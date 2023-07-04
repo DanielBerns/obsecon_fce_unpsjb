@@ -35,7 +35,7 @@ class WebsiteBot(Bot):
         else:
             logging.info(f':  status_code: {response.status_code:d}')
 
-    def grab(self, url: str) -> None:
+    def grab(self, url: str) -> requests.models.Response:
         logging.info(f'start grab({url:s})')
         try:
             response = requests.get(url)
@@ -74,4 +74,3 @@ def bot_run(home: Path,
         bot.store.stop()
         logging.info(f"  done: {identifier:s}")                
     logging.info(f"done run: {str(home):s}")
-    

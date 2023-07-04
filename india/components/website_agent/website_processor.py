@@ -3,11 +3,15 @@ from components.core import (TreeStore,
                              TextReader, 
                              TextReaderHTMLWithBS4)
 
+from components.website_agent.website_bot import WebsiteBot
+
 from pathlib import Path 
 import os
 
 class WebsiteSampleProcessor:
-    def __init__(self, results_home: Path, text_reader: TextReader):
+    def __init__(self, 
+                 results_home: Path, 
+                 text_reader: TextReader):
         self._results_home = results_home
         self._text_reader = text_reader
         
@@ -34,21 +38,20 @@ class WebsiteSampleProcessor:
                         target.write("\n")
                 elif filename == "text.txt":
                     print("    ", "text.txt")
-                        
-
-def processor_start(
-    home: Path,
-    identifier: str
+   
+def processor_run(
+    bot_home: Path,
+    websites: Dict[str, List[str]],
+    results_home: Path    
     ) -> None:
-    bot = WebsiteBot(home, identifier)
-    store = bot.store
-    store.start()
-    return TreeStoreProcessor(store)
-
-def processor_run(results_home: Path, 
-                  text_reader: TextReader,
-                  dataset_processor: TreeStoreProcessor
-                  ) -> None:
-    sample_processor = WebsiteSampleProcessor(results_home, text_reader)
-    dataset_processor.execute(sample_processor)
-    
+    logging.info(f"start run: {str(bot_home):s} -> {str(results_home):s}")
+    for identifier, urls in websites.items():
+        logging.info(f"  identifier: {identifier:s}")        
+        bot = WebsiteBot(bot_home, identifier)
+        bot.store.start()
+        sample_processor = WebsiteSampleProcessor(results_home, identifier, text_reader)
+        dataset_processor = TreeStoreProcessor(store)
+        dataset_processor.execute(sample_processor)
+        bot.store.stop()
+        logging.info(f"  done: {identifier:s}")                
+    logging.info(f"done run: {str(bot_home):s} -> {str(results_home):s}")

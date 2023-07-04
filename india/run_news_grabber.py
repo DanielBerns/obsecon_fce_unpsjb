@@ -1,7 +1,7 @@
 import logging
 
 from app.engine import Engine
-from components.website_agent import run
+from components.website_agent import agent_run
 
 
 IDENTIFIER = "run_news_grabber"
@@ -27,7 +27,7 @@ def main():
     websites["infobae"] = ["https://www.infobae.com/"]
     
     logging.info(f"start {IDENTIFIER:s}")
-    run(engine.news, websites)
+    bot_run(home, websites)
     logging.info(f"stop {IDENTIFIER:s}")
     
 if __name__ == "__main__":

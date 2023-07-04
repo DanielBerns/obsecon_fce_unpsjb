@@ -18,7 +18,7 @@ def main() -> None:
         level=engine.config.log_level)    
     logging.info(f"start {IDENTIFIER:s}")
     
-    results_home = engine.fs.results
+
     websites = {}
     websites["adnsur"] = ["https://adnsur.com.ar"]
     websites["jornada"] = ["https://www.diariojornada.com.ar/home"]
@@ -31,16 +31,8 @@ def main() -> None:
         "https://www.elchubut.com.ar/seccion/esquel"]
     websites["infobae"] = ["https://www.infobae.com/"]
 
-    text_reader = TextReaderHTMLWithParsel()
-    
-    for key, website in websites.items():
-        logging.info("Going to execute processor_start")            
-        processor = processor_start(engine.news, key)
-        logging.info("Executed processor_start")    
-        logging.info("Going to execute processor_run")    
-        processor_run(results_home, text_reader, processor)
-        logging.info("Executed processor_run")        
-
+    for key, urls in websites.items():
+        processor_run(engine.news, key, engine.fs.results)
 
 if __name__ == '__main__':
     main()
