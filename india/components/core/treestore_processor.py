@@ -3,6 +3,8 @@ from pathlib import Path
 
 from components.core import TreeStore, Metadata
 
+import pdb
+
 class SampleProcessor(Protocol):
     def execute(self, sample: Path) -> None:
         pass
@@ -41,6 +43,7 @@ class TreeStoreProcessor:
     def execute(self, 
                 sample_processor: SampleProcessor
                 ) -> None:
+        pdb.set_trace()
         for sample in self.store.samples(self.metadata.next_to_process):
             sample_processor.execute(sample)
         self.store.write()
