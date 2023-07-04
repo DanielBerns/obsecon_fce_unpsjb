@@ -37,9 +37,11 @@ class WebsiteSampleProcessor:
                         
 
 def processor_start(
-    bot_home: Path
+    home: Path,
+    identifier: str
     ) -> None:
-    store = TreeStore(bot_home, 'messages')
+    bot = WebsiteBot(home, identifier)
+    store = bot.store
     store.start()
     return TreeStoreProcessor(store)
 
