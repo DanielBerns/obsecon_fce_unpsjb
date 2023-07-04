@@ -8,6 +8,8 @@ from components.website_agent import processor_start, processor_run
 
 IDENTIFIER = "test_extract_news_with_parsel"
 
+import pdb
+
 def main() -> None:
     engine = Engine()
     logs_txt = engine.get_logs_resource(IDENTIFIER)
@@ -21,6 +23,7 @@ def main() -> None:
     logging.info("Going to execute processor_start")    
     processor = processor_start(bot_home)
     logging.info("Executed processor_start")    
+    pdb.set_trace()
     text_reader = TextReaderHTMLWithParsel()
     logging.info("Going to execute processor_run")    
     processor_run(results_home, text_reader, processor)
