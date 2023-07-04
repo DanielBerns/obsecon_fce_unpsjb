@@ -61,16 +61,16 @@ class WebsiteBot(Bot):
         return html, attributes
 
 
-def bot_run(home: Path,
+def bot_run(bot_home: Path,
             websites: Dict[str, List[str]]
         ) -> None:
-    logging.info(f"start run: {str(home):s}")
+    logging.info(f"start run: {str(bot_home):s}")
     for identifier, urls in websites.items():
         logging.info(f"  identifier: {identifier:s}")        
-        bot = WebsiteBot(home, identifier)
+        bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
         for this_url in urls:
             bot.grab(this_url)
         bot.store.stop()
         logging.info(f"  done: {identifier:s}")                
-    logging.info(f"done run: {str(home):s}")
+    logging.info(f"done run: {str(bot_home):s}")

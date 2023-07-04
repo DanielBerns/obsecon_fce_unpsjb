@@ -31,8 +31,8 @@ def main() -> None:
         "https://www.elchubut.com.ar/seccion/esquel"]
     websites["infobae"] = ["https://www.infobae.com/"]
 
-    for key, urls in websites.items():
-        processor_run(engine.news, key, engine.fs.results)
+    text_reader = TextReaderHTMLWithParsel()
+    processor_run(engine.news, websites, engine.fs.results, text_reader)
 
 if __name__ == '__main__':
     main()

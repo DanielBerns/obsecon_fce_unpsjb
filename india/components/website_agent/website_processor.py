@@ -7,6 +7,7 @@ from components.website_agent.website_bot import WebsiteBot
 
 from pathlib import Path 
 import os
+from typing import Dict, List
 
 class WebsiteSampleProcessor:
     def __init__(self, 
@@ -42,7 +43,8 @@ class WebsiteSampleProcessor:
 def processor_run(
     bot_home: Path,
     websites: Dict[str, List[str]],
-    results_home: Path    
+    results_home: Path,
+    text_reader: TextReader
     ) -> None:
     logging.info(f"start run: {str(bot_home):s} -> {str(results_home):s}")
     for identifier, urls in websites.items():
