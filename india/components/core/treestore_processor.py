@@ -29,6 +29,7 @@ class TreeStoreProcessor:
     def __init__(self, 
                  store: TreeStore
                  ) -> None:    
+        pdb.set_trace()
         self._store = store
         self._metadata = TreeStoreProcessorMetadata(store.base)
 
