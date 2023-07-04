@@ -29,3 +29,9 @@ $ python edit_crontab.py
 $ cd ~/Apps/observatorio_fce_unpsjb/india
 $ . ~/.venvs/pc/bin/activate
 $ python start.py
+
+# How to git
+
+gu.sh
+
+pg.sh
