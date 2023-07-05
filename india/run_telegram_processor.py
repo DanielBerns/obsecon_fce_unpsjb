@@ -1,6 +1,8 @@
 import logging
 
-from app.engine import Engine
+from components.config import Config
+from app.engine import AppFileSystem
+
 from components.telegram_agent import processor_run
 
 
@@ -8,14 +10,17 @@ IDENTIFIER = "run_telegram_processor"
 
 
 def main():
-    engine = Engine()
-    logs_txt = engine.get_logs_resource(IDENTIFIER)
+    config = Config()
+    app_fs = AppFileSystem(config)
+
     logging.basicConfig(
-        filename=logs_txt, 
-        level=engine.config.log_level)    
+        filename=app_fs.get_logs_resource(IDENTIFIER), 
+        level=config.log_level)    
+
     logging.info(f"start {IDENTIFIER:s}")
-    processor_run(engine.telegram, engine.fs.results)
+    processor_run(app_fs.telegram, app_fs.results)
     logging.info(f"stop {IDENTIFIER:s}")
-    
+
+
 if __name__ == '__main__':
     main()

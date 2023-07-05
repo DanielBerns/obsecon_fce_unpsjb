@@ -1,6 +1,8 @@
 import logging
 
-from app.engine import Engine
+from components.config import Config
+from app.engine import AppFileSystem
+
 from components.telegram_agent import bot_run
 
 
@@ -8,18 +10,20 @@ IDENTIFIER = "run_telegram_bot"
 
 
 def main():
-    engine = Engine()
+    config = Config()
+    app_fs = AppFileSystem(config)
 
-    logs_txt = engine.get_logs_resource(IDENTIFIER)
     logging.basicConfig(
-        filename=logs_txt, 
-        level=engine.config.log_level)    
+        filename=app_fs.get_logs_resource(IDENTIFIER), 
+        level=config.log_level)    
+
 
     logging.info(f"start {IDENTIFIER:s}")
-    bot_run(engine.config.application_home,
-        engine.telegram, 
-        engine.config.authorization_token["telegram"])
+    bot_run(app_fs.application_home,
+            app_fs.telegram, 
+            config.authorization_token["telegram"])
     logging.info(f"stop {IDENTIFIER:s}")
+
     
 if __name__ == '__main__':
     main()

@@ -1,30 +1,25 @@
 import logging
 
-from app.engine import Engine
-
+from components.config import Config
+from app.engine import AppFileSystem
 
 IDENTIFIER = "start"
 
+DEFAULT_COMMANDS = [
+  ("~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh:36 * * * *", "run_news_grabber"),
+  ("~/Apps/observatorio_fce_unpsjb/india/update_app.sh:37 * * * *", "update_app")
+]
 
 def main():
-    engine = Engine()
-
-    logging.basicConfig(
-        filename=engine.get_logs_resource(IDENTIFIER), 
-        level=engine.config.log_level)    
-    
-    logging.info(f"start {IDENTIFIER:s}")
-    
-    logging.info("<FileSystem>")
-    logging.info(f":  application_home={str(engine.fs.application_home):s}")
-    logging.info(f":  info_home       ={str(engine.fs.info_home):s}")    
-    logging.info("</Filesystem>")
-    logging.info("<Commands>")        
-    engine.create_default_commands()
-    logging.info("</Commands>")    
-    logging.warning("THIS IS A TEST")
-    logging.error("THIS IS ANOTHER TEST")
-    logging.info(f"start {IDENTIFIER:s}")
+    with create_app(IDENTIFIER) as app:
+        logging.info(f"application_home={str(app.fs.application_home):s}")
+        logging.info(f"info_home       ={str(app.fs.info_home):s}")    
+        
+        app.fs.create_commands(DEFAULT_COMMANDS)
+        
+        logging.warning("THIS IS A TEST")
+        logging.error("THIS IS ANOTHER TEST")
+        logging.info(f"start {IDENTIFIER:s}")
 
 if __name__ == '__main__':
     main()
