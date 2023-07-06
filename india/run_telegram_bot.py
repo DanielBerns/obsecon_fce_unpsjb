@@ -11,9 +11,9 @@ IDENTIFIER = "run_telegram_bot"
 def main():
     with create_app(IDENTIFIER) as app:
         bot_run(
-            app.fs.application_home, 
-            app.fs.telegram, 
-            app.config.authorization_token["telegram"]
+            app.fs.application_home,
+            app.fs.telegram,
+            app.config.authorization_token["telegram"],
         )
 
 
