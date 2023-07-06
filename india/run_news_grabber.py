@@ -1,6 +1,6 @@
 import logging
 
-from app.engine import create_app
+from application.engine import create_app
 
 from components.website_agent import bot_run
 
@@ -9,7 +9,6 @@ IDENTIFIER = "run_news_grabber"
 
 
 def main() -> None:
-    with create_app(IDENTIFIER) as app:
         websites = {}
         websites["adnsur"] = ["https://adnsur.com.ar"]
         websites["jornada"] = ["https://www.diariojornada.com.ar/home"]
@@ -22,7 +21,8 @@ def main() -> None:
             "https://www.elchubut.com.ar/seccion/esquel",
         ]
         websites["infobae"] = ["https://www.infobae.com/"]
-
+    
+    with create_app(IDENTIFIER) as app:
         bot_run(app.fs.news, websites)
 
 
