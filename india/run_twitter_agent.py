@@ -1,6 +1,6 @@
 import logging
 
-from app.engine import create_app
+from application.engine import create_app
 from components.twitter_agent import run
 
 IDENTIFIER = "run_twitter_agent"
