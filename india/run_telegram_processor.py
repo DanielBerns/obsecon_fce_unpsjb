@@ -14,13 +14,13 @@ def main():
     app_fs = AppFileSystem(config)
 
     logging.basicConfig(
-        filename=app_fs.get_logs_resource(IDENTIFIER), 
-        level=config.log_level)    
+        filename=app_fs.get_logs_resource(IDENTIFIER), level=config.log_level
+    )
 
     logging.info(f"start {IDENTIFIER:s}")
     processor_run(app_fs.telegram, app_fs.results)
     logging.info(f"stop {IDENTIFIER:s}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

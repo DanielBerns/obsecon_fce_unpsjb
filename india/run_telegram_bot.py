@@ -14,16 +14,15 @@ def main():
     app_fs = AppFileSystem(config)
 
     logging.basicConfig(
-        filename=app_fs.get_logs_resource(IDENTIFIER), 
-        level=config.log_level)    
-
+        filename=app_fs.get_logs_resource(IDENTIFIER), level=config.log_level
+    )
 
     logging.info(f"start {IDENTIFIER:s}")
-    bot_run(app_fs.application_home,
-            app_fs.telegram, 
-            config.authorization_token["telegram"])
+    bot_run(
+        app_fs.application_home, app_fs.telegram, config.authorization_token["telegram"]
+    )
     logging.info(f"stop {IDENTIFIER:s}")
 
-    
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

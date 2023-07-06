@@ -2,25 +2,23 @@ from pathlib import Path
 import sys
 from typing import Optional
 
-from components.helpers import (remove_directory, 
-                                get_container,
-                                get_resource_identifier, 
-                                get_timestamp)
+from components.helpers import (
+    remove_directory,
+    get_container,
+    get_resource_identifier,
+    get_timestamp,
+)
 
 
 class FileSystem:
-
-    def __init__(self, 
-                 application_home: Path,
-                 info_home: Path
-                 ) -> None:
-        self._application_home = application_home        
+    def __init__(self, application_home: Path, info_home: Path) -> None:
+        self._application_home = application_home
         self._info_home: Path = info_home
-        self._commands: Path = get_container(info_home, 'Commands')
-        self._data: Path = get_container(info_home, 'Data')
-        self._results: Path = get_container(info_home, 'Results')
-        self._reports: Path = get_container(info_home, 'Reports')
-        self._logs: Path = get_container(info_home, 'Logs')
+        self._commands: Path = get_container(info_home, "Commands")
+        self._data: Path = get_container(info_home, "Data")
+        self._results: Path = get_container(info_home, "Results")
+        self._reports: Path = get_container(info_home, "Reports")
+        self._logs: Path = get_container(info_home, "Logs")
 
     @property
     def application_home(self) -> Path:
@@ -33,7 +31,7 @@ class FileSystem:
     @property
     def commands(self) -> Path:
         return self._commands
-    
+
     @property
     def data(self) -> Path:
         return self._data
@@ -52,12 +50,12 @@ class FileSystem:
 
     @property
     def application(self) -> str:
-        return self.home.parts[-2]
-        
+        return self.application_home.parts[-2]
+
     @property
     def version(self) -> str:
-        return self.home.parts[-1]
-       
+        return self.application_home.parts[-1]
+
     def clear(self) -> None:
         if self.commands.exists():
             remove_directory(self.commands)
@@ -69,4 +67,3 @@ class FileSystem:
             remove_directory(self.reports)
         if self.logs.exists():
             remove_directory(self.logs)
-            

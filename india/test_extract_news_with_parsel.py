@@ -8,6 +8,7 @@ from components.website_agent import processor_run
 
 IDENTIFIER = "test_extract_news_with_parsel"
 
+
 def main() -> None:
     with create_app(IDENTIFIER) as app:
         websites = {}
@@ -19,12 +20,13 @@ def main() -> None:
             "https://www.elchubut.com.ar/seccion/rawson",
             "https://www.elchubut.com.ar/seccion/trelew",
             "https://www.elchubut.com.ar/seccion/puerto-madryn",
-            "https://www.elchubut.com.ar/seccion/esquel"]
+            "https://www.elchubut.com.ar/seccion/esquel",
+        ]
         websites["infobae"] = ["https://www.infobae.com/"]
-    
+
         text_reader = TextReaderHTMLWithParsel()
         processor_run(app.fs.news, websites, app.fs.results, text_reader)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

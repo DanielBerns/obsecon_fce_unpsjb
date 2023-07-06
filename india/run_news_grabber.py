@@ -19,11 +19,12 @@ def main() -> None:
             "https://www.elchubut.com.ar/seccion/rawson",
             "https://www.elchubut.com.ar/seccion/trelew",
             "https://www.elchubut.com.ar/seccion/puerto-madryn",
-            "https://www.elchubut.com.ar/seccion/esquel"]
+            "https://www.elchubut.com.ar/seccion/esquel",
+        ]
         websites["infobae"] = ["https://www.infobae.com/"]
-    
+
         bot_run(app.fs.news, websites)
 
-    
+
 if __name__ == "__main__":
     main()
