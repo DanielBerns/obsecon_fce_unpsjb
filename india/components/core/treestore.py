@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from shutil import rmtree
 import logging
-from typing import Tuple
+from typing import Tuple, Generator
 
 from components.helpers import get_container
 
@@ -98,7 +98,7 @@ class TreeStore:
     def stop(self):
         self.write()
 
-    def samples(self, first: int = 0, top: int = -1) -> Generator[Path]:
+    def samples(self, first: int = 0, top: int = -1) -> Generator[Path, None, None]:
         if first < 0:
             raise TreeStoreError(
                 f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"

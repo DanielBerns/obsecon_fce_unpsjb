@@ -2,7 +2,7 @@ from collections import defaultdict, Counter
 import datetime
 import json
 from pathlib import Path
-from typing import Dict, Tuple, DefaultDict
+from typing import Dict, Tuple, DefaultDict, Generator
 
 from components.helpers import (
     save_json,
@@ -71,7 +71,7 @@ class Metadata:
     def stop(self) -> None:
         self.save_events()
 
-    def items(self) -> Generator[Tuple[str, str, Dict]]:
+    def items(self) -> Generator[Tuple[str, str, Dict], None, None]:
         for identifier, sample in self.events.items():
             for attribute, value in sample.items():
                 yield identifier, attribute, value

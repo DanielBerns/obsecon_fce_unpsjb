@@ -6,7 +6,7 @@ from components.helpers import get_directory, get_resource_identifier
 
 
 class JSONSource(Protocol):
-    def events(self) -> Generator[Dict[Any, Any]]:
+    def events(self) -> Generator[Dict[Any, Any], None, None]:
         yield from ()
 
 
@@ -29,7 +29,7 @@ class JSONDocument:
     def stop(self) -> None:
         pass
 
-    def events(self) -> Generator[Dict[Any, Any]]:
+    def events(self) -> Generator[Dict[Any, Any], None, None]:
         with open(self.store, "r") as source:
             for line in source:
                 event = json.loads(line)

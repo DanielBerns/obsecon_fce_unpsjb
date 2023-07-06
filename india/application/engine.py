@@ -1,7 +1,7 @@
 from pathlib import Path
 import logging
 from contextlib import contextmanager
-from typing import List, Tuple
+from typing import List, Tuple, Generator
 
 from components.core.filesystem import FileSystem
 from components.config import Config
@@ -78,7 +78,7 @@ class App:
 
 
 @contextmanager
-def create_app(identifier: str) -> App:
+def create_app(identifier: str) -> Generator[App, None, None]:
     app = App()
 
     logging.basicConfig(

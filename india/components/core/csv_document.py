@@ -2,7 +2,17 @@ from collections import defaultdict, Counter
 import json
 import os
 from pathlib import Path
-from typing import List, Dict, Protocol, Union, Optional, Tuple, DefaultDict
+from typing import (
+    List,
+    Dict,
+    Protocol,
+    Union,
+    Optional,
+    Tuple,
+    DefaultDict,
+    Any,
+    Generator,
+)
 
 from components.helpers import get_directory, get_resource_identifier
 
@@ -15,13 +25,13 @@ class EventsStatsError(Exception):
 
 class EventsStats:
     def __init__(self) -> None:
-        self._counters: defaultDict[Counter] = defaultdict(Counter)
+        self._counters: DefaultDict[Any, Counter] = defaultdict(Counter)
 
     @property
-    def counters(self) -> defaultdict[Counter]:
+    def counters(self) -> DefaultDict[Any, Counter]:
         return self._counters
 
-    def update(self, event: Dict) -> None:
+    def update(self, event: Dict[Any, Any]) -> None:
         for key, value in event.items():
             self.counters[key]["total"] += 1
             value_type = type(value).__name__
@@ -60,7 +70,7 @@ class CSVDocument:
     def stop(self) -> None:
         pass
 
-    def rows(self) -> Generator[str]:
+    def rows(self) -> Generator[str, None, None]:
         with open(self.store, "r") as source:
             header = source.readline()
             yield header
