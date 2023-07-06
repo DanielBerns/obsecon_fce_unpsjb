@@ -30,18 +30,18 @@ def update_crontab(app: App) -> None:
                             f"{str(this_command):s} 2 > {str(command_log_txt):s} 2>&1\n"
                         )
                     else:
-                        logging.warning(f"Error in {str(commands_txt):s} at {line:s}")
+                        logging.warning(f"Error in {str(app.fs.commands_txt):s} at {line:s}")
                         logging.warning("  I can not understand scheduled time")
-                        raise UpdateCrontabWarning(f"Check {str(commands_txt):s}")
+                        raise UpdateCrontabWarning(f"Check {str(app.fs.commands_txt):s}")
                 else:
-                    logging.warning(f"Error in {str(commands_txt):s} at {line:s}")
-                    logging.warning('  character ":" not founded')
-                    raise UpdateCrontabWarning(f"Check {str(commands_txt):s}")
+                    logging.warning(f"Error in {str(app.fs.commands_txt):s} at {line:s}")
+                    logging.warning('  character ":" not found')
+                    raise UpdateCrontabWarning(f"Check {str(app.fs.commands_txt):s}")
             else:
-                logging.warning(f"Error in {str(commands_txt):s} at {line:s}")
+                logging.warning(f"Error in {str(app.fs.commands_txt):s} at {line:s}")
                 logging.warning('  character "," not founded')
-                raise UpdateCrontabWarning(f"Check {str(commands_txt):s}")
-    cp = subprocess.run(["crontab", crontab_txt])
+                raise UpdateCrontabWarning(f"Check {str(app.fs.commands_txt):s}")
+    cp = subprocess.run(["crontab", app.fs.crontab_txt])
     if cp.returncode:
         logging.info(f"crontab edit returncode {cp.returncode:d}")
 

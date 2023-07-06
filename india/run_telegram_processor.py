@@ -1,7 +1,6 @@
 import logging
 
-from components.config import Config
-from app.engine import AppFileSystem
+from application.engine import create_app
 
 from components.telegram_agent import processor_run
 
