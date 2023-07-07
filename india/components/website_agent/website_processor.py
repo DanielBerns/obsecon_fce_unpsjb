@@ -43,6 +43,7 @@ class WebsiteSampleProcessor:
                 elif filename == "text.txt":
                     print("    ", "text.txt")
 
+import pdb
 
 def processor_run(
     bot_home: Path,
@@ -56,6 +57,7 @@ def processor_run(
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
         url, text_reader = resources[0]
+        pdb.set_trace()
         sample_processor = WebsiteSampleProcessor(
             processor_home, identifier, text_reader
         )
