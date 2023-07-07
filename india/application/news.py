@@ -4,7 +4,7 @@ from components.core import TextReaderHTMLWithParsel
 def get_websites():
     websites = {}
     websites["adnsur"] = [
-        ("https://adnsur.com.ar", ADNSUR()]
+        ("https://adnsur.com.ar", ADNSUR())]
     websites["jornada"] = [
         ("https://www.diariojornada.com.ar/home", TextReaderHTMLWithParsel())]
     websites["cronica"] = [
