@@ -14,7 +14,7 @@ def main() -> None:
     websites = get_websites()
     with create_app(IDENTIFIER) as app:
         pdb.set_trace()
-        processor_run(app.fs.news, websites, app.fs.results, websites)
+        processor_run(app.fs.news, app.fs.results, websites)
 
 if __name__ == "__main__":
     main()

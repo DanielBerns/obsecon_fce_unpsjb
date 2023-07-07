@@ -47,9 +47,8 @@ import pdb
 
 def processor_run(
     bot_home: Path,
-    websites: Dict[str, List[str]],
-    processor_home: Path,
-    text_reader: TextReader,
+    processor_home: Path,    
+    websites: Dict[str, Tuple[str, TextReader]]
 ) -> None:
     logging.info(f"start run: {str(bot_home):s} -> {str(processor_home):s}")
     for identifier, resources in websites.items():
