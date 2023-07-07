@@ -18,7 +18,7 @@ class TextReaderHTMLWithBS4:
             clean_text = self.extract_clean_text(soup)
         return [clean_text]
 
-    def extract_clean_text(self, soup: BeatifulSoup) -> str:
+    def extract_clean_text(self, soup: BeautifulSoup) -> str:
         # get noclean text
         noclean_text = soup.get_text("-xxx-")        
         # break into lines and remove leading and trailing space on each
