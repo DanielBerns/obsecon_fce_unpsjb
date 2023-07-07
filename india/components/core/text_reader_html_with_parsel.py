@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 from parsel import Selector
 
@@ -8,15 +8,13 @@ class TextReaderHTMLWithParsel:
     def __init__(self):
         pass
 
-    def read_text(self, resource: Path) -> List:
+    def read(self, resource: Path) -> List:
         with open(resource, "r") as source:
             html = source.read()
-            clean_text, noclean_text = self.extract_text(html)
-        return [clean_text, noclean_text]
+            html_selector = Selector(text=str(html))
+            clean_text = self.extract(html_selector)
+        return [clean_text]
 
-    def extract_text(self, html: str) -> Tuple[str, str]:
-        html_selector = Selector(text=str(html))
-        noclean_text = "xxx"
-        clean_text = "yyy"
-
-        return clean_text, noclean_text  # text.encode('utf-8')
+    def extract(self, html_selector: Selector) -> str:
+        body = html_selector.css('body')
+        return clean_text.get()  # text.encode('utf-8')

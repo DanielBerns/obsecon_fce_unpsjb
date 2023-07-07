@@ -51,10 +51,11 @@ def processor_run(
     text_reader: TextReader,
 ) -> None:
     logging.info(f"start run: {str(bot_home):s} -> {str(processor_home):s}")
-    for identifier, urls in websites.items():
+    for identifier, resources in websites.items():
         logging.info(f"  identifier: {identifier:s}")
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
+        url, text_reader = resources[0]
         sample_processor = WebsiteSampleProcessor(
             processor_home, identifier, text_reader
         )

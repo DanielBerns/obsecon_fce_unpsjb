@@ -60,12 +60,12 @@ class WebsiteBot(Bot):
 
 def bot_run(bot_home: Path, websites: Dict[str, List[str]]) -> None:
     logging.info(f"start run: {str(bot_home):s}")
-    for identifier, urls in websites.items():
+    for identifier, resources in websites.items():
         logging.info(f"  identifier: {identifier:s}")
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
-        for this_url in urls:
-            bot.grab(this_url)
+        for (url, text_reader) in resources:
+            bot.grab(url)
         bot.store.stop()
         logging.info(f"  done: {identifier:s}")
     logging.info(f"done run: {str(bot_home):s}")

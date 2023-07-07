@@ -13,7 +13,7 @@ class TextReaderImageWithTesseractAndPIL:
     def __init__(self):
         pass
 
-    def read_text(self, resource: Path) -> List:
+    def read(self, resource: Path) -> List:
         image = Image.open(str(resource))
         return pytesseract.pytesseract.image_to_data(image)
 
@@ -87,7 +87,7 @@ class TextReaderImageWithTesseractAndCV2:
     def __init__(self):
         pass
 
-    def read_text(self, resource: Path) -> List:
+    def read(self, resource: Path) -> List:
         image = read_image(str(resource))
         gray = get_grayscale(image)
         return pytesseract.pytesseract.image_to_data(image)

@@ -3,7 +3,7 @@ import logging
 from contextlib import contextmanager
 from typing import List, Tuple, Generator
 
-from components.core.filesystem import FileSystem
+from components.core import FileSystem
 from components.config import Config
 from components.helpers import get_container, get_timestamp, get_resource_identifier
 
