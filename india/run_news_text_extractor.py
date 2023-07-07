@@ -2,7 +2,7 @@
 
 import logging
 
-from application import create_app, news_websites
+from application import create_app, get_websites
 from components.core import TextReaderHTMLWithParsel
 from components.website_agent import processor_run
 
