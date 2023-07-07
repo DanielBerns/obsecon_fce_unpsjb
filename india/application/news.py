@@ -18,4 +18,5 @@ def get_websites():
     ]
     websites["infobae"] = [
         ("https://www.infobae.com/", TextReaderHTMLWithParsel())]
+    return websites
  
