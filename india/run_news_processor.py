@@ -8,12 +8,10 @@ from components.website_agent import processor_run
 
 IDENTIFIER = "run_news_processor"
 
-import pdb
 
 def main() -> None:
     websites = get_websites()
     with create_app(IDENTIFIER) as app:
-        pdb.set_trace()
         processor_run(app.fs.news, app.fs.results, websites)
 
 if __name__ == "__main__":
