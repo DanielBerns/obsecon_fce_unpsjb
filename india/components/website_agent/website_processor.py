@@ -36,7 +36,7 @@ class WebsiteSampleProcessor:
                     print("    ", "attributes.json")
                 elif filename == "page.html":
                     print("    ", "page.html")
-                    text = self.text_reader.read_text(Path(root, filename))
+                    text = self.text_reader.read(Path(root, filename))
                     with open(Path(root, "text").with_suffix(".txt"), "w") as target:
                         target.write(str(text))
                         target.write("\n")
