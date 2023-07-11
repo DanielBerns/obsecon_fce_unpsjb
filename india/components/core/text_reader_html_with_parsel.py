@@ -3,14 +3,11 @@ from typing import List
 
 from parsel import Selector
 
-import pdb
-
 class TextReaderHTMLWithParsel:
     def __init__(self):
         pass
 
     def read(self, resource: Path) -> List:
-        pdb.set_trace()
         with open(resource, "r") as source:
             html = source.read()
             html_selector = Selector(text=str(html))
