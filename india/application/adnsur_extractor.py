@@ -9,6 +9,8 @@ class ADNSUR(TextReaderHTMLWithParsel):
     def extract(self, html_selector: Selector) -> str:
         div_container = html_selector.css('div.container')
         dollar = Selector(text=div_container[2].get())
-        phrases = dollar.css('span.values')
-        clean_text = '---'.join([item.get() for item in phrases])
-        return clean_text  # text.encode('utf-8')
+        alpha = dollar.css('span.values')
+        from_alpha = '---'.join([item.get() for item in alpha])
+        bravo = html_selector.css('div.starred')
+        from_bravo = '---'.join([item.get() for item in bravo])
+        return f"[{from_alpha:s}][{from_bravo:s}]"
