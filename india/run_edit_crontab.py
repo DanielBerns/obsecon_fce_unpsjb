@@ -7,14 +7,14 @@ from pathlib import Path
 
 from application import create_app, App
 
-import pdb
 
 def update_crontab(app: App) -> None:
     with open(app.fs.commands_txt, "r") as source, open(
         app.fs.crontab_txt, "w"
     ) as target:
         for line in source:
-            pdb.set_trace()
+            if len(line) < 2:
+                break
             line_parts = (line[:-1]).split(",")
             if len(line_parts) == 2:
                 command_bash, log_identifier = line_parts[0], line_parts[1]
