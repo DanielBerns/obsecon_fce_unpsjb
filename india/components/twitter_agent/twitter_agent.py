@@ -94,7 +94,7 @@ def grab_tweets(agent: TwitterAgent, usernames: List[str], store: TreeStore):
             target.write(f"{event:s}\n")
 
 
-def run(twitter_home: Path, bearer_token: str) -> None:
+def bot_run(twitter_home: Path, bearer_token: str) -> None:
     store = TreeStore(twitter_home, "tweets_from_api")
     store.start()
     users_filename = get_resource_identifier(twitter_home, "users", ".json")
