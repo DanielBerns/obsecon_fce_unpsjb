@@ -1,6 +1,6 @@
 import logging
 
-from application import create_app, get_websites()
+from application import create_app, get_websites
 
 from components.website_agent import bot_run
 
