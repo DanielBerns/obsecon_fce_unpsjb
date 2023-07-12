@@ -7,12 +7,14 @@ from pathlib import Path
 
 from application import create_app, App
 
+import pdb
 
 def update_crontab(app: App) -> None:
     with open(app.fs.commands_txt, "r") as source, open(
         app.fs.crontab_txt, "w"
     ) as target:
         for line in source:
+            pdb.set_trace()
             line_parts = (line[:-1]).split(",")
             if len(line_parts) == 2:
                 command_bash, log_identifier = line_parts[0], line_parts[1]
@@ -49,14 +51,14 @@ def update_crontab(app: App) -> None:
                     raise UpdateCrontabWarning(f"Check {str(app.fs.commands_txt):s}")
             else:
                 logging.warning(f"Error in {str(app.fs.commands_txt):s} at {line:s}")
-                logging.warning('  character "," not founded')
+                logging.warning('  character "," not found')
                 raise UpdateCrontabWarning(f"Check {str(app.fs.commands_txt):s}")
     cp = subprocess.run(["crontab", app.fs.crontab_txt])
     if cp.returncode:
         logging.info(f"crontab edit returncode {cp.returncode:d}")
 
 
-IDENTIFIER = "edit_crontab"
+IDENTIFIER = "run_edit_crontab"
 
 
 class UpdateCrontabWarning(Exception):
