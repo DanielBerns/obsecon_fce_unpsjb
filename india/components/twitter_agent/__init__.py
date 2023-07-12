@@ -1,1 +1,1 @@
-from components.twitter_agent.twitter_agent import run
+from components.twitter_agent.twitter_agent import bot_run
