@@ -1,23 +1,25 @@
-from components.core import TreeStore, TreeStoreProcessor
-from components.core import TextReaderImageWithTesseractAndPIL
-from components.core import TextReader
+from components.core import (TreeStore, 
+                             TreeStoreProcessor, 
+                             FileProcessor, 
+                             ImageFileProcessorWithTesseractAndPIL)
+
 
 from pathlib import Path
 import os
 
 
 class TelegramSampleProcessor:
-    def __init__(self, results_home: Path, text_reader: TextReader):
+    def __init__(self, results_home: Path, text_reader: FileProcessor):
         self._results_home = results_home
         self._text_reader = text_reader
-        # TextReaderImageWithTesseractAndPIL()
+        # FileProcessorImageWithTesseractAndPIL()
 
     @property
     def results_home(self) -> Path:
         return self._results_home
 
     @property
-    def text_reader(self) -> TextReader:
+    def text_reader(self) -> FileProcessor:
         return self._text_reader
 
     def execute(self, sample: Path) -> None:
@@ -42,6 +44,6 @@ def processor_run(bot_home: Path, results_home: Path) -> None:
     store = bot.store
     dataset_processor = TreeStoreProcessor(store)
     sample_processor = TelegramSampleProcessor(
-        results_home, TextReaderImageWithTesseractAndPIL()
+        results_home, FileProcessorImageWithTesseractAndPIL()
     )
     dataset_processor.execute(sample_processor)

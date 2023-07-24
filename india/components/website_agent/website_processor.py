@@ -1,8 +1,7 @@
 from components.core import (
     TreeStore,
     TreeStoreProcessor,
-    TextReader,
-    TextReaderHTMLWithBS4,
+    FileProcessor
 )
 
 from components.website_agent.website_bot import WebsiteBot
@@ -15,7 +14,10 @@ import logging
 
 
 class WebsiteSampleProcessor:
-    def __init__(self, processor_home: Path, identifier: str, text_reader: TextReader):
+    def __init__(self, 
+                 processor_home: Path, 
+                 identifier: str, 
+                 text_reader: FileProcessor):
         self._results_home = get_container(processor_home, identifier)
         self._text_reader = text_reader
 
@@ -24,7 +26,7 @@ class WebsiteSampleProcessor:
         return self._results_home
 
     @property
-    def text_reader(self) -> TextReader:
+    def text_reader(self) -> FileProcessor:
         return self._text_reader
 
     def execute(self, sample: Path) -> None:
@@ -36,10 +38,8 @@ class WebsiteSampleProcessor:
                     print("    ", "attributes.json")
                 elif filename == "page.html":
                     print("    ", "page.html")
-                    text = self.text_reader.read(Path(root, filename))
-                    with open(Path(root, "text").with_suffix(".txt"), "w") as target:
-                        target.write(str(text))
-                        target.write("\n")
+                    self.text_reader.file_identifier = Path(root, filename)
+                    self.text_reader.execute()
                 elif filename == "text.txt":
                     print("    ", "text.txt")
 
@@ -47,7 +47,7 @@ class WebsiteSampleProcessor:
 def processor_run(
     bot_home: Path,
     processor_home: Path,    
-    websites: Dict[str, Tuple[str, TextReader]]
+    websites: Dict[str, Tuple[str, FileProcessor]]
 ) -> None:
     logging.info(f"start run: {str(bot_home):s} -> {str(processor_home):s}")
     for identifier, resources in websites.items():

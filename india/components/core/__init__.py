@@ -5,12 +5,8 @@ from components.core.metadata import Metadata
 from components.core.filesystem import FileSystem
 from components.core.treestore import TreeStore
 from components.core.treestore_processor import TreeStoreProcessor
-from components.core.tasks import Task
-from components.core.text_reader import TextReader
-from components.core.text_reader_html_with_bs4 import TextReaderHTMLWithBS4
-from components.core.text_reader_html_with_parsel import TextReaderHTMLWithParsel
-from components.core.text_reader_image_with_easyocr import TextReaderImageWithEasyOCR
-from components.core.text_reader_image_with_tesseract import (
-    TextReaderImageWithTesseractAndPIL,
-    TextReaderImageWithTesseractAndCV2,
+from components.core.file_processor import FileProcessor
+from components.core.image_file_processor import (
+    ImageFileProcessorWithTesseractAndPIL,
+    ImageFileProcessorWithTesseractAndCV2,
 )

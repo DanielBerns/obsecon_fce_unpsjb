@@ -1,24 +1,14 @@
-from typing import List
-from pathlib import Path
+from typing import Dict
+from components.core.file_processor import FileProcessor
 
 from PIL import Image
+import cv2
 import pytesseract
 
 # https://betterprogramming.pub/a-practical-guide-to-extract-text-from-images-ocr-in-python-d8c9c30ae74b
 
 # https://nanonets.com/blog/ocr-with-tesseract/
-
-
-class TextReaderImageWithTesseractAndPIL:
-    def __init__(self):
-        pass
-
-    def read(self, resource: Path) -> List:
-        image = Image.open(str(resource))
-        return pytesseract.pytesseract.image_to_data(image)
-
-
-import cv2
+# https://snyk.io/advisor/python/pytesseract/functions/pytesseract.image_to_data
 
 
 # read cv2 image
@@ -83,11 +73,32 @@ def match_template(image, template):
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
 
 
-class TextReaderImageWithTesseractAndCV2:
+class ImageFileProcessor(FileProcessor):
     def __init__(self):
+        super().__init__()
+        
+    def result_to_content(self, result: Dict) -> None:
         pass
 
-    def read(self, resource: Path) -> List:
-        image = read_image(str(resource))
+
+class ImageFileProcessorWithTesseractAndPIL(ImageFileProcessor):
+    def __init__(self):
+        super().__init__()
+
+    def execute(self) -> None:
+        image = Image.open(str(self.file_identifier))
+        result = pytesseract.pytesseract.image_to_data(
+            image, output=pytesseract.Output.DICT)
+        self.result_to_content(result)
+
+
+class ImageFileProcessorWithTesseractAndCV2(ImageFileProcessor):
+    def __init__(self):
+        super().__init__()
+
+    def execute(self) -> None:
+        image = read_image(str(self.file_identifier))
         gray = get_grayscale(image)
-        return pytesseract.pytesseract.image_to_data(image)
+        result = pytesseract.pytesseract.image_to_data(
+            image, output=pytesseract.Output.DICT)
+        self.result_to_content(result)
