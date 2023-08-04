@@ -1,12 +1,28 @@
+from typing import List
+
 from bs4 import BeautifulSoup
 
 from components.core import FileProcessor
 
-import pdb
+class ContentExtractor(FileProcessor):
+    def __init__(self) -> None:
+        super().__init__()
+        self._content = list()
+        
+    @property
+    def content(self) -> List:
+        return self._content
+        
+    def execute(self) -> None:
+        with open(self.file_identifier, 'r') as source:
+            text = source.read()
+            self.extract_content(text)
+            
+    def extract_content(self, text: str) -> None:
+        soup = BeautifulSoup(text, "html.parser")
 
-class ADNSUR(FileProcessor):
-    """ADNSUR
-    """
+
+class ADNSUR(ContentExtractor):
     def __init__(self) -> None:
         super().__init__()
         
@@ -24,19 +40,23 @@ class ADNSUR(FileProcessor):
         for spans_within_container_div in find_spans_within_container_divs:
             for span in spans_within_container_div:
                 if span:
-                    pdb.set_trace()
-                    self.content.append((span.text,""))
+                    for data in span.stripped_strings:
+                        if data:
+                            self.content.append((data,))
                     
         find_links_within_divs = [
             div.find_all("a") for div in soup.find_all("div")]
         for links_within_divs in find_links_within_divs:
             for link in links_within_divs:
                 if link:
-                    pdb.set_trace()
-                    link_content = (link.text, link['aria-label']) \
-                        if link.has_attr('aria-label') else (link.text,)
-                    self.content.append(link_content)
-
+                    data = [text for text in link.stripped_strings]
+                    if data:
+                        for text in data:
+                            if text:
+                                self.content.append((text,))
+                    text = link.get('aria-label', '')
+                    if text:
+                        self.content.append((text,))
 
 
 class WebsiteExtractor(FileProcessor):
