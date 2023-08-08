@@ -38,6 +38,8 @@ class TreeStoreProcessor:
         return self._metadata
 
     def execute(self, sample_processor: SampleProcessor) -> None:
-        for sample in self.store.samples(self.metadata.next_to_process):
+        next_to_process = self.metadata.next_to_process
+        self.metadata.next_to_process = self.store.index
+        for sample in self.store.samples(first=next_to_process):
             sample_processor.execute(sample)
         self.store.write()
