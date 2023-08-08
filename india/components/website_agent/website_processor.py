@@ -17,17 +17,17 @@ class WebsiteSampleProcessor:
     def __init__(self, 
                  processor_home: Path, 
                  identifier: str, 
-                 text_reader: FileProcessor):
+                 text_processor: FileProcessor):
         self._results_home = get_container(processor_home, identifier)
-        self._text_reader = text_reader
+        self._text_processor = text_processor
 
     @property
     def results_home(self) -> Path:
         return self._results_home
 
     @property
-    def text_reader(self) -> FileProcessor:
-        return self._text_reader
+    def text_processor(self) -> FileProcessor:
+        return self._text_processor
 
     def execute(self, sample: Path) -> None:
         print(str(sample))
@@ -38,8 +38,9 @@ class WebsiteSampleProcessor:
                     print("    ", "attributes.json")
                 elif filename == "page.html":
                     print("    ", "page.html")
-                    self.text_reader.file_identifier = Path(root, filename)
-                    self.text_reader.execute()
+                    self.text_processor.source_identifier = Path(root, filename)
+                    self.text_processor.target_identifier = Path(root, "text.txt")
+                    self.text_processor.execute()
                 elif filename == "text.txt":
                     print("    ", "text.txt")
 
@@ -54,9 +55,9 @@ def processor_run(
         logging.info(f"  identifier: {identifier:s}")
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
-        url, text_reader = resources[0]
+        url, text_processor = resources[0]
         sample_processor = WebsiteSampleProcessor(
-            processor_home, identifier, text_reader
+            processor_home, identifier, text_processor
         )
         dataset_processor = TreeStoreProcessor(bot.store)
         dataset_processor.execute(sample_processor)
