@@ -21,18 +21,18 @@ class ADNSUR(ContentProcessor):
                 if span:                    
                     data = [text for text in span.stripped_strings]
                     if data:
-                        self.content.append(("span-start", f"#ff:{str(first_number):s}"))
+                        self.content.append(("#span-start", f"#ff:{str(first_number):s}"))
                         for second_number, text in enumerate(data):
                             if text:
                                 self.content.append((text, f"#ss:{str(second_number):s}"))
-                        self.content.append(("span-end",))            
+                        self.content.append(("#span-end",))            
                     
         find_links_within_divs = [
             div.find_all("a") for div in soup.find_all("div")]
         for links_within_divs in find_links_within_divs:                        
             for first_number, link in enumerate(links_within_divs):
                 if link:
-                    self.content.append(("link-start", f"#ff:{str(first_number):s}"))                                        
+                    self.content.append(("#link-start", f"#ff:{str(first_number):s}"))                                        
                     data = [text for text in link.stripped_strings]
                     if data:
                         for second_number, text in enumerate(data):
@@ -40,8 +40,8 @@ class ADNSUR(ContentProcessor):
                                 self.content.append((text, f"#ss:{str(second_number):s}"))
                     text = link.get("aria-label", "")
                     if text:
-                        self.content.append((text,"aria-label"))
-                    self.content.append(('link-end',))
+                        self.content.append((text,"#aria-label"))
+                    self.content.append(('#link-end',))
             
     def write(self, target: TextIO) -> None:
         for datalist in self.content:
