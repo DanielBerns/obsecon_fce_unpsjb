@@ -1,10 +1,18 @@
-from typing import Protocol, Tuple
+from typing import Protocol, Tuple, Optional
 from pathlib import Path
 
 from components.core import TreeStore, Metadata
 
 
-class SampleProcessor(Protocol):
+class SampleTask(Protocol):
+    def execute(self, sample: Path) -> None:
+        pass
+
+
+class EmptySampleTask:
+    def __init__(self):
+        pass
+    
     def execute(self, sample: Path) -> None:
         pass
 
@@ -25,9 +33,12 @@ class TreeStoreProcessorMetadata(Metadata):
 
 
 class TreeStoreProcessor:
-    def __init__(self, store: TreeStore) -> None:
+    def __init__(self, 
+                 store: TreeStore,
+                 sample_task: Optional[SampleTask] = None) -> None:
         self._store = store
         self._metadata = TreeStoreProcessorMetadata(store.base)
+        self._sample_task = sample_task if sample_task else EmptySampleTask()
 
     @property
     def store(self) -> TreeStore:
@@ -37,9 +48,16 @@ class TreeStoreProcessor:
     def metadata(self) -> TreeStoreProcessorMetadata:
         return self._metadata
 
-    def execute(self, sample_processor: SampleProcessor) -> None:
+    @property
+    def sample_task(self) -> SampleTask:
+        return self._sample_task
+    
+    @sample_task.setter
+    def sample_task(self, value: SampleTask) -> None:
+        self._sample_task = value
+
+    def execute(self) -> None:
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
         for sample in self.store.samples(first=next_to_process):
-            sample_processor.execute(sample)
-        self.store.write()
+            self.sample_task.execute(sample)

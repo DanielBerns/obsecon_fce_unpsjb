@@ -8,4 +8,5 @@ from components.helpers.helpers import (
     get_container,
     get_resource_identifier,
     remove_directory,
+    get_command,
 )

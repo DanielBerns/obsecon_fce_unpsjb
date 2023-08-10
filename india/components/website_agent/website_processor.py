@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 import logging
 
 
-class WebsiteSampleProcessor:
+class WebsiteSampleTask:
     def __init__(self, 
                  processor_home: Path, 
                  identifier: str, 
@@ -56,11 +56,11 @@ def processor_run(
         bot = WebsiteBot(bot_home, identifier)
         bot.store.start()
         url, text_processor = resources[0]
-        sample_processor = WebsiteSampleProcessor(
+        sample_task = WebsiteSampleTask(
             processor_home, identifier, text_processor
         )
-        dataset_processor = TreeStoreProcessor(bot.store)
-        dataset_processor.execute(sample_processor)
+        dataset_processor = TreeStoreProcessor(bot.store, sample_task)
+        dataset_processor.execute()
         bot.store.stop()
         logging.info(f"  done: {identifier:s}")
     logging.info(f"done run: {str(bot_home):s} -> {str(processor_home):s}")

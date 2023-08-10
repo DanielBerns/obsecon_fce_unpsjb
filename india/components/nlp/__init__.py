@@ -4,6 +4,8 @@ from components.nlp.eda import (text_read,
                   text_characters_to_integers, 
                   text_fragments, 
                   text_hmm)
+from components.nlp.tokenizer import Tokenizer
+
 # from .dart_dice_and_coins import (simulate_fair_die, simulate_biased_coin,
 #                                   simulate_fair_die_with_biased_coins,
 #                                   simulate_loaded_die_with_biased_coins,
@@ -14,5 +16,5 @@ from components.nlp.eda import (text_read,
 #                           decode_huffman_text, 
 #                           print_huffman_tree)
 # from .mygraph import (get_pairs_of_words, GraphBuilder)
-# from .tokenizer import Tokenizer
+
 # from .substrings import compare, common_substrings

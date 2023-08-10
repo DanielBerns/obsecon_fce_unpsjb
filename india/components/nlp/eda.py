@@ -11,14 +11,10 @@ def text_read(source:str) -> str:
 
 def text_characters(text: str) -> List:
     # here are all the unique characters that occur in this text
-    characters = sorted(list(set(text)))
-    return characters
+    return sorted(list(set(text)))
 
 def text_characters_frequency(text: str) -> Counter:
-    frequency = Counter()
-    for t in text:
-        frequency[t] += 1
-    return frequency
+    return Counter(text)
 
 def text_characters_to_integers(characters: List) -> TextMapping:
     # create a mapping from characters to integers

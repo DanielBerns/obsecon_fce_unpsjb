@@ -59,3 +59,8 @@ def get_resource_identifier(base: Path, name: str, suffix: str) -> Path:
 
 def remove_directory(base: Path) -> None:
     rmtree(base)
+    
+def get_command(name: str) -> bool:
+    COMMAND = os.environ.get(name) or "NO"
+    return COMMAND == "YES"
+    
