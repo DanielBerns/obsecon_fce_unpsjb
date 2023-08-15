@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from components.core import ContentProcessor
 
-class ADNSUR(ContentProcessor):
+class ADNSURExtractor(ContentProcessor):
     def __init__(self) -> None:
         super().__init__()
         
