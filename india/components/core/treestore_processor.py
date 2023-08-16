@@ -61,3 +61,5 @@ class TreeStoreProcessor:
         self.metadata.next_to_process = self.store.index
         for sample in self.store.samples(first=next_to_process):
             self.sample_task.execute(sample)
+
+

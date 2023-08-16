@@ -12,8 +12,7 @@ import os
 from typing import Dict, List, Tuple
 import logging
 
-
-class WebsiteSampleTask:
+class TextFromHTMLSampleTask:
     def __init__(self, 
                  processor_home: Path, 
                  identifier: str, 
@@ -45,22 +44,24 @@ class WebsiteSampleTask:
                     print("    ", "text.txt")
 
 
-def processor_run(
-    bot_home: Path,
-    processor_home: Path,    
-    websites: Dict[str, Tuple[str, FileProcessor]]
-) -> None:
-    logging.info(f"start run: {str(bot_home):s} -> {str(processor_home):s}")
-    for identifier, resources in websites.items():
-        logging.info(f"  identifier: {identifier:s}")
-        bot = WebsiteBot(bot_home, identifier)
-        bot.store.start()
-        url, text_processor = resources[0]
-        sample_task = WebsiteSampleTask(
-            processor_home, identifier, text_processor
+class TextFromHTMLProcessor(MyProcessor):
+    def __init__(self,
+                 bot_home: Path,
+                 processor_home: Path,
+                 text_processor: FileProcessor
+                 ) -> None:
+        super().__init__(bot_home, processor_home)
+        self._text_processor = text_processor
+        
+    @property
+    def text_processor(self) -> FileProcessor:
+        return self._text_processor
+    
+    @text_processor.setter
+    def text_processor(self, value: FileProcessor) -> None:
+        self._text_processor = value
+
+    def build_sample_task(self, identifier: str) -> SampleTask:
+        return TextFromHTMLSampleTask(
+            self.processor_home, identifier, self.text_processor
         )
-        dataset_processor = TreeStoreProcessor(bot.store, sample_task)
-        dataset_processor.execute()
-        bot.store.stop()
-        logging.info(f"  done: {identifier:s}")
-    logging.info(f"done run: {str(bot_home):s} -> {str(processor_home):s}")
