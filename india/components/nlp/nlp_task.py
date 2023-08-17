@@ -1,6 +1,7 @@
 from collections import Counter
 from pathlib import Path
 
+from components.core import SampleTask
 from components.nlp.tokenizer import Tokenizer
 
 class NLPTask:
