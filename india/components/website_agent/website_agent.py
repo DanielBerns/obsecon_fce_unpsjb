@@ -34,7 +34,7 @@ class WebsiteBot(Bot):
         else:
             logging.info("WebsiteBot.save_response: empty text or attributes")
 
-    def grab(self, url: str) -> Tuple[str, int, Dict[str, str]]
+    def grab(self, url: str) -> Tuple[str, int, Dict[str, str]]:
         logging.info(f"start grab({url:s})")
         html, code, attributes = '', 0, None
         try:
