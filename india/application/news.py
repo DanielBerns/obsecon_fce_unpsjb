@@ -9,6 +9,7 @@ def get_websites():
     websites = {}
     websites.append(
         Website("adnsur", "https://adnsur.com.ar", ADNSUR_PIPELINE)
+        )
     websites.append(
         Website("jornada", "https://www.diariojornada.com.ar/home", EMPTY_PIPELINE)
         )
