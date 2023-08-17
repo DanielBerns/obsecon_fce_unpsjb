@@ -11,7 +11,7 @@ import json
 
 from components.core import Bot, TreeStore
 from components.helpers import get_timestamp, get_resource_identifier
-
+from components.website_agent.website import Website
 
 class WebsiteBot(Bot):
     def __init__(self, home: Path, name: str) -> None:
