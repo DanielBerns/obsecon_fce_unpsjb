@@ -1,9 +1,9 @@
-from application.adnsur_extractor import ADNSURExtractor
+from application.adnsur_extractor import ADNSURExtractorTask
 from components.nlp import NLPTask
 from components.website_agent import Website
 
 EMPTY_PIPELINE = [EmptyTask(), EmptyTask()]
-ADNSUR_PIPELINE = [ADNSURExtractor(), NLPTask()]
+ADNSUR_PIPELINE = [ADNSURExtractorTask(), NLPTask()]
 
 def get_websites():
     websites = {}
