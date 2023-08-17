@@ -1,5 +1,6 @@
 from application.adnsur_extractor import ADNSURExtractorTask
-from components.nlp import NLPTask
+from components.nlp import NLPTask, 
+from components.core import EmptyTask
 from components.website_agent import Website
 
 EMPTY_PIPELINE = [EmptyTask(), EmptyTask()]
