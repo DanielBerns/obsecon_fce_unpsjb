@@ -212,17 +212,9 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
-class TelegramBot:
-    def __init__(self, telegram_home: Path):
-        self._store = TreeStore(telegram_home, "messages")
-
-    @property
-    def store(self) -> TreeStore:
-        return self._store
-
-    def get_samples(self):
-        for sample in self.store.samples:
-            yield samples
+class TelegramBot(Bot)
+    def __init__(self, telegram_home: Path) -> None:
+        super().__init__(TreeStore(home, "messages"))
 
 
 def bot_run(application_home: Path, telegram_home: Path, telegram_token: str) -> None:

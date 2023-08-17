@@ -36,12 +36,15 @@ def load_json(data_json: Path) -> Dict:
     return data
 
 
-def readlines(textfile: Path) -> List[str]:
-    lines = None
-    with open(textfile, "r") as source:
+def read_text_lines(source_txt: Path) -> List[str]:
+    with open(source_txt, "r") as source:
         lines = [line[:-1] for line in source]
     return lines
 
+def read_text(source_txt: Path) -> str:
+    with open(source_txt, "r") as source:
+        text = source.read()
+    return text
 
 def get_directory(base: Path) -> Path:
     directory = Path(base).expanduser()

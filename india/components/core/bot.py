@@ -9,7 +9,3 @@ class Bot:
     @property
     def store(self) -> TreeStore:
         return self._store
-
-    # def samples(self, first: int = 0, top: int = -1) -> Generator[Path, None, None]:
-    #     for sample in self.store.samples(first=first, top=top):
-    #         yield sample

@@ -1,12 +1,12 @@
-from typing import Dict, List
+from typing import Dict, List, Any
 
 class Processor:
     def __init__(self):
-        self._content: List = list()
+        self._content: List[Any] = list()
         self._attributes: Dict[str, str] = dict()
         
     @property
-    def content(self) -> List:
+    def content(self) -> List[Any]:
         return self._content
     
     @property

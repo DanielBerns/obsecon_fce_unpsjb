@@ -1,16 +1,25 @@
-from typing import List, TextIO
+from typing import List, Any
 
 from bs4 import BeautifulSoup
 
-from components.core import ContentProcessor
+from components.helpers import text_read
 
-class ADNSURExtractor(ContentProcessor):
+class ADNSURExtractorTask:
     def __init__(self) -> None:
-        super().__init__()
+        self._content: List[Any] = list()
         
-    def read(self, source: TextIO) -> None:
-        self.content = []
-        text = source.read()
+    @property
+    def content(self) -> List[Any]:
+        return self._content
+    
+    @content.setter
+    def content(self, value: List[Any]) -> None:
+        self._content = value
+    
+    def execute(self, source: Path) -> None:
+        if self.content:
+            self.content = [] 
+        text = read_text(Path(source, 'page.html'))
         soup = BeautifulSoup(text, "html.parser")
 
         find_spans_within_container_divs = [
@@ -43,22 +52,8 @@ class ADNSURExtractor(ContentProcessor):
                         self.content.append((text,"#aria-label"))
                     self.content.append(('#link-end',))
             
-    def write(self, target: TextIO) -> None:
-        for datalist in self.content:
-            for data in datalist:
-                target.write(str(data) + "\n")
-
-
-# class WebsiteExtractor(FileProcessor):
-#     """
-#     """
-#     def __init__(self) -> None:
-#         super().__init__()
-#         
-#     def execute(self) -> None:
-#         with open(self.file_identifier, "r") as source:
-#             text = source.read()
-#             self.extract_content(text)
-#             
-#     def extract_content(self, text: str) -> None:
-#         soup = BeautifulSoup(text, "html.parser")
+    def report(self, target: Path) -> None:
+        with open(Path(target, 'text.txt'), 'w') as target:
+            for event in self.content:
+                for data in event:
+                    target.write(str(data) + "\n")

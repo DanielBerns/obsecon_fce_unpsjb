@@ -5,7 +5,7 @@ Bot to access websites
 """
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 import requests
 import json
 
@@ -58,14 +58,27 @@ class WebsiteBot(Bot):
         return html, attributes
 
 
-def bot_run(bot_home: Path, websites: Dict[str, List[str]]) -> None:
+def run_website_bot(
+    bot_home: Path, 
+    identifier: str, 
+    url: str) -> None:
     logging.info(f"start run: {str(bot_home):s}")
-    for identifier, resources in websites.items():
-        logging.info(f"  identifier: {identifier:s}")
-        bot = WebsiteBot(bot_home, identifier)
-        bot.store.start()
-        for (url, text_reader) in resources:
-            bot.grab(url)
-        bot.store.stop()
-        logging.info(f"  done: {identifier:s}")
+    logging.info(f"  identifier: {identifier:s}")
+    bot = WebsiteBot(bot_home, identifier)
+    bot.store.start()
+    bot.grab(url)
+    bot.store.stop()
+    logging.info(f"  done: {identifier:s}")
     logging.info(f"done run: {str(bot_home):s}")
+
+
+def run_website_pipeline(
+    bot_home: Path, 
+    website: Website) -> None:
+    for website in websites:
+        bot = WebsiteBot(app.fs.news, website.identifier)
+        bot.store.start()
+        pipeline = website.pipeline
+        dataset_processor = TreeStoreProcessor(bot.store, pipeline)
+        dataset_processor.execute()
+        bot.store.stop()

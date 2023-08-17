@@ -3,7 +3,7 @@ from pathlib import Path
 
 from components.nlp.tokenizer import Tokenizer
 
-class GetTokensTask:
+class NLPTask:
     def __init__(self):
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
@@ -31,14 +31,14 @@ class GetTokensTask:
             for token in self.tokenizer.read(text):
                 self.store_tokens[token] += 1
 
+    def report(self, target: Path) -> None:
+        pass
 
-def get_tokens_task(bot_home: Path, identifier: str) -> GetTokensTask:
-    bot = WebsiteBot(bot_home, identifier)
-    bot.store.start()
-    sample_task = GetTokensTask()
-    dataset_processor = TreeStoreProcessor(bot.store, sample_task)
-    dataset_processor.metadata.next_to_process = 0
-    dataset_processor.execute()
-    bot.store.stop()
-    return sample_task
- 
+
+class NLPTaskFactory:
+    def __init__(self):
+        self._task = NLPTask()
+    
+    def execute(self) -> SampleTask:
+        return self._task
+

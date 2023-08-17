@@ -5,7 +5,7 @@ from components.nlp.eda import (text_read,
                   text_fragments, 
                   text_hmm)
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.get_tokens_task import GetTokensTask, get_tokens_task
+from components.nlp.nlp_task import NLPTask, NLPTaskFactory
 
 # from .dart_dice_and_coins import (simulate_fair_die, simulate_biased_coin,
 #                                   simulate_fair_die_with_biased_coins,
