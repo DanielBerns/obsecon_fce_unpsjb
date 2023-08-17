@@ -83,7 +83,7 @@ def run_website_bot(
 
 def run_website_pipeline(
     bot_home: Path, 
-    website: Website) -> None:
+    websites: List[Website]) -> None:
     for website in websites:
         bot = WebsiteBot(app.fs.news, website.identifier)
         bot.store.start()
