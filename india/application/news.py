@@ -1,5 +1,5 @@
-from application.adnsur_extractor import ADNSURSampleTask
-from components.nlp import NLPSampleTask, 
+from application.adnsur import ADNSURSampleTask
+from components.nlp import NLPSampleTask
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
