@@ -54,10 +54,12 @@ class TreeStoreProcessorException(Exception):
 class TreeStoreProcessor:
     def __init__(self, 
                  store: TreeStore,
-                 pipeline: Optional[List[SampleTask]] = None) -> None:
+                 pipeline: Optional[List[SampleTask]] = None,
+                 reset_next_to_process: bool = True) -> None:
         self._store = store
         self._metadata = TreeStoreProcessorMetadata(store.base)
         self._pipeline = pipeline if pipeline else SAMPLE_TASK_EMPTY_PIPELINE
+        self._reset_next_to_process = reset_next_to_process
 
     @property
     def store(self) -> TreeStore:
@@ -78,7 +80,13 @@ class TreeStoreProcessor:
         else:
             raise TreeStoreProcessorException("zero length SampleTask pipeline")
 
+    @property
+    def reset_next_to_process(self) -> bool:
+        return self._reset_next_to_process
+
     def execute(self) -> None:
+        if self.reset_next_to_process:
+            self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
         for sample in self.store.samples(first=next_to_process):
