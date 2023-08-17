@@ -7,7 +7,7 @@ EMPTY_PIPELINE = [EmptySampleTask(),]
 ADNSUR_PIPELINE = [ADNSURSampleTask(), NLPSampleTask()]
 
 def get_websites():
-    websites = {}
+    websites = []
     websites.append(
         Website("adnsur", "https://adnsur.com.ar", ADNSUR_PIPELINE)
         )
