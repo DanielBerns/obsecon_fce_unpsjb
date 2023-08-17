@@ -2,7 +2,7 @@ from typing import List, Any
 
 from bs4 import BeautifulSoup
 
-from components.helpers import text_read
+from components.helpers import read_text
 
 class ADNSURExtractorTask:
     def __init__(self) -> None:
