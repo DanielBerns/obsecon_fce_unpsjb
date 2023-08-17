@@ -85,7 +85,7 @@ def run_website_pipeline(
     bot_home: Path, 
     websites: List[Website]) -> None:
     for website in websites:
-        bot = WebsiteBot(app.fs.news, website.identifier)
+        bot = WebsiteBot(bot_home, website.identifier)
         bot.store.start()
         pipeline = website.pipeline
         dataset_processor = TreeStoreProcessor(bot.store, pipeline)
