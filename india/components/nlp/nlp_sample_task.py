@@ -4,7 +4,7 @@ from pathlib import Path
 from components.core import SampleTask
 from components.nlp.tokenizer import Tokenizer
 
-class NLPTask:
+class NLPSampleTask:
     def __init__(self):
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
@@ -36,9 +36,9 @@ class NLPTask:
         pass
 
 
-class NLPTaskFactory:
+class NLPSampleTaskFactory:
     def __init__(self):
-        self._task = NLPTask()
+        self._task = NLPSampleTask()
     
     def execute(self) -> SampleTask:
         return self._task

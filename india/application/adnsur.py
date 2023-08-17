@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from components.helpers import read_text
 
-class ADNSURExtractorTask:
+class ADNSURSampleTask:
     def __init__(self) -> None:
         self._content: List[Any] = list()
         
