@@ -4,7 +4,7 @@ from components.core import EmptySampleTask
 from components.website_agent import Website
 
 EMPTY_PIPELINE = [EmptySampleTask(),]
-ADNSUR_PIPELINE = [ADNSURExtractorTask(), NLPSampleTask()]
+ADNSUR_PIPELINE = [ADNSURSampleTask(), NLPSampleTask()]
 
 def get_websites():
     websites = {}
