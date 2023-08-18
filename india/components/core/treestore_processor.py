@@ -103,6 +103,7 @@ class TreeStoreProcessor:
         return self._reset_next_to_process
 
     def execute(self) -> None:
+        pdb.set_trace()
         if self.reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
