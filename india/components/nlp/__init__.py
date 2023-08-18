@@ -1,4 +1,4 @@
-from components.nlp.eda import (text_read, 
+from components.nlp.eda import (read_text, 
                   text_characters,
                   text_characters_frequency,
                   text_characters_to_integers, 
