@@ -6,7 +6,7 @@ from components.helpers import load_json
 from components.nlp import read_text
 
 
-def read_sample(sample: Path) -> Tuple[text, Dict[str, str]]:
+def read_sample(sample: Path) -> Tuple[str, Dict[str, str]]:
     html = read_text(Path(sample, 'page.html'))
     attributes = load_json(Path(sample, 'attributes.json'))
     return html, attributes
