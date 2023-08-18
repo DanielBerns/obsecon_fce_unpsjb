@@ -1,6 +1,8 @@
 from collections import Counter
 from pathlib import Path
 
+import pdb
+
 from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
@@ -42,6 +44,7 @@ class NLPSampleTask(SampleTask):
         with open(nlp_md, 'w') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
+            pdb.set_trace()
             characters = text_characters(
                 ''.join([cc for cc in self.store_characters.keys()])
                 )
