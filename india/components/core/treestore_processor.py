@@ -110,6 +110,7 @@ class TreeStoreProcessor:
         for sample in self.store.samples(first=next_to_process):
             for sample_task in self.pipeline:
                 sample_task.execute(sample)
+            break
         target = get_container(Path(self.store.base, 'target'), get_timestamp())
         print(f"target {str(target):s}")
         for sample_task in self.pipeline:
