@@ -1,9 +1,10 @@
 from typing import List, Tuple, Callable, Dict
 from collections import Counter
+from pathlib import Path
 
 TextMapping = Tuple[Callable[[str], List[int]], Callable[[List[int]], str]]
 
-def text_read(source:str) -> str:
+def read_text(source:Path) -> str:
     # get text from utf-8 encoded file
     with open(source, 'r', encoding='utf-8') as f:
         text = f.read()

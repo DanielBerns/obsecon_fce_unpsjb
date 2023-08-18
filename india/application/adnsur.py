@@ -2,7 +2,15 @@ from typing import List, Any
 from pathlib import Path
 from bs4 import BeautifulSoup
 
-from components.helpers import read_text
+from components.helpers import load_json
+from components.nlp import read_text
+
+
+def read_sample(sample: Path) -> Tuple[text, Dict[str, str]]:
+    html = read_text(Path(sample, 'page.html'))
+    attributes = load_json(Path(sample, 'attributes.json'))
+    return html, attributes
+
 
 class ADNSURSampleTask:
     def __init__(self) -> None:
@@ -19,8 +27,8 @@ class ADNSURSampleTask:
     def execute(self, source: Path) -> None:
         if self.content:
             self.content = [] 
-        text = read_text(Path(source, 'page.html'))
-        soup = BeautifulSoup(text, "html.parser")
+        html, attributes = read_sample(source)
+        soup = BeautifulSoup(html, "html.parser")
 
         find_spans_within_container_divs = [
             div.find_all("span") 

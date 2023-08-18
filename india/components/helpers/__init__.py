@@ -4,7 +4,6 @@ from components.helpers.helpers import (
     save_json,
     load_json,
     read_text_lines,
-    read_text,
     get_directory,
     get_container,
     get_resource_identifier,

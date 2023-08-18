@@ -2,6 +2,7 @@ from collections import Counter
 from pathlib import Path
 
 from components.core import SampleTask
+from components.nlp.eda import text_characters_frequency
 from components.nlp.tokenizer import Tokenizer
 
 class NLPSampleTask:

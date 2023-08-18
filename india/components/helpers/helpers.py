@@ -29,7 +29,7 @@ def save_json(data_json: Path, data: Dict) -> None:
         json.dump(data, target)
 
 
-def load_json(data_json: Path) -> Dict:
+def load_json(data_json: Path) -> Dict[str, str]:
     data = None
     with open(data_json, "r") as source:
         data = json.load(source)
@@ -40,11 +40,6 @@ def read_text_lines(source_txt: Path) -> List[str]:
     with open(source_txt, "r") as source:
         lines = [line[:-1] for line in source]
     return lines
-
-def read_text(source_txt: Path) -> str:
-    with open(source_txt, "r") as source:
-        text = source.read()
-    return text
 
 def get_directory(base: Path) -> Path:
     directory = Path(base).expanduser()
