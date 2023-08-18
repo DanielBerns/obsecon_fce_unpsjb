@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple
 from pathlib import Path
 from bs4 import BeautifulSoup
 
