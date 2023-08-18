@@ -39,7 +39,7 @@ class NLPSampleTask(SampleTask):
     def report(self, target: Path) -> None:
         super().report(target)
         nlp_md = Path(target, 'nlp.md')
-        with open(nlp_stats_md, 'w', encoding='utf-8') as target:
+        with open(nlp_stats_md, 'w') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
             characters = ''.join([cc for cc in self.store_characters.keys()])
