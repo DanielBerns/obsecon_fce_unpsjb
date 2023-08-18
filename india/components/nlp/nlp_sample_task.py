@@ -26,7 +26,7 @@ class NLPSampleTask:
     
     @property
     def iteration(self) -> int:
-        return self._iteration = 0
+        return self._iteration
     
     @iteration.setter
     def iteration(self, value: int) -> None:
