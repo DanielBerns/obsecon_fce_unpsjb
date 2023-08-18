@@ -49,7 +49,8 @@ class NLPSampleTask(SampleTask):
                 ))
             target.write(characters + '\n\n')
             target.write("## Characters stats\n")
-            for key, value in self.store_characters.items():
+            for key in characters:
+                value = self.store_characters[key]
                 if ord(key) < 32:
                     target.write(f"&{ord(key):>4d}: {value:d}\n")
                 elif 32 <= ord(key) < 127:
