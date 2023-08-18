@@ -64,6 +64,7 @@ class ADNSURSampleTask(SampleTask):
                     self.content.append(('#link-end',))
             
     def report(self, target: Path) -> None:
+        super().report(target)
         with open(Path(target, 'text.txt'), 'w') as target:
             for event in self.content:
                 for data in event:
