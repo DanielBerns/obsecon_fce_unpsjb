@@ -107,9 +107,10 @@ class TreeStoreProcessor:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
-        for sample in self.store.samples(first=next_to_process):
-            for sample_task in self.pipeline:
-                sample_task.execute(sample)
+        # for sample in self.store.samples(first=next_to_process):
+        #     for sample_task in self.pipeline:
+        #         sample_task.execute(sample)
+        pdb.set_trace()
         target = get_container(Path(store.base, 'target'), get_timestamp())
         print(f"target {str(target):s}")
         for sample_task in self.pipeline:
