@@ -4,8 +4,6 @@ from pathlib import Path
 from components.core import TreeStore, Metadata
 from components.helpers import get_container, get_timestamp
 
-import pdb
-
 class SampleTask:
     def __init__(self, identifier: str):
         self._identifier = identifier
@@ -112,7 +110,6 @@ class TreeStoreProcessor:
             for sample_task in self.pipeline:
                 sample_task.execute(sample)
             break
-        pdb.set_trace()
         target = get_container(Path(self.store.base, 'target'), get_timestamp())
         print(f"target {str(target):s}")
         for sample_task in self.pipeline:

@@ -2,7 +2,7 @@ from collections import Counter
 from pathlib import Path
 
 from components.core import SampleTask
-from components.nlp.eda import text_characters_frequency
+from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
 
 class NLPSampleTask(SampleTask):
@@ -42,7 +42,9 @@ class NLPSampleTask(SampleTask):
         with open(nlp_md, 'w') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
-            characters = ''.join([cc for cc in self.store_characters.keys()])
+            characters = text_characters(
+                ''.join([cc for cc in self.store_characters.keys()])
+                )
             target.write(characters + '\n\n')
             target.write("## Characters stats\n")
             for key, value in self.store_characters.items():
