@@ -5,22 +5,40 @@ from components.core import TreeStore, Metadata
 from components.helpers import get_container, get_timestamp
 
 
-class SampleTask(Protocol):
-    def execute(self, sample: Path) -> None:
-        pass
+class SampleTask:
+    def __init__(self, identifier: str):
+        self._identifier = identifier
+        self._iteration = 0
 
-    def report(self, target: Path) -> None:
-        pass
-
-class EmptySampleTask:
-    def __init__(self):
-        pass
+    @property
+    def identifier(self) -> int:
+        return self._identifier
+        
+    @property
+    def iteration(self) -> int:
+        return self._iteration
+    
+    @iteration.setter
+    def iteration(self, value: int) -> None:
+        self._iteration = value
     
     def execute(self, sample: Path) -> None:
-        pass
+        self.iteration += 1
+        print(f"{self.identifier:s} - {str(sample):s}: {self.iteration:d}")
 
     def report(self, target: Path) -> None:
-        pass
+        print(f"{self.identifier:s} - total iteration: {self.iteration:d}")
+        
+
+class EmptySampleTask(SampleTask):
+    def __init__(self):
+        super().__init__('EmptySampleTask')
+    
+    def execute(self, sample: Path) -> None:
+        super().execute(sample)
+
+    def report(self, target: Path) -> None:
+        super().report(target)
 
 
 SAMPLE_TASK_EMPTY_PIPELINE = [EmptySampleTask()]

@@ -5,8 +5,9 @@ from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency
 from components.nlp.tokenizer import Tokenizer
 
-class NLPSampleTask:
+class NLPSampleTask(SampleTask):
     def __init__(self):
+        super().__init__('NLP')
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
         self._tokenizer: Tokenizer = Tokenizer()
@@ -24,17 +25,8 @@ class NLPSampleTask:
     def tokenizer(self) -> Tokenizer:
         return self._tokenizer
     
-    @property
-    def iteration(self) -> int:
-        return self._iteration
-    
-    @iteration.setter
-    def iteration(self, value: int) -> None:
-        self._iteration = value
-
     def execute(self, sample: Path) -> None:
-        self.iteration += 1
-        print(f"NLP - {str(sample):s}: {self.iteration:d}")
+        super().execute(sample)
         text_txt = Path(sample, 'text.txt')
         with open(text_txt, 'r') as source:
             lines = [line[:-1] for line in source if not line.startswith('#')]
@@ -45,8 +37,8 @@ class NLPSampleTask:
                 self.store_tokens[token] += 1
 
     def report(self, target: Path) -> None:
-        print(f"NLP - Total iterations {self.iteration:d}")
-        nlp_md = Path(sample, 'nlp.md')
+        super().report(target)
+        nlp_md = Path(target, 'nlp.md')
         with open(nlp_stats_md, 'w', encoding='utf-8') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
