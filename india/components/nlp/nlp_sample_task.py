@@ -44,10 +44,9 @@ class NLPSampleTask(SampleTask):
         with open(nlp_md, 'w') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
-            pdb.set_trace()
-            characters = text_characters(
+            characters = ''.join(text_characters(
                 ''.join([cc for cc in self.store_characters.keys()])
-                )
+                ))
             target.write(characters + '\n\n')
             target.write("## Characters stats\n")
             for key, value in self.store_characters.items():
