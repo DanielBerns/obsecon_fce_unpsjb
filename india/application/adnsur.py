@@ -27,7 +27,7 @@ class ADNSURSampleTask(SampleTask):
         self._content = value
     
     def execute(self, sample: Path) -> None:
-        super().__init__
+        super().execute(sample)
         if self.content:
             self.content = list() 
         html, attributes = read_sample(sample)
