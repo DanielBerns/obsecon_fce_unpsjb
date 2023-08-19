@@ -1,5 +1,6 @@
 from collections import Counter
 from pathlib import Path
+from typing import List
 
 import pdb
 
@@ -7,8 +8,11 @@ from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
 
+def get_sorted_characters(some_characters: List[str]) -> str:
+   return ''.join(sorted(some_characters))
+
 class NLPSampleTask(SampleTask):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('NLP')
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
@@ -44,9 +48,8 @@ class NLPSampleTask(SampleTask):
         with open(nlp_md, 'w') as target:
             target.write("# NLP\n")
             target.write("## Characters\n")
-            characters = ''.join(text_characters(
-                ''.join([cc for cc in self.store_characters.keys()])
-                ))
+            characters = get_sorted_characters(
+                [cc for cc in self.store_characters.keys()])
             target.write(characters + '\n\n')
             target.write("## Characters stats\n")
             for key in characters:
@@ -59,7 +62,7 @@ class NLPSampleTask(SampleTask):
                     target.write(f"&{ord(key):d}: {value:d}\n")
             target.write("## Tokens\n")
             max_token_length = 0
-            for key, value in self.store_tokens.items():
+            for key, value in sorted(self.store_tokens.items()):
                 target.write(f"{key:s}: {value:d}\n")
                 if len(key) > max_token_length:
                     max_token_length = len(key)
