@@ -104,8 +104,6 @@ class TreeStoreProcessor:
         return self._reset_next_to_process
 
     def execute(self) -> None:
-        if self.reset_next_to_process:
-            self.metadata.next_to_process = 997
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
         for sample in self.store.samples(first=next_to_process):
