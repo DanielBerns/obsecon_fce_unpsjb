@@ -7,13 +7,11 @@ from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
 from components.nlp.formats import TextTXT, CharactersMD, TokensMD
                     
-class NLPSampleTask(SampleTask):
+class NLPEncodeText(SampleTask):
     def __init__(self) -> None:
-        super().__init__("NLP")
-        self._store_characters: Counter = Counter()
-        self._store_tokens: Counter = Counter()        
+        super().__init__("NLPEncodeText")
+        self._store_tokens: Dict[str, int] = {}        
         self._tokenizer: Tokenizer = Tokenizer()
-        self._iteration: int = 0
 
     @property
     def store_characters(self) -> Counter:
@@ -41,10 +39,11 @@ class NLPSampleTask(SampleTask):
         TokensMD.write(container, self.store_tokens)
 
 
-class NLPSampleTaskFactory:
+class NLPGetTokensFactory:
     def __init__(self):
-        self._task = NLPSampleTask()
+        self._task = NLPGetTokens()
     
     def execute(self) -> SampleTask:
         return self._task
 
+ 

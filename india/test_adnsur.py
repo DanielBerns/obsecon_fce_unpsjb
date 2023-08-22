@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from application import ADNSURSampleTask
-from components.nlp import NLPSampleTask
+from application import ADNSURGetText
+from components.nlp import NLPGetTokens
 from components.website_agent import Website, run_website_pipeline
 
-ADNSUR_PIPELINE = [ADNSURSampleTask(), NLPSampleTask()]
+ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
 
 def main():
     base = Path('~', 'Data', 'observatorio-economico').expanduser()

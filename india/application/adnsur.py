@@ -7,7 +7,7 @@ from components.helpers import read_text, load_json
 from components.nlp.formats import NewsSample, TextTXT, CharactersMD, TokensMD
 
 
-class ADNSURSampleTask(SampleTask):
+class ADNSURGetText(SampleTask):
     def __init__(self) -> None:
         super().__init__("adnsur")
         self._content: List[Any] = list()

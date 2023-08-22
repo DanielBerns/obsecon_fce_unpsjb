@@ -1,10 +1,10 @@
-from application.adnsur import ADNSURSampleTask
-from components.nlp import NLPSampleTask
+from application.adnsur import ADNSURGetText
+from components.nlp import NLPGetTokens
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
 EMPTY_PIPELINE = [EmptySampleTask(),]
-ADNSUR_PIPELINE = [ADNSURSampleTask(), NLPSampleTask()]
+ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
 
 def get_websites():
     websites = []
