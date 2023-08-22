@@ -108,7 +108,6 @@ class TreeStoreProcessor:
             self.metadata.next_to_process = 997
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
-        pdb.set_trace()        
         for sample in self.store.samples(first=next_to_process):
             for sample_task in self.pipeline:
                 sample_task.execute(sample)
