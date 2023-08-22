@@ -14,11 +14,7 @@ class NLPEncodeText(SampleTask):
         self._tokenizer: Tokenizer = Tokenizer()
 
     @property
-    def store_characters(self) -> Counter:
-        return self._store_characters
-
-    @property
-    def store_tokens(self) -> Counter:
+    def store_tokens(self) -> Dict[str, int]:
         return self._store_tokens
 
     @property
@@ -27,7 +23,7 @@ class NLPEncodeText(SampleTask):
     
     def execute(self, sample: Path) -> None:
         super().execute(sample)
-        text = TextTXT.read(sample)
+        tokens = .read(sample)
         sample_characters = text_characters_frequency(text)
         self.store_characters.update(sample_characters)
         for token in self.tokenizer.read(text):

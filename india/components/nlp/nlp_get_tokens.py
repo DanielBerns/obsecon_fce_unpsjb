@@ -9,7 +9,7 @@ from components.nlp.formats import TextTXT, CharactersMD, TokensMD
                     
 class NLPGetTokens(SampleTask):
     def __init__(self) -> None:
-        super().__init__("NLP")
+        super().__init__("NLPGetTokens")
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
         self._tokenizer: Tokenizer = Tokenizer()
