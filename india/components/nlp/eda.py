@@ -4,18 +4,13 @@ from pathlib import Path
 
 TextMapping = Tuple[Callable[[str], List[int]], Callable[[List[int]], str]]
 
-def read_text(source:Path) -> str:
-    # get text from utf-8 encoded file
-    with open(source, 'r', encoding='utf-8') as f:
-        text = f.read()
-    return text
 
 def text_characters(text: str) -> List:
     # here are all the unique characters that occur in this text
     return sorted(list(set(text)))
 
 def text_characters_frequency(text: str) -> Counter:
-    return Counter(text)
+    return Counter(text_characters(text))
 
 def text_characters_to_integers(characters: List) -> TextMapping:
     # create a mapping from characters to integers

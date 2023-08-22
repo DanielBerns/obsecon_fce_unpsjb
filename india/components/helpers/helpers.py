@@ -35,10 +35,15 @@ def load_json(data_json: Path) -> Dict[str, str]:
         data = json.load(source)
     return data
 
+def read_text(source: Path) -> str:
+    # get text from utf-8 encoded file
+    with open(source, 'r', encoding='utf-8') as f:
+        text = f.read()
+    return text
 
-def read_text_lines(source_txt: Path) -> List[str]:
-    with open(source_txt, "r") as source:
-        lines = [line[:-1] for line in source]
+def read_text_lines(source: Path) -> List[str]:
+    with open(source, "r") as f:
+        lines = [line[:-1] for line in f]
     return lines
 
 def get_directory(base: Path) -> Path:

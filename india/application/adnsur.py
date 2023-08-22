@@ -3,10 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from components.core import SampleTask
-from components.helpers import load_json
-from components.nlp import read_text
-
-
+from components.helpers import read_text, load_json
 from components.nlp.formats import NewsSample, TextTXT, CharactersMD, TokensMD
 
 

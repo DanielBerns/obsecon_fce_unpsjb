@@ -1,3 +1,8 @@
+from typing import Dict, List, Tuple
+from pathlib import Path
+from collections import Counter
+from components.helpers import read_text, load_json
+
 class NewsSample:
     page_html = 'page.html'
     attributes_json = 'attributes.json'
