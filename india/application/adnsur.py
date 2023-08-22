@@ -7,10 +7,7 @@ from components.helpers import load_json
 from components.nlp import read_text
 
 
-def read_sample(sample: Path) -> Tuple[str, Dict[str, str]]:
-    html = read_text(Path(sample, 'page.html'))
-    attributes = load_json(Path(sample, 'attributes.json'))
-    return html, attributes
+from components.nlp.formats import NewsSample, TextTXT, CharactersMD, TokensMD
 
 
 class ADNSURSampleTask(SampleTask):
@@ -30,7 +27,7 @@ class ADNSURSampleTask(SampleTask):
         super().execute(sample)
         if self.content:
             self.content = list() 
-        html, attributes = read_sample(sample)
+        html, attributes = NewsSample.read(sample)
         soup = BeautifulSoup(html, "html.parser")
 
         find_spans_within_container_divs = [
@@ -65,7 +62,4 @@ class ADNSURSampleTask(SampleTask):
             
     def report(self, target: Path) -> None:
         super().report(target)
-        with open(Path(target, 'text.txt'), 'w') as target:
-            for event in self.content:
-                for data in event:
-                    target.write(str(data) + "\n")
+        TextTXT.write(target, self.content)

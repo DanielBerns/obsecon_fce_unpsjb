@@ -23,10 +23,10 @@ class SampleTask:
     
     def execute(self, sample: Path) -> None:
         self.iteration += 1
-        print(f"{self.identifier:>20s} - {str(sample):s}: {self.iteration:d}")
+        print(f"{self.identifier:<20s} - {str(sample):s}: {self.iteration:d}")
 
     def report(self, target: Path) -> None:
-        print(f"{self.identifier:>20s} - total iteration: {self.iteration:d}")
+        print(f"{self.identifier:<20s} - total iteration: {self.iteration:d}")
         
 
 class EmptySampleTask(SampleTask):
@@ -109,7 +109,6 @@ class TreeStoreProcessor:
         for sample in self.store.samples(first=next_to_process):
             for sample_task in self.pipeline:
                 sample_task.execute(sample)
-            break
         target = get_container(Path(self.store.base, 'target'), get_timestamp())
         print(f"target {str(target):s}")
         for sample_task in self.pipeline:

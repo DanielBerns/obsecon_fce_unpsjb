@@ -1,24 +1,20 @@
 from collections import Counter
 from pathlib import Path
-from typing import List
-
-import pdb
+from typing import List, Dict
 
 from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-
-def get_sorted_characters(some_characters: List[str]) -> str:
-   return ''.join(sorted(some_characters))
-
+from components.nlp.formats import TextTXT, CharactersMD, TokensMD
+                    
 class NLPSampleTask(SampleTask):
     def __init__(self) -> None:
-        super().__init__('NLP')
+        super().__init__("NLP")
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
         self._tokenizer: Tokenizer = Tokenizer()
         self._iteration: int = 0
-    
+
     @property
     def store_characters(self) -> Counter:
         return self._store_characters
@@ -33,40 +29,16 @@ class NLPSampleTask(SampleTask):
     
     def execute(self, sample: Path) -> None:
         super().execute(sample)
-        text_txt = Path(sample, 'text.txt')
-        with open(text_txt, 'r') as source:
-            lines = [line[:-1] for line in source if not line.startswith('#')]
-            text = '\n'.join(lines)
-            sample_characters = text_characters_frequency(text)
-            self.store_characters.update(sample_characters)
-            for token in self.tokenizer.read(text):
-                self.store_tokens[token] += 1
+        text = TextTXT.read(sample)
+        sample_characters = text_characters_frequency(text)
+        self.store_characters.update(sample_characters)
+        for token in self.tokenizer.read(text):
+            self.store_tokens[token] += 1
 
-    def report(self, target: Path) -> None:
-        super().report(target)
-        nlp_md = Path(target, 'nlp.md')
-        with open(nlp_md, 'w') as target:
-            target.write("# NLP\n")
-            target.write("## Characters\n")
-            characters = get_sorted_characters(
-                [cc for cc in self.store_characters.keys()])
-            target.write(characters + '\n\n')
-            target.write("## Characters stats\n")
-            for key in characters:
-                value = self.store_characters[key]
-                if ord(key) < 32:
-                    target.write(f"&{ord(key):>4d}: {value:d}\n")
-                elif 32 <= ord(key) < 127:
-                    target.write(f">{key:>4s}: {value:d}\n")
-                else:
-                    target.write(f"&{ord(key):d}: {value:d}\n")
-            target.write("## Tokens\n")
-            max_token_length = 0
-            for key, value in sorted(self.store_tokens.items()):
-                target.write(f"{key:s}: {value:d}\n")
-                if len(key) > max_token_length:
-                    max_token_length = len(key)
-            target.write(f"max token length: {max_token_length:d}\n")
+    def report(self, container: Path) -> None:
+        super().report(container)
+        CharactersMD.write(container, self.store_characters)
+        TokensMD.write(container, self.store_tokens)
 
 
 class NLPSampleTaskFactory:

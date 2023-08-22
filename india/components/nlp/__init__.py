@@ -6,6 +6,7 @@ from components.nlp.eda import (read_text,
                   text_hmm)
 from components.nlp.tokenizer import Tokenizer
 from components.nlp.nlp_sample_task import NLPSampleTask, NLPSampleTaskFactory
+from components.nlp.formats import NewsSample, TextTXT, CharactersMD, TokensMD
 
 # from .dart_dice_and_coins import (simulate_fair_die, simulate_biased_coin,
 #                                   simulate_fair_die_with_biased_coins,
