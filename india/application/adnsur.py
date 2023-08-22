@@ -56,7 +56,7 @@ class ADNSURGetText(SampleTask):
                     if text:
                         self.content.append((text,"#aria-label"))
                     self.content.append(('#link-end',))
-            
+        TextTXT.write(sample, self.content)    
+    
     def report(self, target: Path) -> None:
         super().report(target)
-        TextTXT.write(target, self.content)
