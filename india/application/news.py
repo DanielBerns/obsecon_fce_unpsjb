@@ -1,5 +1,5 @@
 from application.adnsur import ADNSURGetText
-from components.nlp import NLPGetTokens, 
+from components.nlp import NLPGetTokens, NLPEncodeText
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
