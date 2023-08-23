@@ -92,7 +92,7 @@ def encoded_text_reader(base: Path) -> Generator[EncodedTextReader, None, None]:
         resource = EncodedTextReader(source)
         yield resource
     except Exception as message:
-        print(str(message)
+        print(str(message))
     finally:
         if source.closed:
             pass
