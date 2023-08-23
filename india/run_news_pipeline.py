@@ -7,9 +7,9 @@ from components.nlp import encoded_text_writer
 import pdb
 
 def main() -> None:
+    pdb.set_trace()
     with create_app("run_news_pipeline") as app:
          with encoded_text_writer(app.fs.news) as text_writer:
-             pdb.set_trace()
              websites = get_websites(text_writer)
              run_website_pipeline(app.fs.news, websites)
     
