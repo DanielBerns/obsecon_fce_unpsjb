@@ -66,8 +66,8 @@ class EncodedTextWriterTask(SampleTask):
 
 
 @contextmanager
-def encoded_text_writer(base: Path) -> Generator[EncodedTextWriterTask, None, None]:
-    container = get_container(Path(base, 'target'))
+def create_encoded_text_writer(base: Path) -> Generator[EncodedTextWriterTask, None, None]:
+    container = get_container(base, 'target')
     identifier = Path(container, 'encoded_text.json')
     try:
         target = open(identifier, 'w')
@@ -84,8 +84,8 @@ def encoded_text_writer(base: Path) -> Generator[EncodedTextWriterTask, None, No
             target.close()
 
 @contextmanager
-def encoded_text_reader(base: Path) -> Generator[EncodedTextReader, None, None]:
-    container = get_container(Path(base, 'target'))    
+def create_encoded_text_reader(base: Path) -> Generator[EncodedTextReader, None, None]:
+    container = get_container(base, 'target')    
     identifier = Path(container, 'encoded_text.json')
     try:
         source = open(identifier, 'r')
