@@ -5,10 +5,10 @@ from components.nlp import NLPGetTokens, EncodedTextWriterTask
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
-def get_websites(encoded_text_writer: EncodedTextWriterTask) -> List[Website]:
+def get_websites(writer: EncodedTextWriterTask) -> List[Website]:
     EMPTY_PIPELINE = []
     ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
-    ENCODED_TEXT_PIPELINE = [encoded_text_writer]    
+    ENCODED_TEXT_PIPELINE = [writer]    
     websites = []
     websites.append(
         Website("adnsur", "https://adnsur.com.ar", 
