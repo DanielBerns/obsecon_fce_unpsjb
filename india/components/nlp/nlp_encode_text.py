@@ -77,6 +77,8 @@ def encoded_text_writer(base: Path) -> Generator[NLPEncodeText, None, None]:
         yield resource
     except Exception as message:
         print(str(message)
+    else:
+        print('Ok!')
     finally:
         if target.closed:
             pass
