@@ -1,3 +1,5 @@
+from typing import List
+
 from application.adnsur import ADNSURGetText
 from components.nlp import NLPGetTokens, EncodedTextWriterTask
 from components.core import EmptySampleTask
