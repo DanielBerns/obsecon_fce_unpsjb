@@ -86,8 +86,9 @@ def run_website_pipeline(
     websites: List[Website]) -> None:
     for website in websites:
         bot = WebsiteBot(bot_home, website.identifier)
-        bot.store.start()
-        pipeline = website.pipeline
-        dataset_processor = TreeStoreProcessor(bot.store, pipeline)
-        dataset_processor.execute()
-        bot.store.stop()
+        for segment in website.pipeline:
+            if segment:
+                bot.store.start()
+                dataset_processor = TreeStoreProcessor(bot.store, segment)
+                dataset_processor.execute()
+                bot.store.stop()

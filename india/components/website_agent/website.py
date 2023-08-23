@@ -7,5 +7,5 @@ from components.core import SampleTask
 class Website:
     identifier: str
     url: str
-    pipeline: List[SampleTask]
+    pipeline: List[List[SampleTask]]
 

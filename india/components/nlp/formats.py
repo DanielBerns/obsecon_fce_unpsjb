@@ -34,6 +34,14 @@ class TextTXT:
             text = "\n".join(lines)
         return text
 
+    @staticmethod
+    def read_sentences(container: Path) -> Generator[str, None, None]:
+        text_txt = Path(container, TextTXT.filename)
+        with open(text_txt, "r") as source:
+            for line in source:
+                if not line.startswith('#'):
+                    yield line
+   
 
 def get_sorted_characters(some_characters: List[str]) -> str:
    return "".join(sorted(some_characters))
