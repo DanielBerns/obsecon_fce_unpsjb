@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Generator
 from pathlib import Path
 from collections import Counter
 from components.helpers import read_text, load_json
