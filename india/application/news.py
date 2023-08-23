@@ -1,9 +1,9 @@
 from application.adnsur import ADNSURGetText
-from components.nlp import NLPGetTokens, NLPEncodeText
+from components.nlp import NLPGetTokens, EncodedTextWriterTask
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
-def get_websites(encoded_text_writer: NLPEncodeText) -> List[Website]:
+def get_websites(encoded_text_writer: EncodedTextWriterTask) -> List[Website]:
     EMPTY_PIPELINE = []
     ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
     ENCODED_TEXT_PIPELINE = [encoded_text_writer]    

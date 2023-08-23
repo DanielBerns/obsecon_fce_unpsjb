@@ -31,12 +31,12 @@ class EncodedTextWriter:
         self._target.write(text)
 
 
-class NLPEncodeText(SampleTask):
+class EncodedTextWriterTask(SampleTask):
     def __init__(self, 
                  all_the_tokens: Dict[str, int],
                  writer: EncodedTextWriter
                  ) -> None:
-        super().__init__("NLPEncodeText")
+        super().__init__("EncodedTextWriterTask")
         self._all_the_tokens = all_the_tokens # TokensMD.read(container)        
         self._writer = writer
         self._tokenizer: Tokenizer = Tokenizer()
@@ -66,14 +66,14 @@ class NLPEncodeText(SampleTask):
 
 
 @contextmanager
-def encoded_text_writer(base: Path) -> Generator[NLPEncodeText, None, None]:
+def encoded_text_writer(base: Path) -> Generator[EncodedTextWriterTask, None, None]:
     container = get_container(Path(base, 'target'))
     identifier = Path(container, 'encoded_text.json')
     try:
         target = open(identifier, 'w')
         all_the_tokens = TokensMD.read(container)
         writer = EncodedTextWriter(target)
-        resource = NLPEncodeText(all_the_tokens, writer)
+        resource = EncodedTextWriterTask(all_the_tokens, writer)
         yield resource
     except Exception as message:
         print(str(message))
