@@ -76,7 +76,7 @@ def encoded_text_writer(base: Path) -> Generator[NLPEncodeText, None, None]:
         resource = NLPEncodeText(all_the_tokens, writer)
         yield resource
     except Exception as message:
-        print(str(message)
+        print(str(message))
     else:
         print('Ok!')
     finally:
