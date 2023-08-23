@@ -33,7 +33,7 @@ class EncodedTextWriter:
 
 class NLPEncodeText(SampleTask):
     def __init__(self, 
-                 all_the_tokens: Dict[str, int] 
+                 all_the_tokens: Dict[str, int],
                  writer: EncodedTextWriter
                  ) -> None:
         super().__init__("NLPEncodeText")
