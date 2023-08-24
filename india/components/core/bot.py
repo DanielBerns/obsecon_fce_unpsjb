@@ -21,5 +21,9 @@ class Bot:
 
     def create(self, 
                pipeline: SampleTaskFactory) -> None:
-        
+        processor = TreeStoreProcessor(
+            self.store,
+            pipeline,
+            reset_next_to_process)
+        processor.create()        
         
