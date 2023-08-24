@@ -9,36 +9,35 @@ from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
 from components.nlp.formats import TextTXT, TokensMD
 
+# TODO
+class EncodedText:
+    @staticmethod
+    def reader(container: Path) -> Generator[List[int], None, None]:
+        encoded_text_json = Path(container, EncodedText.filename)
+        with open(encoded_text_json, 'r') as source:
+            for line in source:
+                yield TextEncoder.deserialize(line)
 
-class EncodedTextReader:
-    def __init__(self, source: TextIO) -> None:
-        self._source = source
-   
-    def read(self) -> Generator[List[int], None, None]:
-        for line in self._source:
-            array = line[1:-2]
-            parts = array.split(',')
-            numbers = [int(pp) for pp in parts]
-            yield number
+    @staticmethod
+    def generate(store: TreeStore) -> None:
+        container = TokensMD.target_container(store.base)
+        encoded_text_json = Path(container, EncodedText.filename)
+        with open(encoded_text_json, 'w') as target:
+             store.start()
+             text_encoder = TextEncoder(container)
+             for sample in store.samples():
+                 for encoded_sentence in text_encoder.execute(sample):
+                     line = TextEncoder.serialize(encoded_sentence)
+                     target.write(line)
+             store.stop()
+            
 
-
-class EncodedTextWriter:
-    def __init__(self, target: TextIO) -> None:
-        self._target = target
-    
-    def write(self, encoded_sentence: List[int]) -> None:
-        text =  '[' + ','.join(str(dd) for dd in encoded_sentence) + ']\n'
-        self._target.write(text)
-
-
-class EncodedTextWriterTask(SampleTask):
+class TextEncoder:
     def __init__(self, 
-                 all_the_tokens: Dict[str, int],
-                 writer: EncodedTextWriter
+                 container: Path
                  ) -> None:
-        super().__init__("EncodedTextWriterTask")
-        self._all_the_tokens = all_the_tokens # TokensMD.read(container)        
-        self._writer = writer
+        super().__init__("TextEncoder")
+        self._all_the_tokens = TokensMD.read(container)        
         self._tokenizer: Tokenizer = Tokenizer()
 
     @property
@@ -46,34 +45,39 @@ class EncodedTextWriterTask(SampleTask):
         return self._all_the_tokens
 
     @property
-    def writer(self) -> EncodedTextWriter:
-        return self._writer
-    
-    @property
     def tokenizer(self) -> Tokenizer:
         return self._tokenizer
 
+    @staticmethod
+    def serialize(encoded_sentence: List[int]) -> str:
+        return '[' + ','.join(str(dd) for dd in encoded_sentence) + ']\n'
+
+    @staticmethod
+    def deserialize(line: str) -> List[int]:
+        array = line[1:-2]
+        parts = array.split(',')
+        numbers = [int(pp) for pp in parts]
+        yield numbers
+
     def execute(self, sample: Path) -> None:
-        super().execute(sample)
         for sentence in TextTXT.read_sentences(sample):
             encoded_sentence = []
             for token in self.tokenizer.read(sentence):
                 encoded_sentence.append(self.all_the_tokens[token])
-            self.writer.write(encoded_sentence)
-            
-    def report(self, container: Path) -> None:
-        super().report(container)
+            yield encoded_sentence
+
+# TODO
 
 
+    
+    
 @contextmanager
-def create_encoded_text_writer(base: Path) -> Generator[EncodedTextWriterTask, None, None]:
+def create_encoded_text_writer(base: Path) -> Generator[EncodedTextWriter, None, None]:
     container = get_container(base, 'target')
     identifier = Path(container, 'encoded_text.json')
     try:
         target = open(identifier, 'w')
-        all_the_tokens = TokensMD.read(container)
-        writer = EncodedTextWriter(target)
-        resource = EncodedTextWriterTask(all_the_tokens, writer)
+        resource = EncodedTextWriter(target)
         yield resource
     except Exception as message:
         print(str(message))

@@ -1,18 +1,17 @@
 from typing import List
 
 from application.adnsur import ADNSURGetText
-from components.nlp import NLPGetTokens, EncodedTextWriterTask
+from components.nlp import NLPGetTokens
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
-def get_websites(writer: EncodedTextWriterTask) -> List[Website]:
+def get_websites() -> List[Website]:
     EMPTY_PIPELINE = []
     ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
-    ENCODED_TEXT_PIPELINE = [writer]    
     websites = []
     websites.append(
         Website("adnsur", "https://adnsur.com.ar", 
-                [ADNSUR_PIPELINE, ENCODED_TEXT_PIPELINE])
+                [ADNSUR_PIPELINE]
         )
     websites.append(
         Website("jornada", "https://www.diariojornada.com.ar/home", [EMPTY_PIPELINE])

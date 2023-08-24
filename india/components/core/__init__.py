@@ -4,7 +4,7 @@ from components.core.csv_document import CSVDocument
 from components.core.metadata import Metadata
 from components.core.filesystem import FileSystem
 from components.core.treestore import TreeStore
-from components.core.treestore_processor import TreeStoreProcessor, SampleTask, EmptySampleTask
+from components.core.treestore_executor import TreeStoreExecutor, SampleTask, EmptySampleTask, SampleTaskFactory
 from components.core.file_processor import FileProcessor
 from components.core.image_file_processor import (
     ImageFileProcessorWithTesseractAndPIL,

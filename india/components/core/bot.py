@@ -1,5 +1,5 @@
 from pathlib import Path
-from components.core.treestore import TreeStore
+from components.core.treestore import SampleTaskFactory, TreeStore
 
 
 class Bot:
@@ -9,3 +9,17 @@ class Bot:
     @property
     def store(self) -> TreeStore:
         return self._store
+
+    def process(self, 
+                pipeline: SampleTaskFactory, 
+                reset_next_to_process: bool = True) -> None:
+        processor = TreeStoreProcessor(
+            self.store,
+            pipeline,
+            reset_next_to_process)
+        processor.execute()
+
+    def create(self, 
+               pipeline: SampleTaskFactory) -> None:
+        
+        

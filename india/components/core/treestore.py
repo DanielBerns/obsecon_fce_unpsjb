@@ -2,9 +2,10 @@ import json
 from pathlib import Path
 from shutil import rmtree
 import logging
-from typing import Tuple, Generator
+from typing import Tuple, Generator, Protocol, List, Optional
 
-from components.helpers import get_container
+from components.core import Metadata
+from components.helpers import get_container, get_timestamp
 
 
 class TreeStoreError(Exception):
@@ -128,3 +129,123 @@ class TreeStore:
                 f"{third_digit:>03d}",
             )
             yield sample
+
+
+
+class SampleTask:
+    def __init__(self, identifier: str):
+        self._identifier = identifier
+        self._iteration = 0
+
+    @property
+    def identifier(self) -> int:
+        return self._identifier
+        
+    @property
+    def iteration(self) -> int:
+        return self._iteration
+    
+    @iteration.setter
+    def iteration(self, value: int) -> None:
+        self._iteration = value
+    
+    def start(self, target: Path) -> None:
+        print(f"start {self.identifier:<20s} - total iteration: {self.iteration:d}")
+        
+    def execute(self, sample: Path) -> None:
+        self.iteration += 1
+        print(f"{self.identifier:<20s} - {str(sample):s}: {self.iteration:d}")
+
+    def stop(self, target: Path) -> None:
+        print(f"stop {self.identifier:<20s} - total iteration: {self.iteration:d}")
+        
+
+class EmptySampleTask(SampleTask):
+    def __init__(self):
+        super().__init__('EmptySampleTask')
+
+    def start(self, target: Path) -> None:
+        super().start(target)
+    
+    def execute(self, sample: Path) -> None:
+        super().execute(sample)
+
+    def stop(self, target: Path) -> None:
+        super().stop(target)
+
+
+SAMPLE_TASK_EMPTY_PIPELINE = [EmptySampleTask()]
+
+
+class SampleTaskFactory(Protocol):
+    def start(self) -> None:
+        pass
+    
+    def execute(self) -> SampleTask:
+        pass
+
+    def stop(self) -> None:
+        pass
+
+
+class TreeStoreMetadata(Metadata):
+    def __init__(self, base: Path):
+        super().__init__(base)
+
+    @property
+    def next_to_process(self) -> Tuple[int, int]:
+        processed_samples = self.events["samples"]["processed"]
+        return processed_samples.get("next_to_process", 0)
+
+    @next_to_process.setter
+    def next_to_process(self, value: int) -> None:
+        self.events["samples"]["processed"]["next_to_process"] = value
+        self.save_events()
+
+
+class TreeStoreDriver:
+    def __init__(self, 
+                 store: TreeStore
+                 ) -> None:
+        self._store = store
+        self._metadata = TreeStoreMetadata(store.base)
+        self._pipeline = SAMPLE_TASK_EMPTY_PIPELINE
+
+    @property
+    def store(self) -> TreeStore:
+        return self._store
+
+    @property
+    def metadata(self) -> TreeStoreMetadata:
+        return self._metadata
+
+    @property
+    def pipeline(self) -> SampleTaskFactory:
+        return self._pipeline
+    
+    @pipeline.setter
+    def pipeline(self, value: SampleTaskFactory) -> None:
+        self._pipeline = value
+
+    @property
+    def get_target_container(self):
+        return get_container(self.store.base, 'target')
+
+    def create(self) -> None:
+        sample = self.store.new_sample()        
+        for sample_task in self.pipeline.execute():
+            sample_task.execute(sample)
+    
+    def process(self, reset_next_to_process: bool = True) -> None:
+        if reset_next_to_process:
+            self.metadata.next_to_process = 0
+        next_to_process = self.metadata.next_to_process
+        self.metadata.next_to_process = self.store.index
+        for sample_task in self.pipeline.execute():
+            sample_task.start(self.store.base)
+        for sample in self.store.samples(first=next_to_process):
+            for sample_task in self.pipeline.execute():
+                sample_task.execute(sample)
+        for sample_task in self.pipeline.execute():
+            sample_task.stop(self.store.base)
+
