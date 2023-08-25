@@ -3,12 +3,12 @@ Bot to access websites
 
 
 """
-import logging
 from pathlib import Path
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 import requests
 import json
 
+from components.core import SampleTask
 from components.helpers import get_timestamp, get_resource_identifier
 
 class GrabURLSample:
