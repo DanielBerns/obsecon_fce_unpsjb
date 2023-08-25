@@ -176,10 +176,10 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             if update.message.caption:
                 # Log caption
                 logging.info(f"Found caption {update.message.caption:s}!")
-            TelegramSample.write_message_caption(
-                sample, 
-                user.full_name, 
-                update.message.caption)
+                TelegramSample.write_message_caption(
+                    sample, 
+                    user.full_name, 
+                    update.message.caption)
             else:
                 # None
                 logging.info("Not found update.message.caption!")
