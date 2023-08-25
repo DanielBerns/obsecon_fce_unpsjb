@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import List, Dict, TextIO, Generator
 
-from components.core import SampleTask
+from components.core import SampleTask, TreeStore
 from components.helpers import get_container
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
