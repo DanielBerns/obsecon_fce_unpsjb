@@ -5,7 +5,7 @@ import logging
 from typing import Tuple, Generator, Protocol, List, Optional
 from contextlib import contextmanager
 
-from components.core import Metadata
+from components.core.metadata import Metadata
 from components.helpers import get_container, get_timestamp
 
 
