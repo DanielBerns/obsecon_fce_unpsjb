@@ -5,37 +5,16 @@ from components.nlp import NLPGetTokens
 from components.core import EmptySampleTask
 from components.website_agent import Website
 
-def get_websites() -> List[Website]:
-    EMPTY_PIPELINE = []
-    ADNSUR_PIPELINE = [ADNSURGetText(), NLPGetTokens()]
-    websites = []
-    websites.append(
-        Website("adnsur", "https://adnsur.com.ar", 
-                [ADNSUR_PIPELINE]
-        )
-    websites.append(
-        Website("jornada", "https://www.diariojornada.com.ar/home", [EMPTY_PIPELINE])
-        )
-    websites.append(
-        Website("cronica", "https://www.diariocronica.com.ar/", [EMPTY_PIPELINE])                
-        )
-    websites.append(
-        Website("elchubut", "https://www.elchubut.com.ar/seccion/comodoro-rivadavia", [EMPTY_PIPELINE])               
-        )
-    websites.append(
-        Website("elchubut", "https://www.elchubut.com.ar/seccion/rawson", [EMPTY_PIPELINE])                
-        )
-    websites.append(
-        Website("elchubut", "https://www.elchubut.com.ar/seccion/trelew", [EMPTY_PIPELINE])
-        )
-    websites.append(
-        Website("elchubut", "https://www.elchubut.com.ar/seccion/puerto-madryn", [EMPTY_PIPELINE])                
-        )
-    websites.append(
-        Website("elchubut", "https://www.elchubut.com.ar/seccion/esquel", [EMPTY_PIPELINE])
-        )
-    websites.append(
-        Website("infobae", "https://www.infobae.com/", [EMPTY_PIPELINE])
-        )
+def get_websites() -> Dict[str, Tuple[str, ...]]:
+    websites = {
+    "adnsur": ("https://adnsur.com.ar",),
+    "jornada": ("https://www.diariojornada.com.ar/home",),
+    "cronica": ("https://www.diariocronica.com.ar/",),
+    "elchubut": ("https://www.elchubut.com.ar/seccion/comodoro-rivadavia",),
+    "elchubut": ("https://www.elchubut.com.ar/seccion/rawson", 
+                 "https://www.elchubut.com.ar/seccion/trelew", 
+                 "https://www.elchubut.com.ar/seccion/puerto-madryn",
+                 "https://www.elchubut.com.ar/seccion/esquel",),
+    "infobae": ("https://www.infobae.com/",)}
     return websites
  

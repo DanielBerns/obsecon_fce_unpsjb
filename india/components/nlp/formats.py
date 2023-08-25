@@ -3,15 +3,16 @@ from pathlib import Path
 from collections import Counter
 from components.helpers import read_text, load_json
 
-class NewsSample:
-    page_html = 'page.html'
-    attributes_json = 'attributes.json'
-    
-    @staticmethod
-    def read(sample: Path) -> Tuple[str, Dict[str, str]]:
-        html = read_text(Path(sample, NewsSample.page_html))
-        attributes = load_json(Path(sample, NewsSample.attributes_json))
-        return html, attributes
+# Use instead components.website_agent.GrabURLSample
+# class NewsSample:
+#     page_html = 'page.html'
+#     attributes_json = 'attributes.json'
+#     
+#     @staticmethod
+#     def read(sample: Path) -> Tuple[str, Dict[str, str]]:
+#         html = read_text(Path(sample, NewsSample.page_html))
+#         attributes = load_json(Path(sample, NewsSample.attributes_json))
+#         return html, attributes
 
 
 class TextTXT:

@@ -3,6 +3,7 @@ from pathlib import Path
 from shutil import rmtree
 import logging
 from typing import Tuple, Generator, Protocol, List, Optional
+from contextlib import contextmanager
 
 from components.core import Metadata
 from components.helpers import get_container, get_timestamp
@@ -178,13 +179,7 @@ SAMPLE_TASK_EMPTY_PIPELINE = [EmptySampleTask()]
 
 
 class SampleTaskFactory(Protocol):
-    def start(self) -> None:
-        pass
-    
-    def execute(self) -> SampleTask:
-        pass
-
-    def stop(self) -> None:
+    def execute(self) -> Generator[SampleTask, None, None]
         pass
 
 
@@ -202,6 +197,17 @@ class TreeStoreMetadata(Metadata):
         self.events["samples"]["processed"]["next_to_process"] = value
         self.save_events()
 
+class Pipeline:
+    def __init__(self) -> None:
+        self._tasks: List[SampleTask] = []
+
+    def append(self, task: SampleTask) -> None:
+        self._tasks.append(task)
+        
+    def execute(self) -> Generator[SampleTask, None, None]:
+        for task in self._tasks:
+            yield task
+
 
 class TreeStoreDriver:
     def __init__(self, 
@@ -209,7 +215,7 @@ class TreeStoreDriver:
                  ) -> None:
         self._store = store
         self._metadata = TreeStoreMetadata(store.base)
-        self._pipeline = SAMPLE_TASK_EMPTY_PIPELINE
+        self._pipeline = Pipeline()
 
     @property
     def store(self) -> TreeStore:
@@ -220,11 +226,11 @@ class TreeStoreDriver:
         return self._metadata
 
     @property
-    def pipeline(self) -> SampleTaskFactory:
+    def pipeline(self) -> Pipeline:
         return self._pipeline
     
     @pipeline.setter
-    def pipeline(self, value: SampleTaskFactory) -> None:
+    def pipeline(self, value: Pipeline) -> None:
         self._pipeline = value
 
     @property
@@ -236,7 +242,7 @@ class TreeStoreDriver:
         for sample_task in self.pipeline.execute():
             sample_task.execute(sample)
     
-    def process(self, reset_next_to_process: bool = True) -> None:
+    def process(self, reset_next_to_process: bool) -> None:
         if reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
@@ -249,3 +255,20 @@ class TreeStoreDriver:
         for sample_task in self.pipeline.execute():
             sample_task.stop(self.store.base)
 
+
+@contextmanager
+def create_treestore_driver(
+    treestore_home: Path, 
+    identifier: str) -> None:
+    logging.info(f"start run: {str(treestore_home):s}")
+    logging.info(f"  identifier: {identifier:s}")
+    store = TreeStore(treestore_home, identifier)
+    store.start()
+    driver = TreeStoreDriver(store)
+    try:
+        yield driver
+    except Exception as message:
+        print(str(message))
+    store.stop()
+    logging.info(f"  done: {identifier:s}")
+    logging.info(f"done run: {str(treestore_home):s}")

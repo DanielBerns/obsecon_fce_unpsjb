@@ -3,27 +3,18 @@ from components.core.treestore import SampleTaskFactory, TreeStore
 
 
 class Bot:
-    def __init__(self, store: TreeStore):
+    def __init__(self, store: TreeStore) -> None:
         self._store = store
+        self._driver = TreeStoreDriver(store)
 
     @property
-    def store(self) -> TreeStore:
-        return self._store
+    def driver(self) -> TreeStoreDriver:
+        return self._driver
 
-    def process(self, 
-                pipeline: SampleTaskFactory, 
-                reset_next_to_process: bool = True) -> None:
-        processor = TreeStoreProcessor(
-            self.store,
-            pipeline,
-            reset_next_to_process)
-        processor.execute()
+    def create(self) -> None:
+        self.driver.create()
 
-    def create(self, 
-               pipeline: SampleTaskFactory) -> None:
-        processor = TreeStoreProcessor(
-            self.store,
-            pipeline,
-            reset_next_to_process)
-        processor.create()        
+    def process(self, reset_next_to_process: bool = True) -> None:
+        self.driver.process(reset_next_to_process)
+
         

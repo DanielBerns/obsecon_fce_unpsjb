@@ -3,8 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from components.core import SampleTask
-from components.helpers import read_text, load_json
-from components.nlp.formats import NewsSample, TextTXT, CharactersMD, TokensMD
+from components.nlp.formats import GrabURLSample, TextTXT
 
 
 class ADNSURGetText(SampleTask):
@@ -19,12 +18,18 @@ class ADNSURGetText(SampleTask):
     @content.setter
     def content(self, value: List[Any]) -> None:
         self._content = value
+
+    def start(self, target: Path) -> None:
+        super().start(target)
+    
+    def stop(self, target: Path) -> None:
+        super().stop(target)
     
     def execute(self, sample: Path) -> None:
         super().execute(sample)
         if self.content:
             self.content = list() 
-        html, attributes = NewsSample.read(sample)
+        html, attributes = GrabURLSample.read(sample)
         soup = BeautifulSoup(html, "html.parser")
 
         find_spans_within_container_divs = [
@@ -57,6 +62,4 @@ class ADNSURGetText(SampleTask):
                         self.content.append((text,"#aria-label"))
                     self.content.append(('#link-end',))
         TextTXT.write(sample, self.content)    
-    
-    def report(self, target: Path) -> None:
-        super().report(target)
+

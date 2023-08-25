@@ -1,5 +1,5 @@
 """
-Bot to get Telegram messages.
+Agent able to manage Telegram messages.
 
 First, a few handler functions are defined. 
 Then, those functions are passed to
@@ -45,7 +45,7 @@ from telegram.ext import (
     filters,
 )
 
-from components.core import TreeStore, Bot
+from components.core import TreeStore, TreeStoreDriver
 from components.helpers import get_container
 
 
@@ -53,7 +53,7 @@ from components.helpers import get_container
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     application_home: Optional[Path] = None
     telegram_home: Optional[Path] = None
-    treestore: Optional[TreeStore] = None
+    store: Optional[TreeStore] = None
 
     def __init__(
         self, application: Application, chat_id: int = None, user_id: int = None
@@ -92,18 +92,54 @@ async def get_twitter(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("get twitter data")
 
 
+class TelegramSample:
+
+    @staticmethod
+    def get_message_id(sample: Path) -> Path:
+        return Path(sample, "message").with_suffix(".txt")
+        
+    @staticmethod
+    def get_image_id(sample: Path) -> Path:
+        return Path(sample, "photo.jpeg")
+
+    @staticmethod
+    def get_caption_id(sample: Path) -> Path:
+        return Path(sample, "caption").with_suffix(".txt")
+
+    @staticmethod    
+    def write_message(
+        sample: Path, 
+        user_full_name: str, 
+        message_text: str
+        ) -> None:
+        message_id = TelegramSample.get_message_id(sample)
+        with open(message_id, "w") as target:
+            target.write(f"{user_full_name:s}:{message_text:s}\n")
+
+    @staticmethod
+    def write_message_caption(
+        sample: Path, 
+        user_full_name: str, 
+        message_caption: str
+        ) -> None:
+        caption_id = TelegramSample.get_caption_id(sample)
+        with open(caption_id, "w") as target:
+            target.write(f"{user_full_name:s}:{message_caption:s}\n")
+
+
 async def process_text(update: Update, context: CustomContext) -> None:
     """Process text message."""
     if update.message:
         if update.message.text:
-            ts = CustomContext.treestore
+            ts = CustomContext.store
             ts.start()
             sample = ts.new_sample()
             ts.stop()
-            logging.info(f"Created sample {str(sample):s}!")
-            user = update.effective_user
-            with open(Path(sample, "message").with_suffix(".txt"), "w") as target:
-                target.write(f"{user.full_name:s}:{update.message.text:s}\n")
+            logging.info(f"Created sample {str(sample):s}!")            
+            TelegramSample.write_message(
+                sample, 
+                update.effective_user.full_name, 
+                update.message.text)
             await update.message.reply_text(
                 f"Text: {update.message.text:s} from {user.full_name:s}"
             )
@@ -119,14 +155,14 @@ async def process_photo(update: Update, context: CustomContext) -> None:
     """Process photo message."""
     if update.message:
         if update.message.photo:
-            ts = CustomContext.treestore
+            ts = CustomContext.store
             ts.start()
             sample = ts.new_sample()
             ts.stop()
             logging.info(f"Created sample {str(sample):s}!")
             file_id = update.message.photo[-1].file_id
             new_file = await context.bot.get_file(file_id)
-            image_id = Path(sample, "photo.jpeg")
+            image_id = TelegramSample.get_image_id(sample)
             await new_file.download_to_drive(image_id)
             # Log photo
             user = update.effective_user
@@ -140,8 +176,10 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             if update.message.caption:
                 # Log caption
                 logging.info(f"Found caption {update.message.caption:s}!")
-                with open(Path(sample, "caption").with_suffix(".txt"), "w") as target:
-                    target.write(f"{user.full_name:s}:{update.message.caption:s}\n")
+            TelegramSample.write_message_caption(
+                sample, 
+                user.full_name, 
+                update.message.caption)
             else:
                 # None
                 logging.info("Not found update.message.caption!")
@@ -217,15 +255,18 @@ class TelegramBot(Bot):
         super().__init__(TreeStore(home, "messages"))
 
 
-def bot_run(application_home: Path, telegram_home: Path, telegram_token: str) -> None:
-    """Start the bot."""
-    bot = TelegramBot(telegram_home)
+def run(
+    application_home: Path, 
+    telegram_home: Path, 
+    telegram_token: str) -> None:
+    """Start the agent."""
+    store = TreeStore(telegram_home, "messages")
     if CustomContext.application_home is None:
         CustomContext.application_home = application_home
     if CustomContext.telegram_home is None:
         CustomContext.telegram_home = telegram_home
-    if CustomContext.treestore is None:
-        CustomContext.treestore = bot.store
+    if CustomContext.store is None:
+        CustomContext.store = store
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)
