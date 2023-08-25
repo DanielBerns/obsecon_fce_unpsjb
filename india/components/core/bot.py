@@ -1,5 +1,7 @@
 from pathlib import Path
-from components.core.treestore import SampleTaskFactory, TreeStore
+from components.core.treestore import (SampleTaskFactory, 
+                                       TreeStore, 
+                                       TreeStoreDriver)
 
 
 class Bot:
