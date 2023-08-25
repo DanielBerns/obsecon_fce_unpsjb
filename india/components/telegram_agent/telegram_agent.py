@@ -250,11 +250,6 @@ async def update_code(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("end code update")
 
 
-class TelegramBot(Bot):
-    def __init__(self, telegram_home: Path) -> None:
-        super().__init__(TreeStore(home, "messages"))
-
-
 def run(
     application_home: Path, 
     telegram_home: Path, 

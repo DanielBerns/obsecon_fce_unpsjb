@@ -1,2 +1,2 @@
 from components.telegram_agent.telegram_agent import run
-from components.telegram_agent.telegram_processor import processor_run
+# from components.telegram_agent.telegram_processor import processor_run
