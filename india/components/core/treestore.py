@@ -175,11 +175,9 @@ class EmptySampleTask(SampleTask):
         super().stop(target)
 
 
-SAMPLE_TASK_EMPTY_PIPELINE = [EmptySampleTask()]
-
 
 class SampleTaskFactory(Protocol):
-    def execute(self) -> Generator[SampleTask, None, None]
+    def execute(self) -> Generator[SampleTask, None, None]:
         pass
 
 
