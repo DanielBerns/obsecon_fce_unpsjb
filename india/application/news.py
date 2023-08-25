@@ -1,9 +1,6 @@
 from typing import List
 
 from application.adnsur import ADNSURGetText
-from components.nlp import NLPGetTokens
-from components.core import EmptySampleTask
-from components.website_agent import Website
 
 def get_websites() -> Dict[str, Tuple[str, ...]]:
     websites = {
