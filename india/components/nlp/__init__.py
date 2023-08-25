@@ -4,8 +4,8 @@ from components.nlp.eda import (text_characters,
                   text_fragments, 
                   text_hmm)
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.nlp_get_tokens import NLPGetTokens, NLPGetTokensFactory
-from components.nlp.nlp_encode_text import EncodedTextWriterTask, create_encoded_text_writer, create_encoded_text_reader
+# from components.nlp.nlp_get_tokens import NLPGetTokens, NLPGetTokensFactory
+# from components.nlp.nlp_encode_text import EncodedTextWriterTask, create_encoded_text_writer, create_encoded_text_reader
 from components.nlp.formats import TextTXT, CharactersMD, TokensMD
 
 # from .dart_dice_and_coins import (simulate_fair_die, simulate_biased_coin,

@@ -12,7 +12,7 @@ from components.nlp.formats import TextTXT, TokensMD
 # TODO
 class EncodedText:
     @staticmethod
-    def reader(container: Path) -> Generator[List[int], None, None]:
+    def read(container: Path) -> Generator[List[int], None, None]:
         encoded_text_json = Path(container, EncodedText.filename)
         with open(encoded_text_json, 'r') as source:
             for line in source:
@@ -66,18 +66,14 @@ class TextEncoder:
                 encoded_sentence.append(self.all_the_tokens[token])
             yield encoded_sentence
 
-# TODO
 
-
-    
-    
 @contextmanager
-def create_encoded_text_writer(base: Path) -> Generator[EncodedTextWriter, None, None]:
+def create_text_encoder(base: Path) -> Generator[TextEncoder, None, None]:
     container = get_container(base, 'target')
     identifier = Path(container, 'encoded_text.json')
     try:
         target = open(identifier, 'w')
-        resource = EncodedTextWriter(target)
+        resource = TextEncoder(target)
         yield resource
     except Exception as message:
         print(str(message))
