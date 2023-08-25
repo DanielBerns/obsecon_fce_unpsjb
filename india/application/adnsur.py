@@ -3,7 +3,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from components.core import SampleTask
-from components.nlp.formats import GrabURLSample, TextTXT
+from components.website_agent import GrabURLSample
+from components.nlp.formats import TextTXT
 
 
 class ADNSURGetText(SampleTask):
