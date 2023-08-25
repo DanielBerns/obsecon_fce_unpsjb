@@ -197,15 +197,20 @@ class TreeStoreMetadata(Metadata):
 
 class Pipeline:
     def __init__(self) -> None:
-        self._tasks: List[SampleTask] = []
+        self._tasks: Dict[str, SampleTask] = {}
 
-    def append(self, task: SampleTask) -> None:
-        self._tasks.append(task)
+    def add(self, task: SampleTask) -> None:
+        self._tasks[task.identifier] = task
         
     def execute(self) -> Generator[SampleTask, None, None]:
-        for task in self._tasks:
+        for identifier, task in self._tasks.items():
             yield task
 
+    def remove(self, identifier: str) -> None:
+        try:
+            del self._tasks[identifier]
+        except KeyError:
+            pass
 
 class TreeStoreDriver:
     def __init__(self, 
@@ -235,12 +240,12 @@ class TreeStoreDriver:
     def get_target_container(self):
         return get_container(self.store.base, 'target')
 
-    def create(self) -> None:
+    def create_sample(self) -> None:
         sample = self.store.new_sample()        
         for sample_task in self.pipeline.execute():
             sample_task.execute(sample)
     
-    def process(self, reset_next_to_process: bool) -> None:
+    def process_sample(self, reset_next_to_process: bool) -> None:
         if reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
