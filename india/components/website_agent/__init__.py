@@ -1,1 +1,1 @@
-from components.website_agent.website_agent import GrabUrlSample, GrabUrlSampleTask
+from components.website_agent.website_agent import GrabURLSample, GrabURLSampleTask
