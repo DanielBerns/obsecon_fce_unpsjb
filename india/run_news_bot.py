@@ -2,7 +2,7 @@ import logging
 
 from application import create_app, get_websites
 
-from components.core import 
+# from components.core import 
 from components.website_agent import GrabURLSampleTask
 
 IDENTIFIER = "run_news_bot"
