@@ -80,7 +80,7 @@ class EncodedText:
         with open(encoded_text_json, 'w') as target:
              store.start()
              text_code = TextCode(store.base)
-             for sample in store.samples(first=0):
+             for sample in store.samples(first=1164):
                  print(str(sample))
                  try:
                      for encoded_sentence in text_code.encode(sample):
