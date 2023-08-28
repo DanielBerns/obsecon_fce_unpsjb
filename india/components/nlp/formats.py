@@ -1,18 +1,7 @@
 from typing import Dict, List, Tuple, Generator
 from pathlib import Path
 from collections import Counter
-from components.helpers import read_text, load_json
-
-# Use instead components.website_agent.GrabURLSample
-# class NewsSample:
-#     page_html = 'page.html'
-#     attributes_json = 'attributes.json'
-#     
-#     @staticmethod
-#     def read(sample: Path) -> Tuple[str, Dict[str, str]]:
-#         html = read_text(Path(sample, NewsSample.page_html))
-#         attributes = load_json(Path(sample, NewsSample.attributes_json))
-#         return html, attributes
+from components.helpers import load_json, get_container
 
 
 class TextTXT:
@@ -47,13 +36,23 @@ class TextTXT:
 def get_sorted_characters(some_characters: List[str]) -> str:
    return "".join(sorted(some_characters))
 
+
+class NLPContainer:
+    separator: str = "::::"
+    
+    @staticmethod
+    def get(base: Path) -> Path:
+        return get_container(base, 'nlp')
+
+    
 class CharactersMD:
     filename: str = "characters.md"
     title: str = "# Characters\n"
     
     @staticmethod
-    def write(container: Path, 
+    def write(base: Path, 
               store_characters: Counter) -> None:
+        container = NLPContainer.get(base)
         characters_md = Path(container, CharactersMD.filename)
         with open(characters_md, "w") as target:
             target.write(CharactersMD.title)
@@ -74,8 +73,9 @@ class TokensMD:
     title: str = "# Tokens\n"
     
     @staticmethod
-    def write(container: Path,
+    def write(base: Path,
               store_tokens: Counter) -> None:
+        container = NLPContainer.get(base)        
         tokens_md = Path(container, TokensMD.filename)
         with open(tokens_md, "w") as target:        
             target.write(TokensMD.title)
@@ -83,21 +83,25 @@ class TokensMD:
             for key, value in sorted(store_tokens.items(), 
                                      key=lambda pair: pair[1],
                                      reverse=True):
-                target.write(f"{key:<25s}: {value:d}\n")
+                target.write(f"{key:<25s}{NLPContainer.separator:s}{value:d}\n")
                 if len(key) > max_token_length:
                     max_token_length = len(key)
                     
     @staticmethod
-    def read(container: Path) -> Dict[str, int]:
+    def read(base: Path) -> Dict[str, int]:
         tokens: Dict[str, int] = dict()
+        container = NLPContainer.get(base)        
         tokens_md = Path(container, TokensMD.filename)
         with open(tokens_md, "r") as target:
             title = target.readline()
             assert title == TokensMD.title
             for number, line in enumerate(target):
-                parts = line.split(":")
-                assert len(parts) == 2
-                word = parts[0].strip()
-                tokens[word] = number
+                parts = line.split(NLPContainer.separator)
+                try:
+                    assert len(parts) == 2
+                    word = parts[0].strip()
+                    tokens[word] = number
+                except AssertionError:
+                    print(number, line)
         return tokens
  

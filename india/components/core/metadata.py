@@ -76,5 +76,8 @@ class Metadata:
             for attribute, value in sample.items():
                 yield identifier, attribute, value
 
-    def add_item(self, identifier: str, attribute: str, value: Dict) -> None:
+    def add_item(self, 
+                 identifier: str, 
+                 attribute: str, 
+                 value: Dict[str, str]) -> None:
         self.events[identifier][attribute] = value

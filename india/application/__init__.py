@@ -1,3 +1,3 @@
 from application.application import create_app, App
 from application.news import get_websites
-from application.adnsur import ADNSURGetText 
+from application.adnsur import ADNSURGetTextSampleTask

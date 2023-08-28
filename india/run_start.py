@@ -1,7 +1,7 @@
 import logging
 
 from components.config import Config
-from app.engine import AppFileSystem
+from application import create_app
 
 IDENTIFIER = "run_start"
 
@@ -18,6 +18,8 @@ def main():
     with create_app(IDENTIFIER) as app:
         logging.info(f"application_home={str(app.fs.application_home):s}")
         logging.info(f"info_home       ={str(app.fs.info_home):s}")
+        print(app.fs.application_home)
+        print(app.fs.info_home)
         app.fs.create_commands(DEFAULT_COMMANDS)
 
 

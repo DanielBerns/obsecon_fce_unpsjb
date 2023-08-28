@@ -3,6 +3,7 @@ Bot to access websites
 
 
 """
+import logging
 from pathlib import Path
 from typing import Dict, Tuple
 import requests
@@ -55,14 +56,14 @@ class GrabURLSample:
 
     @staticmethod
     def execute(sample: Path, url: str) -> None:
-        html, attributes = GrabURL.grab(url)
-        GrabURL.write(sample, html, attributes)
+        html, attributes = GrabURLSample.grab(url)
+        GrabURLSample.write(sample, html, attributes)
 
 
 class GrabURLSampleTask(SampleTask):
     def __init__(self, identifier: str, url: str) -> None:
         super().__init__(identifier)
-        self._url = _url
+        self._url = url
     
     @property
     def url(self) -> None:

@@ -1,6 +1,5 @@
 from typing import Dict, Tuple
 
-from application.adnsur import ADNSURGetText
 
 def get_websites() -> Dict[str, Tuple[str, ...]]:
     websites = {

@@ -99,6 +99,7 @@ class TreeStore:
 
     def stop(self):
         self.write()
+        logging.info(f"treestore.stop() with index {self.index:d}")        
 
     def samples(self, first: int = 0, top: int = -1) -> Generator[Path, None, None]:
         if first < 0:
@@ -130,7 +131,6 @@ class TreeStore:
                 f"{third_digit:>03d}",
             )
             yield sample
-
 
 
 class SampleTask:
@@ -195,6 +195,7 @@ class TreeStoreMetadata(Metadata):
         self.events["samples"]["processed"]["next_to_process"] = value
         self.save_events()
 
+
 class Pipeline:
     def __init__(self) -> None:
         self._tasks: Dict[str, SampleTask] = {}
@@ -211,6 +212,7 @@ class Pipeline:
             del self._tasks[identifier]
         except KeyError:
             pass
+
 
 class TreeStoreDriver:
     def __init__(self, 
@@ -245,16 +247,24 @@ class TreeStoreDriver:
         for sample_task in self.pipeline.execute():
             sample_task.execute(sample)
     
-    def process_sample(self, reset_next_to_process: bool) -> None:
+    def process_samples(self, reset_next_to_process: bool) -> None:
         if reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
+        logging.info(f"TreeStoreDriver.process_samples: start")        
         for sample_task in self.pipeline.execute():
             sample_task.start(self.store.base)
+        logging.info(f"TreeStoreDriver.process_samples: execute")        
         for sample in self.store.samples(first=next_to_process):
             for sample_task in self.pipeline.execute():
-                sample_task.execute(sample)
+                try:
+                    sample_task.execute(sample)
+                except Exception as message:
+                    logging.error(f"TreeStoreDriver.process_samples: error")
+                    logging.error(f"  {str(sample):s}")                    
+                    logging.error(f"  {str(message):s}")
+        logging.info(f"TreeStoreDriver.process_samples: stop")                        
         for sample_task in self.pipeline.execute():
             sample_task.stop(self.store.base)
 

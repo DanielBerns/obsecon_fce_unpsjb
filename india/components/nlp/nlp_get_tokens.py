@@ -5,11 +5,13 @@ from typing import List, Dict
 from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.formats import TextTXT, CharactersMD, TokensMD
-                    
-class NLPGetTokens(SampleTask):
-    def __init__(self) -> None:
-        super().__init__("NLPGetTokens")
+from components.nlp.formats import TextTXT, CharactersMD, TokensMD, NLPContainer
+
+                
+class GetTokensSampleTask(SampleTask):
+
+    def __init__(self, identifier: str) -> None:
+        super().__init__(identifier)
         self._store_characters: Counter = Counter()
         self._store_tokens: Counter = Counter()        
         self._tokenizer: Tokenizer = Tokenizer()
@@ -34,15 +36,15 @@ class NLPGetTokens(SampleTask):
         for token in self.tokenizer.read(text):
             self.store_tokens[token] += 1
 
-    def report(self, container: Path) -> None:
-        super().report(container)
-        CharactersMD.write(container, self.store_characters)
-        TokensMD.write(container, self.store_tokens)
+    def stop(self, base: Path) -> None:
+        super().stop(base)
+        CharactersMD.write(base, self.store_characters)
+        TokensMD.write(base, self.store_tokens)
 
 
-class NLPGetTokensFactory:
+class GetTokensSampleTaskFactory:
     def __init__(self):
-        self._task = NLPGetTokens()
+        self._task = GetTokensSampleTask()
     
     def execute(self) -> SampleTask:
         return self._task

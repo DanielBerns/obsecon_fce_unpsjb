@@ -7,47 +7,51 @@ from components.core import SampleTask, TreeStore
 from components.helpers import get_container
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.formats import TextTXT, TokensMD
+from components.nlp.formats import TextTXT, TokensMD, NLPContainer
 
-# TODO
-class EncodedText:
-    @staticmethod
-    def read(container: Path) -> Generator[List[int], None, None]:
-        encoded_text_json = Path(container, EncodedText.filename)
-        with open(encoded_text_json, 'r') as source:
-            for line in source:
-                yield TextEncoder.deserialize(line)
-
-    @staticmethod
-    def generate(store: TreeStore) -> None:
-        container = TokensMD.target_container(store.base)
-        encoded_text_json = Path(container, EncodedText.filename)
-        with open(encoded_text_json, 'w') as target:
-             store.start()
-             text_encoder = TextEncoder(container)
-             for sample in store.samples():
-                 for encoded_sentence in text_encoder.execute(sample):
-                     line = TextEncoder.serialize(encoded_sentence)
-                     target.write(line)
-             store.stop()
-            
-
-class TextEncoder:
+class TextCode:
     def __init__(self, 
-                 container: Path
+                 base: Path
                  ) -> None:
-        super().__init__("TextEncoder")
-        self._all_the_tokens = TokensMD.read(container)        
+        encoded_tokens = TokensMD.read(base)
+        encoded_tokens["<Initial>"] = -1
+        encoded_tokens["<Final>"] = -2
+        decoded_tokens = {v:k for k, v in encoded_tokens.items()}
+        self._encoded_tokens = encoded_tokens
+        self._decoded_tokens = decoded_tokens
         self._tokenizer: Tokenizer = Tokenizer()
 
     @property
-    def all_the_tokens(self) -> Dict[str, int]:
-        return self._all_the_tokens
+    def encoded_tokens(self) -> Dict[str, int]:
+        return self._encoded_tokens
+
+    @property
+    def decoded_tokens(self) -> Dict[int, str]:
+        return self._decoded_tokens
 
     @property
     def tokenizer(self) -> Tokenizer:
         return self._tokenizer
 
+    def encode(self, sample: Path) -> Generator[List[int], None, None]:
+        for sentence in TextTXT.read_sentences(sample):
+            encoded_sentence = [
+                self.encoded_tokens[token] for token in self.tokenizer.read(sentence)]
+            yield encoded_sentence                  
+
+    def decode(self, encoded_sentence: List[int]) -> List[str]:
+        return [self.decoded_tokens[code] for code in encoded_sentence]
+
+            
+class EncodedText:
+    
+    filename = "encoded_text.json"
+    
+    @staticmethod
+    def get_encoded_text_json(base: Path) -> Path:
+        container = NLPContainer.get(base)
+        return Path(container, EncodedText.filename)        
+    
     @staticmethod
     def serialize(encoded_sentence: List[int]) -> str:
         return '[' + ','.join(str(dd) for dd in encoded_sentence) + ']\n'
@@ -58,44 +62,26 @@ class TextEncoder:
         parts = array.split(',')
         numbers = [int(pp) for pp in parts]
         yield numbers
-
-    def execute(self, sample: Path) -> None:
-        for sentence in TextTXT.read_sentences(sample):
-            encoded_sentence = []
-            for token in self.tokenizer.read(sentence):
-                encoded_sentence.append(self.all_the_tokens[token])
-            yield encoded_sentence
-
-
-@contextmanager
-def create_text_encoder(base: Path) -> Generator[TextEncoder, None, None]:
-    container = get_container(base, 'target')
-    identifier = Path(container, 'encoded_text.json')
-    try:
-        target = open(identifier, 'w')
-        resource = TextEncoder(target)
-        yield resource
-    except Exception as message:
-        print(str(message))
-    finally:
-        if target.closed:
-            pass
-        else:
-            target.close()
-
-@contextmanager
-def create_encoded_text_reader(base: Path) -> Generator[EncodedTextReader, None, None]:
-    container = get_container(base, 'target')    
-    identifier = Path(container, 'encoded_text.json')
-    try:
-        source = open(identifier, 'r')
-        resource = EncodedTextReader(source)
-        yield resource
-    except Exception as message:
-        print(str(message))
-    finally:
-        if source.closed:
-            pass
-        else:
-            source.close()
     
+    @staticmethod
+    def read(base: Path) -> Generator[List[int], None, None]:
+        encoded_text_json = EncodedText.get_encoded_text_json(base)
+        with open(encoded_text_json, 'r') as source:
+            for line in source:
+                yield EncodedText.deserialize(line)
+
+    @staticmethod
+    def write(store: TreeStore) -> None:
+        encoded_text_json = EncodedText.get_encoded_text_json(store.base)
+        with open(encoded_text_json, 'w') as target:
+             store.start()
+             text_code = TextCode(store.base)
+             for sample in store.samples(first=0):
+                 print(str(sample))
+                 try:
+                     for encoded_sentence in text_code.encode(sample):
+                         line = EncodedText.serialize(encoded_sentence)
+                         target.write(line)
+                 except Exception as message:
+                     print("  ", str(message))
+             store.stop()
