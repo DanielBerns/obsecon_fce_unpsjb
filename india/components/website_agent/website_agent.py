@@ -20,7 +20,7 @@ class GrabURLSample:
         html, http_code, attributes = "", -1, None
         try:
             response = requests.get(url)
-            html, http_code = response.text, response_status_code
+            html, http_code = response.text, response.status_code
             attributes = {"timestamp": get_timestamp(), 
                           "original url": url,
                           "response.url": response.url,
