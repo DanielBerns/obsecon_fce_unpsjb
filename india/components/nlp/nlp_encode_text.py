@@ -9,6 +9,8 @@ from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
 from components.nlp.formats import TextTXT, TokensMD, NLPContainer
 
+import pdb
+
 class TextCode:
     def __init__(self, 
                  base: Path
@@ -82,6 +84,7 @@ class EncodedText:
              text_code = TextCode(store.base)
              for sample in store.samples(first=1164):
                  print(str(sample))
+                 pdb.set_trace()
                  try:
                      for encoded_sentence in text_code.encode(sample):
                          line = EncodedText.serialize(encoded_sentence)
