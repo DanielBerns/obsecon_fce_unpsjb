@@ -92,3 +92,4 @@ class EncodedText:
                  except Exception as message:
                      print("  ", str(message))
              store.stop()
+        print('The end!')
