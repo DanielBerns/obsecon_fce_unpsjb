@@ -34,10 +34,14 @@ class TextCode:
         return self._tokenizer
 
     def encode(self, sample: Path) -> Generator[List[int], None, None]:
-        for sentence in TextTXT.read_sentences(sample):
-            encoded_sentence = [
-                self.encoded_tokens[token] for token in self.tokenizer.read(sentence)]
-            yield encoded_sentence                  
+        try:
+            for sentence in TextTXT.read_sentences(sample):
+                encoded_sentence = [
+                    self.encoded_tokens[token] 
+                    for token in self.tokenizer.read(sentence)]
+                yield encoded_sentence
+        except Exception as message:
+            print('    Error:', str(message))
 
     def decode(self, encoded_sentence: List[int]) -> List[str]:
         return [self.decoded_tokens[code] for code in encoded_sentence]
