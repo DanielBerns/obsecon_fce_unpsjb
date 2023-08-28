@@ -1,4 +1,4 @@
-from application.engine import create_app
+from application import create_app
 from components.telegram_agent import run
 
 IDENTIFIER = "run_telegram_bot"
