@@ -1,12 +1,13 @@
 import logging
 
-from application import create_app, get_websites
+from app_nlp_news.application import create_app
+from app_nlp_news.news import get_websites
 
+from context import components
 from components.core import create_treestore_driver
 from components.website_agent import GrabURLSampleTask
 
 IDENTIFIER = "run_news_bot"
-
 
 def main() -> None:
     websites = get_websites()
