@@ -63,7 +63,7 @@ class UpdateCrontabWarning(Exception):
 
 
 def main():
-    with create_app("observatorio_fce_unspjb", "india") as app:
+    with create_app("observatorio_fce_unspjb", "india", "edit_crontab") as app:
         try:
             update_crontab(app)
         except UpdateCrontabWarning as message:
