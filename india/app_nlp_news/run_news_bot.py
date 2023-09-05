@@ -11,7 +11,7 @@ IDENTIFIER = "run_news_bot"
 
 def main() -> None:
     websites = get_websites()
-    with create_app(IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
         print("app created!")
         for identifier, urls in websites.items():        
             print(f"  {identifier:s}")
