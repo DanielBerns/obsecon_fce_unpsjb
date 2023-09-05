@@ -7,7 +7,6 @@ from pathlib import Path
 
 from application import create_app, App
 
-
 def update_crontab(app: App) -> None:
     with open(app.fs.commands_txt, "r") as source, open(
         app.fs.crontab_txt, "w"
@@ -63,7 +62,7 @@ class UpdateCrontabWarning(Exception):
 
 
 def main():
-    with create_app("observatorio_fce_unspjb", "india", "edit_crontab") as app:
+    with create_app("observatorio_fce_unpsjb", "india", "edit_crontab") as app:
         try:
             update_crontab(app)
         except UpdateCrontabWarning as message:
