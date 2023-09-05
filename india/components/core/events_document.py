@@ -1,22 +1,13 @@
-from collections import defaultdict, Counter
 import json
-import os
 from pathlib import Path
-from typing import (
-    List,
-    Dict,
-    Protocol,
-    Union,
-    Optional,
-    Tuple,
-    DefaultDict,
-    Any,
-    Generator,
-)
+from typing import Dict, Protocol, Generator, Any
 
 from components.helpers import get_directory, get_resource_identifier
 
-from components.core.json_document import JSONDocument
+
+class EventsSource(Protocol):
+    def events(self) -> Generator[Dict[Any, Any], None, None]:
+        yield from ()
 
 
 class EventsStatsError(Exception):
@@ -49,12 +40,11 @@ class EventsStats:
         return [key for key in self.counters.keys()]
 
 
-class CSVDocument:
-    function = lambda v: str(int(v * 100)) if isinstance(v, float) else str(v).lower()
-
+class EventsDocument:
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, "store", ".csv")
+        self._store: Path = get_resource_identifier(self.directory, "store", ".json")
+        self._events_stats = EventsStats()
 
     @property
     def directory(self) -> Path:
@@ -64,26 +54,25 @@ class CSVDocument:
     def store(self) -> Path:
         return self._store
 
+    @property
+    def events_stats(self) -> EventsStats:
+        return self._events_stats
+
     def start(self) -> None:
         pass
 
     def stop(self) -> None:
         pass
 
-    def rows(self) -> Generator[str, None, None]:
+    def events(self) -> Generator[Dict[Any, Any], None, None]:
         with open(self.store, "r") as source:
-            header = source.readline()
-            yield header
             for line in source:
-                yield line
+                event = json.loads(line)
+                yield event
 
-    def write(self, source: JSONDocument) -> None:
-        events_stats = EventsStats()
-        for event in source.events():
-            events_stats.update(event)
-        keys = events_stats.keys()
-        header = "|".join(keys)
-        with open(self.store, "w") as target:
-            target.write(header + "\n")
+    def update(self, source: EventsSource) -> None:
+        with open(self.store, "a") as target:
             for event in source.events():
-                row = "|".join([CSVDocument.function(event[k]) for k in keys])
+                self.events_stats.update(event)
+                line = json.dumps(event)
+                target.write(f"{line:s}\n")

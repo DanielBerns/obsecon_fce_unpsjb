@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 CONTEXT = "observatorio_fce_unpsjb"
 VERSION = "india"
 
-default_info_folder = str(Path("~", "Info").expanduser())
-default_apps_folder = str(Path("~", "Apps").expanduser())
+info_home = str(Path("~", "Info").expanduser())
+apps_home = str(Path("~", "Apps").expanduser())
 
 
 def get_args() -> Dict[str, str]:
@@ -47,7 +47,7 @@ def get_info_home(
     version: str,
     instance: str,
 ) -> Path:
-    home = Path(default_info_folder, context, version, instance).expanduser()
+    home = Path(info_home, context, version, instance).expanduser()
     home.mkdir(mode=0o700, parents=True, exist_ok=True)
     return home
 
@@ -57,7 +57,7 @@ def get_application_home(
     version: str,
     instance: str,
 ) -> Path:
-    home = Path(default_apps_folder, context, version, instance).expanduser()
+    home = Path(apps_home, context, version, instance).expanduser()
     home.mkdir(mode=0o700, parents=True, exist_ok=True)
     return home
 
@@ -81,11 +81,11 @@ def load_environment_variables(home: str, dotenv: str) -> None:
 
 
 class Config:
-    def __init__(self):
+    def __init__(self, context: str, version: str, instance: str):
         args = get_args()
         instance, dotenv = get_instance_dotenv(args)
-        application_home = get_application_home(CONTEXT, VERSION, instance)
-        info_home = get_info_home(CONTEXT, VERSION, instance)
+        application_home = get_application_home(context, version, instance)
+        info_home = get_info_home(context, version, instance)
         load_environment_variables(info_home, dotenv)
         self._application_home = application_home
         self._info_home = info_home

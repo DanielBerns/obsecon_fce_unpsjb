@@ -71,14 +71,17 @@ class AppFileSystem(FileSystem):
 
 
 class App:
-    def __init__(self):
-        config = Config()
+    def __init__(self, context: str, version: str):
+        config = Config(context, version)
         self.config = config
         self.fs = AppFileSystem(config)
 
 
 @contextmanager
-def create_app(identifier: str) -> Generator[App, None, None]:
+def create_app(
+    context: str,
+    version: str,
+    identifier: str) -> Generator[App, None, None]:
     app = App()
 
     logging.basicConfig(
