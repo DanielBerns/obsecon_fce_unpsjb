@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from collections import Counter
 from typing import DefaultDict, Dict, Protocol, Generator, Any
 
 from components.helpers import get_directory, get_resource_identifier
