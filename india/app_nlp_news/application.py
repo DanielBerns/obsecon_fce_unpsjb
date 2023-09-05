@@ -75,7 +75,7 @@ class AppFileSystem(FileSystem):
 
 
 class App:
-    def __init__(self, context: str, version: str, instance_ str):
+    def __init__(self, context: str, version: str, instance: str):
         config = Config(context, version, instance)
         self.config = config
         self.fs = AppFileSystem(config)
