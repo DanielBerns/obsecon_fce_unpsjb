@@ -1,7 +1,7 @@
 import logging
 
-from app_nlp_news.application import create_app
-from app_nlp_news.news import get_websites
+from application import create_app
+from news import get_websites
 
 from context import components
 from components.core import create_treestore_driver
