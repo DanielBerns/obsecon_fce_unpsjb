@@ -7,7 +7,7 @@ IDENTIFIER = "run_start"
 
 DEFAULT_COMMANDS = [
     (
-        "~/Apps/observatorio_fce_unpsjb/india/run_news_bot.sh:36 * * * *",
+        "~/Apps/observatorio_fce_unpsjb/india/app_nlp_news/run_news_bot.sh:36 * * * *",
         "run_news_bot",
     ),
     ("~/Apps/observatorio_fce_unpsjb/india/update_app.sh:37 * * * *", "update_app"),
