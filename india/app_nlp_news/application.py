@@ -86,7 +86,7 @@ def create_app(
     context: str,
     version: str,
     identifier: str) -> Generator[App, None, None]:
-    app = App()
+    app = App(context, version)
 
     logging.basicConfig(
         filename=app.fs.get_logs_resource(identifier), level=app.config.log_level
