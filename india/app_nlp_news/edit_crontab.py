@@ -58,15 +58,12 @@ def update_crontab(app: App) -> None:
         logging.info(f"crontab edit returncode {cp.returncode:d}")
 
 
-IDENTIFIER = "run_edit_crontab"
-
-
 class UpdateCrontabWarning(Exception):
     pass
 
 
 def main():
-    with create_app(IDENTIFIER) as app:
+    with create_app("observatorio_fce_unspjb", "india") as app:
         try:
             update_crontab(app)
         except UpdateCrontabWarning as message:
