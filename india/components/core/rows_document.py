@@ -16,7 +16,7 @@ from typing import (
 
 from components.helpers import get_directory, get_resource_identifier
 
-from components.core.json_document import JSONDocument
+from components.core.events_document import EventsSource
 
 
 class RowsDocument:
@@ -47,7 +47,7 @@ class RowsDocument:
             for line in source:
                 yield line
 
-    def write(self, source: JSONDocument) -> None:
+    def write(self, source: EventsSource) -> None:
         keys = source.events_stats.keys()
         header = "|".join(str(k) for k in keys)
         with open(self.store, "w") as target:
