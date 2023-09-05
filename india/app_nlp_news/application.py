@@ -75,8 +75,8 @@ class AppFileSystem(FileSystem):
 
 
 class App:
-    def __init__(self, context: str, version: str):
-        config = Config(context, version)
+    def __init__(self, context: str, version: str, instance_ str):
+        config = Config(context, version, instance)
         self.config = config
         self.fs = AppFileSystem(config)
 
@@ -86,7 +86,7 @@ def create_app(
     context: str,
     version: str,
     identifier: str) -> Generator[App, None, None]:
-    app = App(context, version)
+    app = App(context, version, identifier)
 
     logging.basicConfig(
         filename=app.fs.get_logs_resource(identifier), level=app.config.log_level
