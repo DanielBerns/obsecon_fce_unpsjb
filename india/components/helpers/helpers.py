@@ -69,7 +69,7 @@ def get_resource_identifier_with_timestamp(
     suffix: str) -> Path:
     timestamp = get_timestamp()
     resource = get_resource_identifier(
-        home, f"{name:s}_{timestamp:s}", suffix
+        base, f"{name:s}_{timestamp:s}", suffix
     )
     return resource
 
