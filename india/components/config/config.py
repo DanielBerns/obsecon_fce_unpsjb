@@ -34,8 +34,8 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
 
-def load_environment_variables(home: str) -> None:
-    dotenv_full_filename = Path(home, '.env')
+def load_environment_variables(home: str, dotenv: str) -> None:
+    dotenv_full_filename = Path(home, dotenv)
     if not dotenv_full_filename.exists():
         write_dotenv(dotenv_full_filename)
     load_dotenv(dotenv_full_filename)
