@@ -69,7 +69,7 @@ class App:
                  version: str, 
                  instance: str):
         self.fs = AppFS(context, version, instance)        
-        self.config = Config()
+        self.config = Config(self.fs.info_home)
 
 
 @contextmanager
