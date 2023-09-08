@@ -3,10 +3,10 @@ from application import create_app
 from context import components
 from components.telegram_agent import run
 
-IDENTIFIER = "run_telegram_bot"
+NAME = "run_telegram_bot"
 
 def main():
-    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
         print("app created!")
         run(
             app.fs.application_home,

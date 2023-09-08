@@ -11,13 +11,37 @@ from components.helpers import (
 
 
 class FileSystem:
-    def __init__(self, 
-                 application_home: Path, 
-                 info_home: Path) -> None:
-        self._application_home = application_home
-        self._info_home: Path = info_home
+    
+    info_root = str(Path("~", "Info").expanduser())
+    apps_root = str(Path("~", "Apps").expanduser())
+
+    @staticmethod
+    def get_info_home(
+        context: str,
+        version: str,
+        instance: str,
+        ) -> Path:
+        home = Path(FileSystem.info_root, context, version, instance).expanduser()
+        home.mkdir(mode=0o700, parents=True, exist_ok=True)
+        return home
+    
+    @staticmethod
+    def get_application_home(
+        context: str,
+        version: str,
+        instance: str,
+        ) -> Path:
+        home = Path(FileSystem.apps_root, context, version, instance).expanduser()
+        home.mkdir(mode=0o700, parents=True, exist_ok=True)
+        return home
+    
+    def __init__(self, context: str, 
+                       version: str, 
+                       instance: str) -> None:    
+        self._application_home: Path = FileSystem.get_application_home(context, version, instance)
+        self._info_home: Path = FileSystem.get_info_home(context, version, instance)
         self._commands: Path = get_container(info_home, "Commands")
-        self._data: Path = get_container(info_home, "Data")
+        self._sources: Path = get_container(info_home, "Sources")
         self._results: Path = get_container(info_home, "Results")
         self._reports: Path = get_container(info_home, "Reports")
         self._logs: Path = get_container(info_home, "Logs")
@@ -35,8 +59,8 @@ class FileSystem:
         return self._commands
 
     @property
-    def data(self) -> Path:
-        return self._data
+    def sources(self) -> Path:
+        return self._sources
 
     @property
     def results(self) -> Path:
@@ -61,8 +85,8 @@ class FileSystem:
     def clear(self) -> None:
         if self.commands.exists():
             remove_directory(self.commands)
-        if self.data.exists():
-            remove_directory(self.data)
+        if self.sources.exists():
+            remove_directory(self.sources)
         if self.results.exists():
             remove_directory(self.results)
         if self.reports.exists():

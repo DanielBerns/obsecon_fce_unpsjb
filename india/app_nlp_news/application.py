@@ -9,19 +9,23 @@ from context import components
 
 from components.core import FileSystem
 from components.config import Config
-from components.helpers import get_container, get_timestamp, get_resource_identifier
+from components.helpers import (get_container, 
+                                get_resource_identifier, 
+                                get_resource_identifier_with_timestamp)
 
 
-class AppFileSystem(FileSystem):
-    def __init__(self, config: Config) -> None:
-        super().__init__(config.application_home, config.info_home)
-        self._crontab = get_container(self.data, "crontab")
-        self._metadata = get_container(self.data, "metadata")
-        self._news = get_container(self.data, "news")
-        self._telegram = get_container(self.data, "telegram")
-        self._twitter = get_container(self.data, "twitter")
-        self._downloads = get_container(self.data, "downloads")
-        self._commands_txt = self.get_commands_resource("default_commands")
+class AppFS(FileSystem):
+    def __init__(self, 
+                 context: str,
+                 version: str,
+                 instance: str) -> None:
+        super().__init__(context, version, instance)
+        self._crontab = get_container(self.sources, "crontab")
+        self._metadata = get_container(self.sources, "metadata")
+        self._news = get_container(self.sources, "news")
+        self._telegram = get_container(self.sources, "telegram")
+        self._downloads = get_container(self.sources, "downloads")
+        self._commands_txt = get_resource_identifier(self.commands, "default_commands", ".txt")
         self._crontab_txt = get_resource_identifier(self.crontab, "crontab", ".txt")
 
     @property
@@ -41,10 +45,6 @@ class AppFileSystem(FileSystem):
         return self._telegram
 
     @property
-    def twitter(self) -> Path:
-        return self._twitter
-
-    @property
     def downloads(self) -> Path:
         return self._downloads
 
@@ -56,17 +56,6 @@ class AppFileSystem(FileSystem):
     def crontab_txt(self) -> Path:
         return self._crontab_txt
 
-    def get_commands_resource(self, identifier: str) -> Path:
-        resource = get_resource_identifier(self.commands, identifier, ".txt")
-        return resource
-
-    def get_logs_resource(self, identifier: str) -> Path:
-        timestamp = get_timestamp()
-        resource = get_resource_identifier(
-            self.logs, f"{identifier:s}_{timestamp:s}", ".txt"
-        )
-        return resource
-
     def create_commands_txt(self, commands: List[Tuple[str, str]]) -> None:
         if not self.commands_txt.exists():
             with open(self.commands_txt, "w") as target:
@@ -75,27 +64,32 @@ class AppFileSystem(FileSystem):
 
 
 class App:
-    def __init__(self, context: str, version: str, instance: str):
-        config = Config(context, version, instance)
-        self.config = config
-        self.fs = AppFileSystem(config)
+    def __init__(self, 
+                 context: str, 
+                 version: str, 
+                 instance: str):
+        self.fs = AppFS(context, version, instance)        
+        self.config = Config()
 
 
 @contextmanager
 def create_app(
     context: str,
     version: str,
-    identifier: str) -> Generator[App, None, None]:
-    app = App(context, version, identifier)
+    instance: str,
+    name: str) -> Generator[App, None, None]:
 
+    app = App(context, version, instance)
+    
     logging.basicConfig(
-        filename=app.fs.get_logs_resource(identifier), level=app.config.log_level
+        filename=get_resource_identifier_with_timestamp(app.fs.logs, name), 
+        level=app.config.log_level
     )
 
-    logging.info(f"start {identifier:s}")
+    logging.info(f"start")
     try:
         yield app
     except Exception as message:
-        logging.info(f"{str(message):s}\n")
+        logging.warning(f"exception: {str(message):s}\n")
     finally:
-        logging.info(f"stop {identifier:s}")
+        logging.info(f"stop")

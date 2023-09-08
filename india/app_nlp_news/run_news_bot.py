@@ -7,11 +7,11 @@ from context import components
 from components.core import create_treestore_driver
 from components.website_agent import GrabURLSampleTask
 
-IDENTIFIER = "run_news_bot"
+NAME = "run_news_bot"
 
 def main() -> None:
     websites = get_websites()
-    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
         print("app created!")
         for identifier, urls in websites.items():        
             print(f"  {identifier:s}")

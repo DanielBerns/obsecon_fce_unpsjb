@@ -8,20 +8,10 @@ from typing import Dict, Tuple
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-info_home = str(Path("~", "Info").expanduser())
-apps_home = str(Path("~", "Apps").expanduser())
-
-
 def get_args() -> Dict[str, str]:
     """Construct the argument parser and parse the arguments"""
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i",
-        "--instance",
-        type=str,
-        default="test",
-        help="instance name",
-    )
+
     parser.add_argument(
         "-d",
         "--dotenv",
@@ -31,32 +21,6 @@ def get_args() -> Dict[str, str]:
     )
     args = vars(parser.parse_args())
     return args
-
-
-def get_instance_dotenv(args: Dict[str, str]) -> Tuple[str, str]:
-    instance = args["instance"]
-    dotenv = args["dotenv"]
-    return instance, dotenv
-
-
-def get_info_home(
-    context: str,
-    version: str,
-    instance: str,
-) -> Path:
-    home = Path(info_home, context, version, instance).expanduser()
-    home.mkdir(mode=0o700, parents=True, exist_ok=True)
-    return home
-
-
-def get_application_home(
-    context: str,
-    version: str,
-    instance: str,
-) -> Path:
-    home = Path(apps_home, context, version, instance).expanduser()
-    home.mkdir(mode=0o700, parents=True, exist_ok=True)
-    return home
 
 
 def write_dotenv(dotenv_full_filename: Path) -> None:
@@ -78,14 +42,15 @@ def load_environment_variables(home: str) -> None:
 
 
 class Config:
-    def __init__(self, context: str, 
-                       version: str, 
-                       instance: str) -> None:
-        application_home = get_application_home(context, version, instance)
-        info_home = get_info_home(context, version, instance)
+    def __init__(self, info_home: Path) -> None:
+        args = get_args()
+        try:
+            dotenv = args['dotenv']
+        except KeyError:
+            dotenv = '.env'
+        if not dotenv.startswith('.'):
+            dotenv = '.env'
         load_environment_variables(info_home, dotenv)
-        self._application_home = application_home
-        self._info_home = info_home
         self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"
         telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
         twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"
@@ -93,14 +58,6 @@ class Config:
             "telegram": telegram_token,
             "twitter": twitter_token,
         }
-
-    @property
-    def info_home(self) -> Path:
-        return self._info_home
-
-    @property
-    def application_home(self) -> Path:
-        return self._application_home
 
     @property
     def log_level(self) -> int:

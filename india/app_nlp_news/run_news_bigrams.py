@@ -22,15 +22,15 @@ from context import components
 from components.nlp import TextCode, TokensMD, NLPContainer, Bigrams
 from components.core import create_treestore_driver
 
-IDENTIFIER = "run_news_bigrams"
+NAME = "run_news_bigrams"
 
 def main() -> None:
-    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
         print("app created!")
-        keys = ["adnsur"]
-        for a_key in keys:
-            print(a_key)
-            with create_treestore_driver(app.fs.news, a_key) as driver:
+        identifiers = ["adnsur"]
+        for an_identifier in identifiers:
+            print(an_identifier)
+            with create_treestore_driver(app.fs.news, an_identifier) as driver:
                 frequency = Bigrams.find_bigrams(driver.store.base)
                 Bigrams.write_frequency(driver.store.base, frequency)
                 sorted_bigrams = Bigrams.sort_bigrams(frequency)
