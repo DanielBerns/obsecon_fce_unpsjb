@@ -60,10 +60,10 @@ def update_crontab(app: App) -> None:
 class UpdateCrontabWarning(Exception):
     pass
 
-IDENTIFIER = "edit_crontab"
+NAME = "edit_crontab"
 
 def main():
-    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
         try:
             update_crontab(app)
         except UpdateCrontabWarning as message:
