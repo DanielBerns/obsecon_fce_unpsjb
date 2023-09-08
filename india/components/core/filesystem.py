@@ -40,11 +40,11 @@ class FileSystem:
                        instance: str) -> None:    
         self._application_home: Path = FileSystem.get_application_home(context, version, instance)
         self._info_home: Path = FileSystem.get_info_home(context, version, instance)
-        self._commands: Path = get_container(info_home, "Commands")
-        self._sources: Path = get_container(info_home, "Sources")
-        self._results: Path = get_container(info_home, "Results")
-        self._reports: Path = get_container(info_home, "Reports")
-        self._logs: Path = get_container(info_home, "Logs")
+        self._commands: Path = get_container(self.info_home, "Commands")
+        self._sources: Path = get_container(self.info_home, "Sources")
+        self._results: Path = get_container(self.info_home, "Results")
+        self._reports: Path = get_container(self.info_home, "Reports")
+        self._logs: Path = get_container(self.info_home, "Logs")
 
     @property
     def application_home(self) -> Path:
