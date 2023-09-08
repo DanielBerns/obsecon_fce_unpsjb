@@ -286,5 +286,7 @@ def run(
         MessageHandler(filters.PHOTO & ~filters.COMMAND, process_photo)
     )
 
+    logging.debug("start")
     # Run the bot until the user presses Ctrl-C
     application.run_polling()
+    logging.debug("stop")
