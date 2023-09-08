@@ -81,8 +81,9 @@ def create_app(
 
     app = App(context, version, instance)
     
+    logs_txt = get_resource_identifier_with_timestamp(app.fs.logs, name, '.txt')
     logging.basicConfig(
-        filename=get_resource_identifier_with_timestamp(app.fs.logs, name), 
+        filename=logs_txt, 
         level=app.config.log_level
     )
 
