@@ -11,7 +11,9 @@ from components.helpers import (
 
 
 class FileSystem:
-    def __init__(self, application_home: Path, info_home: Path) -> None:
+    def __init__(self, 
+                 application_home: Path, 
+                 info_home: Path) -> None:
         self._application_home = application_home
         self._info_home: Path = info_home
         self._commands: Path = get_container(info_home, "Commands")

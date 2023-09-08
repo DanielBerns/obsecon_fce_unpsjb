@@ -8,9 +8,6 @@ from typing import Dict, Tuple
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-CONTEXT = "observatorio_fce_unpsjb"
-VERSION = "india"
-
 info_home = str(Path("~", "Info").expanduser())
 apps_home = str(Path("~", "Apps").expanduser())
 
@@ -73,23 +70,22 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
 
-def load_environment_variables(home: str, dotenv: str) -> None:
-    dotenv_full_filename = Path(home, dotenv)
+def load_environment_variables(home: str) -> None:
+    dotenv_full_filename = Path(home, '.env')
     if not dotenv_full_filename.exists():
         write_dotenv(dotenv_full_filename)
     load_dotenv(dotenv_full_filename)
 
 
 class Config:
-    def __init__(self, context: str, version: str, instance: str):
-        args = get_args()
-        instance, dotenv = get_instance_dotenv(args)
+    def __init__(self, context: str, 
+                       version: str, 
+                       instance: str) -> None:
         application_home = get_application_home(context, version, instance)
         info_home = get_info_home(context, version, instance)
         load_environment_variables(info_home, dotenv)
         self._application_home = application_home
         self._info_home = info_home
-
         self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"
         telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
         twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"

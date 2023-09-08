@@ -15,7 +15,7 @@ DEFAULT_COMMANDS = [
 
 
 def main():
-    with create_app(IDENTIFIER) as app:
+    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
         logging.info(f"application_home={str(app.fs.application_home):s}")
         logging.info(f"info_home       ={str(app.fs.info_home):s}")
         print(app.fs.application_home)

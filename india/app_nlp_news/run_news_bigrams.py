@@ -17,11 +17,15 @@
 from pathlib import Path
 from collections import Counter
 from application import create_app
+
+from context import components
 from components.nlp import TextCode, TokensMD, NLPContainer, Bigrams
 from components.core import create_treestore_driver
 
+IDENTIFIER = "run_news_bigrams"
+
 def main() -> None:
-    with create_app("run_news_bigrams") as app:
+    with create_app("observatorio_fce_unpsjb", "india", IDENTIFIER) as app:
         print("app created!")
         keys = ["adnsur"]
         for a_key in keys:
