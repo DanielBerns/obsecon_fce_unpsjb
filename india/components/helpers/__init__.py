@@ -10,5 +10,5 @@ from components.helpers.helpers import (
     get_resource,
     get_resource_with_timestamp,
     remove_directory,
-    get_command,
+    get_command
 )

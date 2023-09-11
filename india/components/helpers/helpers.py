@@ -10,7 +10,6 @@ from shutil import rmtree
 
 indentation = "    "
 
-
 def get_timestamp() -> str:
     now = datetime.datetime.now()
     timestamp = "".join(
