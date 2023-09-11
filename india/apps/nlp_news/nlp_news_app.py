@@ -17,7 +17,7 @@ class FSNLPNews(FileSystem):
                  version: str,
                  instance: str) -> None:
         super().__init__(context, version, instance)
-        self._crontab = get_container(commands, "crontab")
+        self._crontab = get_container(self.commands, "crontab")
         self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
         self._news = get_container(self.storage, "news")
         self._telegram = get_container(self.storage, "telegram")
@@ -48,6 +48,7 @@ class FSNLPNews(FileSystem):
     def metadata(self) -> Metadata:
         return self._metadata
 
+
 class AppNLPNews:
     def __init__(self, fs: FSNLPNews) -> None:
         self._fs: FSNLPNews = fs
@@ -71,13 +72,13 @@ def create_app(
 
     fs = FSNLPNews(context, version, instance)
     fs.metadata.start()
-    app = Application(fs)
+    app = AppNLPNews(fs)
     
     logs_txt = get_resource_with_timestamp(
         fs.logs, name, '.txt')
     logging.basicConfig(
         filename=logs_txt, 
-        level=config.log_level
+        level=app.config.log_level
     )
 
     logging.info(f"start")

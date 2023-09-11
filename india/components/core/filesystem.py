@@ -68,6 +68,10 @@ class FileSystem:
 
     @property
     def reports(self) -> Path:
+        return self._reports
+
+    @property
+    def logs(self) -> Path:
         return self._logs
 
     def clear(self) -> None:

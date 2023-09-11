@@ -1,3 +1,0 @@
-from app_nlp_news.nlp_news_app import create_app
-from app_nlp_news.nlp_news_websites import get_websites
-from app_nlp_news.adnsur import ADNSURGetTextSampleTask

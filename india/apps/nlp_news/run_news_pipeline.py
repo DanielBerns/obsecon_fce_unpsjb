@@ -1,12 +1,13 @@
 import logging
 
-from application import create_app
-from news import get_websites
-from adnsur import ADNSURGetTextSampleTask
-
 from context import components
 from components.core import create_treestore_driver
 from components.nlp import GetTextFacadeSampleTask, GetTokensSampleTask
+
+from nlp_news_app import create_app
+from nlp_news_websites import get_websites
+from nlp_news_adnsur import ADNSURGetTextSampleTask
+
 
 NAME = "run_news_pipeline"
 
