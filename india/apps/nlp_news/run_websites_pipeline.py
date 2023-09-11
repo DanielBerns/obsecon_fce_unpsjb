@@ -9,10 +9,12 @@ from nlp_news_websites import get_websites
 from nlp_news_adnsur import ADNSURGetTextSampleTask
 
 
-NAME = "run_news_pipeline"
+def filename():
+    return __file__[:-3]
+
 
 def main() -> None:
-    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
         print("app created!")
         get_text_task = GetTextFacadeSampleTask("GetTextSampleTask")        
         get_text_task.add(ADNSURGetTextSampleTask())

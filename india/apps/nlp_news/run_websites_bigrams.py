@@ -1,31 +1,18 @@
-# from components.nlp import BigramGenerator
-# from random import randint
-# 
-# from collections import Counter
-# 
-# for k in range(10):
-#     sentence = [randint(0,10) for v in range(100)]
-#     
-#     collect = Counter()
-#     for item in BigramGenerator.get(sentence):
-#         collect[item] += 1
-# 
-# for k, v in collect.items():
-#     print(str(k), v)
-# 
-
 from pathlib import Path
 from collections import Counter
-from application import create_app
 
 from context import components
 from components.nlp import TextCode, TokensMD, NLPContainer, Bigrams
 from components.core import create_treestore_driver
 
-NAME = "run_news_bigrams"
+from nlp_news_app import create_app
+
+
+def filename():
+    return __file__[:-3]
 
 def main() -> None:
-    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
         print("app created!")
         identifiers = ["adnsur"]
         for an_identifier in identifiers:

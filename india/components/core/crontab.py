@@ -142,7 +142,7 @@ class Crontab:
     def content(self):
         return self.text.content()
     
-    def update_crontab(crontab_txt: Path) -> None:
+    def update(crontab_txt: Path) -> None:
         with open(crontab_txt, "w") as target:
              target.write(self.content())
         cp = subprocess.run(["crontab", crontab_txt])
