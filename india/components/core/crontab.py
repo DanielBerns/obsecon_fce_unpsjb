@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import logging
 
+from components.core.text_generator import TextGenerator
 
 # https://www.adminschoice.com/crontab-quick-reference
 

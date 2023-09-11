@@ -12,7 +12,7 @@ from components.helpers import (
 
 class FileSystem:
     
-    info_root = str(Path("~", "Info").expanduser())
+    root = str(Path("~", "Info").expanduser())
 
     @staticmethod
     def get_home(
@@ -20,22 +20,35 @@ class FileSystem:
         version: str,
         instance: str,
         ) -> Path:
-        home = Path(FileSystem.info_root, context, version, instance).expanduser()
+        home = Path(FileSystem.root, context, version, instance).expanduser()
         home.mkdir(mode=0o700, parents=True, exist_ok=True)
         return home
     
     def __init__(self, context: str, 
                        version: str, 
                        instance: str) -> None:    
-        self._context = context
-        self._version = version
-        self._instance = instance
-        self._home: Path = FileSystem.get_home(context, version, instance)
-        self._commands: Path = get_container(self.home, "Commands")
-        self._storage: Path = get_container(self.home, "Storage")
-        self._results: Path = get_container(self.home, "Results")
-        self._reports: Path = get_container(self.home, "Reports")
-        self._logs: Path = get_container(self.home, "Logs")
+        self._context: str = context
+        self._version: str = version
+        self._instance: str = instance
+        self._catalog: Dict[str, Path] = {}   
+        self._home = FileSystem.get_home(context, version, instance)
+        self._commands = get_container(self.home, "Commands")
+        self._storage = get_container(self.home, "Storage")
+        self._results = get_container(self.home, "Results")
+        self._reports = get_container(self.home, "Reports")
+        self._logs = get_container(self.home, "Logs")
+
+    @property
+    def context(self) -> str:
+        return self._context
+
+    @property
+    def version(self) -> str:
+        return self._version
+
+    @property
+    def instance(self) -> str:
+        return self._instance
 
     @property
     def home(self) -> Path:
@@ -55,28 +68,8 @@ class FileSystem:
 
     @property
     def reports(self) -> Path:
-        return self._reports
-
-    @property
-    def logs(self) -> Path:
         return self._logs
 
-    @property
-    def application(self) -> str:
-        return self.application_home.parts[-2]
-
-    @property
-    def version(self) -> str:
-        return self.application_home.parts[-1]
-
     def clear(self) -> None:
-        if self.commands.exists():
-            remove_directory(self.commands)
-        if self.storage.exists():
-            remove_directory(self.sources)
-        if self.results.exists():
-            remove_directory(self.results)
-        if self.reports.exists():
-            remove_directory(self.reports)
-        if self.logs.exists():
-            remove_directory(self.logs)
+        if self.home.exists():
+            remove_directory(home)
