@@ -10,7 +10,6 @@ def filename():
 
 
 def main() -> None:
-    websites = get_websites()
     with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
         print("app created!")
         crontab = Crontab()
