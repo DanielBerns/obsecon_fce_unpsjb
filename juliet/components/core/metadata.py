@@ -4,14 +4,14 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple, DefaultDict
 
-from components.helpers import save_json, get_directory, get_timestamp, get_resource_identifier
+from components.helpers import save_json, get_directory, get_timestamp, get_resource
 
 
 class Metadata:
 
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, 'store', '.json')
+        self._store: Path = get_resource(self.directory, 'store', '.json')
         self._events: DefaultDict[str, DefaultDict[str, Dict]] = \
             defaultdict(lambda: defaultdict(dict))
         if self.store.exists():

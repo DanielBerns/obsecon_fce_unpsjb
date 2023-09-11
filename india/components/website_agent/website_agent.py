@@ -10,7 +10,7 @@ import requests
 import json
 
 from components.core import SampleTask
-from components.helpers import get_timestamp, get_resource_identifier
+from components.helpers import get_timestamp, get_resource
 
 class GrabURLSample:
           
@@ -37,20 +37,20 @@ class GrabURLSample:
 
     @staticmethod
     def read(sample: Path) -> Tuple[str, Dict[str, str]]:
-        page_html = get_resource_identifier(sample, "page", ".html")
+        page_html = get_resource(sample, "page", ".html")
         with open(page_html, "r") as source:
             html = source.read()
-        attributes_json = get_resource_identifier(sample, "attributes", ".json")
+        attributes_json = get_resource(sample, "attributes", ".json")
         with open(attributes_json, "r") as source:
             attributes = json.load(source)
         return html, attributes
 
     @staticmethod
     def write(sample: Path, html: str, attributes: Dict[str, str]):
-        page_html = get_resource_identifier(sample, "page", ".html")
+        page_html = get_resource(sample, "page", ".html")
         with open(page_html, "w") as target:
             target.write(html)
-        attributes_json = get_resource_identifier(sample, "attributes", ".json")
+        attributes_json = get_resource(sample, "attributes", ".json")
         with open(attributes_json, "w") as source:
             json.dump(attributes, source)
 

@@ -2,9 +2,8 @@ import logging
 import random
 from typing import List
 
-from components.config import Config
 from components.core import FileSystem, Metadata, JSONDocument
-from components.helpers import save_json, get_container, get_resource_identifier
+from components.helpers import save_json, get_container, get_resource
 from components.logs import add_stdout_handler
 
 

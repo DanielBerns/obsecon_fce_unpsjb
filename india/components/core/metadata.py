@@ -8,15 +8,15 @@ from components.helpers import (
     save_json,
     get_directory,
     get_timestamp,
-    get_resource_identifier,
+    get_resource,
 )
 
 
 class Metadata:
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._resource: Path = get_resource_identifier(
-            self.directory, "metadata", ".json"
+        self._resource: Path = get_resource(
+            self.directory, "store", ".json"
         )
         self._events: DefaultDict[str, DefaultDict[str, Dict]] = defaultdict(
             lambda: defaultdict(dict)

@@ -56,19 +56,19 @@ def get_container(base: Path, identifier: str):
     return get_directory(Path(base, identifier))
 
 
-def get_resource_identifier(
+def get_resource(
     base: Path, 
     name: str, 
     suffix: str
     ) -> Path:
     return Path(base, name).with_suffix(suffix)
 
-def get_resource_identifier_with_timestamp(
+def get_resource_with_timestamp(
     base: Path, 
     name: str,
     suffix: str) -> Path:
     timestamp = get_timestamp()
-    resource = get_resource_identifier(
+    resource = get_resource(
         base, f"{name:s}_{timestamp:s}", suffix
     )
     return resource

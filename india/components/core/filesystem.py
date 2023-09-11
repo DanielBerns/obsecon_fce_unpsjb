@@ -5,7 +5,7 @@ from typing import Optional
 from components.helpers import (
     remove_directory,
     get_container,
-    get_resource_identifier,
+    get_resource,
     get_timestamp,
 )
 
@@ -13,10 +13,9 @@ from components.helpers import (
 class FileSystem:
     
     info_root = str(Path("~", "Info").expanduser())
-    apps_root = str(Path("~", "Apps").expanduser())
 
     @staticmethod
-    def get_info_home(
+    def get_home(
         context: str,
         version: str,
         instance: str,
@@ -25,42 +24,30 @@ class FileSystem:
         home.mkdir(mode=0o700, parents=True, exist_ok=True)
         return home
     
-    @staticmethod
-    def get_application_home(
-        context: str,
-        version: str,
-        instance: str,
-        ) -> Path:
-        home = Path(FileSystem.apps_root, context, version, instance).expanduser()
-        home.mkdir(mode=0o700, parents=True, exist_ok=True)
-        return home
-    
     def __init__(self, context: str, 
                        version: str, 
                        instance: str) -> None:    
-        self._application_home: Path = FileSystem.get_application_home(context, version, instance)
-        self._info_home: Path = FileSystem.get_info_home(context, version, instance)
-        self._commands: Path = get_container(self.info_home, "Commands")
-        self._sources: Path = get_container(self.info_home, "Sources")
-        self._results: Path = get_container(self.info_home, "Results")
-        self._reports: Path = get_container(self.info_home, "Reports")
-        self._logs: Path = get_container(self.info_home, "Logs")
+        self._context = context
+        self._version = version
+        self._instance = instance
+        self._home: Path = FileSystem.get_home(context, version, instance)
+        self._commands: Path = get_container(self.home, "Commands")
+        self._storage: Path = get_container(self.home, "Storage")
+        self._results: Path = get_container(self.home, "Results")
+        self._reports: Path = get_container(self.home, "Reports")
+        self._logs: Path = get_container(self.home, "Logs")
 
     @property
-    def application_home(self) -> Path:
-        return self._application_home
-
-    @property
-    def info_home(self) -> Path:
-        return self._info_home
+    def home(self) -> Path:
+        return self._home
 
     @property
     def commands(self) -> Path:
         return self._commands
 
     @property
-    def sources(self) -> Path:
-        return self._sources
+    def storage(self) -> Path:
+        return self._storage
 
     @property
     def results(self) -> Path:
@@ -85,7 +72,7 @@ class FileSystem:
     def clear(self) -> None:
         if self.commands.exists():
             remove_directory(self.commands)
-        if self.sources.exists():
+        if self.storage.exists():
             remove_directory(self.sources)
         if self.results.exists():
             remove_directory(self.results)

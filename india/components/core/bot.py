@@ -3,7 +3,6 @@ from components.core.treestore import (SampleTaskFactory,
                                        TreeStore, 
                                        TreeStoreDriver)
 
-
 class Bot:
     def __init__(self, store: TreeStore) -> None:
         self._store = store

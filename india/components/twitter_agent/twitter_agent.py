@@ -5,7 +5,7 @@ from typing import Dict, List
 import requests
 
 from components.core import Metadata, TreeStore
-from components.helpers import get_resource_identifier
+from components.helpers import get_resource
 
 
 class TwitterAgent:
@@ -88,7 +88,7 @@ def grab_user_tweets(agent: TwitterAgent, usernames: List[str]):
 
 def grab_tweets(agent: TwitterAgent, usernames: List[str], store: TreeStore):
     new_sample = store.new_sample()
-    target_filename = get_resource_identifier(new_sample, "tweets", ".json")
+    target_filename = get_resource(new_sample, "tweets", ".json")
     with open(target_filename, "w") as target:
         for event in grab_user_tweets(agent, usernames):
             target.write(f"{event:s}\n")
@@ -97,7 +97,7 @@ def grab_tweets(agent: TwitterAgent, usernames: List[str], store: TreeStore):
 def bot_run(twitter_home: Path, bearer_token: str) -> None:
     store = TreeStore(twitter_home, "tweets_from_api")
     store.start()
-    users_filename = get_resource_identifier(twitter_home, "users", ".json")
+    users_filename = get_resource(twitter_home, "users", ".json")
     with open(users_filename, "r") as source:
         users = json.load(source)
         usernames = [u["username"] for u in users["users"]]

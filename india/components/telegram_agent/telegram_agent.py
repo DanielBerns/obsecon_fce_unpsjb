@@ -112,10 +112,14 @@ class TelegramSample:
         user_full_name: str, 
         message_text: str
         ) -> None:
+        logging.debug("write_message: 0")
         message_id = TelegramSample.get_message_id(sample)
+        logging.debug("write_message: 1")
         with open(message_id, "w") as target:
+            logging.debug("write_message: 2")            
             target.write(f"{user_full_name:s}:{message_text:s}\n")
-
+        logging.debug("write_message: 3")
+        
     @staticmethod
     def write_message_caption(
         sample: Path, 
@@ -141,7 +145,7 @@ async def process_text(update: Update, context: CustomContext) -> None:
                 update.effective_user.full_name, 
                 update.message.text)
             await update.message.reply_text(
-                f"Text: {update.message.text:s} from {user.full_name:s}"
+                f"Text: {update.message.text:s} from {update.effective_user.full_name:s}"
             )
         else:
             # None
@@ -286,7 +290,7 @@ def run(
         MessageHandler(filters.PHOTO & ~filters.COMMAND, process_photo)
     )
 
-    logging.debug("start")
+    logging.debug("start: saturday 9, september, 2023")
     # Run the bot until the user presses Ctrl-C
     application.run_polling()
-    logging.debug("stop")
+    logging.debug("stop: saturday 9, september, 2023")

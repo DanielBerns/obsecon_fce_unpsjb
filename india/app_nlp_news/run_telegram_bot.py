@@ -13,6 +13,7 @@ def main():
             app.fs.telegram,
             app.config.authorization_token["telegram"]
         )
+        print("The end!")
 
 if __name__ == "__main__":
     main()

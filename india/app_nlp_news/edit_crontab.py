@@ -7,10 +7,14 @@ from pathlib import Path
 
 from application import create_app, App
 
+def get_default_commands(commands_home: Path) -> Generator[Tuple[str, str], None, None]:
+    _h = str(self.commands_home)
+    yield (f"{_h:s}/run_bots.sh:15 * * * *", "run_bots")
+    yield (f"{_h:s}/update_repo.sh:45 * * * *", "update_repo")
+
+
 def update_crontab(app: App) -> None:
-    with open(app.fs.commands_txt, "r") as source, open(
-        app.fs.crontab_txt, "w"
-    ) as target:
+    with open(app.fs.commands_txt, "r") as source, open(app.fs.crontab_txt, "w") as target:
         for line in source:
             if len(line) < 2:
                 break

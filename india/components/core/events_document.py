@@ -3,7 +3,7 @@ from pathlib import Path
 from collections import Counter
 from typing import DefaultDict, List, Dict, Protocol, Generator, Any
 
-from components.helpers import get_directory, get_resource_identifier
+from components.helpers import get_directory, get_resource
 
 
 class EventsSource(Protocol):
@@ -44,7 +44,7 @@ class EventsStats:
 class EventsDocument:
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, "store", ".json")
+        self._store: Path = get_resource(self.directory, "store", ".json")
         self._events_stats = EventsStats()
 
     @property

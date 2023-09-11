@@ -12,7 +12,7 @@ from typing import (
     Generator,
 )
 
-from components.helpers import get_directory, get_resource_identifier
+from components.helpers import get_directory, get_resource
 
 from components.core.events_document import EventsSource
 
@@ -22,7 +22,7 @@ class RowsDocument:
 
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, "store", ".csv")
+        self._store: Path = get_resource(self.directory, "store", ".csv")
 
     @property
     def directory(self) -> Path:

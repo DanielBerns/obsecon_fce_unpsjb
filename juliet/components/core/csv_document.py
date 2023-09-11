@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import List, Dict, Protocol, Union, Optional, Tuple, DefaultDict
 
-from components.helpers import get_directory, get_resource_identifier
+from components.helpers import get_directory, get_resource
 
 from components.core.json_document import JSONDocument
 
@@ -43,7 +43,7 @@ class CSVDocument:
     
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, 'store', '.csv')
+        self._store: Path = get_resource(self.directory, 'store', '.csv')
         
     @property
     def directory(self) -> Path:

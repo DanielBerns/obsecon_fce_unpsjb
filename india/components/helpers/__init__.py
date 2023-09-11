@@ -7,8 +7,8 @@ from components.helpers.helpers import (
     read_text_lines,
     get_directory,
     get_container,
-    get_resource_identifier,
-    get_resource_identifier_with_timestamp,
+    get_resource,
+    get_resource_with_timestamp,
     remove_directory,
     get_command,
 )

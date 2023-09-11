@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict, Protocol
 
-from components.helpers import get_directory, get_resource_identifier
+from components.helpers import get_directory, get_resource
 
 
 class JSONSource(Protocol):
@@ -14,7 +14,7 @@ class JSONDocument:
 
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource_identifier(self.directory, 'store', '.json')
+        self._store: Path = get_resource(self.directory, 'store', '.json')
         
     @property
     def directory(self) -> Path:
