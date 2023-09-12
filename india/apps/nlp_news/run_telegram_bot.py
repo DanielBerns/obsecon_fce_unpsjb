@@ -8,7 +8,7 @@ def filename():
     return __file__[:-3]
 
 def main():
-    with create_app("observatorio_fce_unpsjb", "india", "test", filename) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
         print("app created!")
         update_app_sh = get_resource(app.fs.commands, "update_app", ".sh")
         run(app.fs.telegram,

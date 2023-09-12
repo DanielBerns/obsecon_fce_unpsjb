@@ -75,8 +75,6 @@ class AppNLPNews:
     def config(self) -> Config:
         return self._config
 
-import pdb
-
 @contextmanager
 def create_app(
     context: str,
@@ -88,7 +86,6 @@ def create_app(
     fs.metadata.start()
     app = AppNLPNews(fs)
 
-    pdb.set_trace()    
     logs_txt = get_resource_with_timestamp(
         fs.logs, name, '.txt')
     logging.basicConfig(
