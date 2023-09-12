@@ -23,7 +23,8 @@ def main() -> None:
                     str(update_app_sh),
                     "15", "*", "*", "*", "*")
 
-        crontab.update(app.fs.crontab_txt)
+        crontab_txt = get_resource(app.fs.crontab, "crontab", ".txt")
+        crontab.update(crontab_txt)
 
 
 if __name__ == "__main__":
