@@ -6,7 +6,7 @@ from typing import Tuple, Generator, Protocol, List, Optional
 from contextlib import contextmanager
 
 from components.core.metadata import Metadata
-from components.helpers import get_container, get_timestamp
+from components.helpers import get_container, get_resource, get_timestamp
 
 
 class TreeStoreError(Exception):
@@ -37,11 +37,9 @@ class TreeStore:
         home: path where TreeStore lives
         identifier: the name of the TreeStore
         """
-        base = get_container(home, identifier)
-        index_resource = Path(base, "index").with_suffix(".json")
-        self._base = base
-        self._tree = Path(base, "tree")
-        self._index_resource = index_resource
+        self._base = get_container(home, identifier)
+        self._tree = get_container(self.base, "tree")
+        self._index_resource = get_resource(self.base, "index", ".json")
         self._index = 0
         if self.index_resource.exists():
             # restarting treestore
