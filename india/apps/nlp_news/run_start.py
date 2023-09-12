@@ -4,6 +4,7 @@ from context import components
 from components.core import Crontab
 from nlp_news_app import create_app
 
+
 def filename():
     return __file__[:-3]
 
@@ -14,7 +15,7 @@ def main() -> None:
         crontab = Crontab()
         crontab.add("run_bots", 
                     str(app.fs.run_bots_sh),
-                    "45", "*", "*", "*", "*")
+                    "55", "*", "*", "*", "*")
         crontab.add("update_app",
                     str(app.fs.update_app_sh),
                     "15", "*", "*", "*", "*")
