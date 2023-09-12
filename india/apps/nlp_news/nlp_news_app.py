@@ -19,8 +19,8 @@ class FSNLPNews(FileSystem):
         super().__init__(context, version, instance)
         self._crontab = get_container(self.commands, "crontab")
         self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
-        self._update_app_sh = get_resource(app.fs.commands, "update_app", ".sh")
-        nlp_news_container = get_container(app.fs.commands, "nlp_news")
+        self._update_app_sh = get_resource(self.commands, "update_app", ".sh")
+        nlp_news_container = get_container(self.commands, "nlp_news")
         self._run_bots_sh = get_resource(nlp_news_container, "run_bots", ".sh")
 
         
