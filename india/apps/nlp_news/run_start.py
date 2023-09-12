@@ -2,7 +2,7 @@ import logging
 
 from context import components
 from components.core import Crontab
-
+from components.helpers import get_container, get_resource
 from nlp_news_app import create_app
 
 def filename():
