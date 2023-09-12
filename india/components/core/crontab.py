@@ -14,7 +14,7 @@ import pdb
 
 class Crontab:
     def __init__(self):
-        self._text: TextGenerator()
+        self._text = TextGenerator()
 
     @property
     def text(self) -> TextGenerator:
