@@ -143,7 +143,7 @@ class Crontab:
     
     def update(self, crontab_txt: Path) -> None:
         with open(crontab_txt, "w") as target:
-             target.write(self.content())
+             target.write(self.content() + '\n')
         cp = subprocess.run(["crontab", crontab_txt])
         if cp.returncode:
             logging.info(f"update_crontab returncode {cp.returncode:d}")
