@@ -110,7 +110,6 @@ class Crontab:
             day_of_month: str,
             month: str,
             day_of_week: str) -> None:
-        pdb.set_trace()
         try:
             _command = self.check_command(command)
             _minute = self.check_minute(minute)
@@ -145,6 +144,7 @@ class Crontab:
         return self.text.content()
     
     def update(crontab_txt: Path) -> None:
+        pdb.set_trace()
         with open(crontab_txt, "w") as target:
              target.write(self.content())
         cp = subprocess.run(["crontab", crontab_txt])
