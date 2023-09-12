@@ -7,7 +7,7 @@ from components.core.text_generator import TextGenerator
 
 # https://www.adminschoice.com/crontab-quick-reference
 
-class UpdateCrontabWarning(Exception):
+class UpdateCrontabException(Exception):
     pass
 
 
