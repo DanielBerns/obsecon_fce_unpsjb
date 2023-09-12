@@ -8,6 +8,7 @@ from nlp_news_app import create_app
 def filename():
     return __file__[:-3]
 
+import pdb
 
 def main() -> None:
     with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
@@ -22,7 +23,7 @@ def main() -> None:
         crontab.add("update_app",
                     str(update_app_sh),
                     "15", "*", "*", "*", "*")
-
+        pdb.set_trace()
         crontab_txt = get_resource(app.fs.crontab, "crontab", ".txt")
         crontab.update(crontab_txt)
 

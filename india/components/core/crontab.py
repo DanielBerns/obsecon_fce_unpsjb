@@ -10,8 +10,6 @@ from components.core.text_generator import TextGenerator
 class UpdateCrontabException(Exception):
     pass
 
-import pdb
-
 class Crontab:
     def __init__(self):
         self._text = TextGenerator()
@@ -144,7 +142,6 @@ class Crontab:
         return self.text.content()
     
     def update(crontab_txt: Path) -> None:
-        pdb.set_trace()
         with open(crontab_txt, "w") as target:
              target.write(self.content())
         cp = subprocess.run(["crontab", crontab_txt])
