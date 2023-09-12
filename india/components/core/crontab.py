@@ -117,7 +117,7 @@ class Crontab:
             _hour = self.check_hour(hour)
             _day_of_month = self.check_day_of_month(day_of_month)
             _month = self.check_month(month)
-            _day_of_week = self.check_command(day_of_week)
+            _day_of_week = self.check_day_of_week(day_of_week)
         except UpdateCrontabException as message:
             logging.info(f"{str(message):s}")
             raise UpdateCrontabException(
