@@ -73,7 +73,7 @@ async def start(update: Update, context: CustomContext) -> None:
 async def help_command(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
     await update.message.reply_text(
-        "/start, /help, /telegram, /news, /twitter, /sd, /uc"
+        "/start, /help, /telegram, /news, /twitter, /sd, /ua"
     )
 
 
@@ -230,33 +230,31 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("executing shutdown")
 
 
-async def _update_code(update_code_path: Path) -> None:
-    cwd = os.getcwd()
-    os.chdir(update_code_path)
-    cp = subprocess.run(["git", "pull"])
-    os.chdir(cwd)
+async def _update_app() -> None:
+    cp = subprocess.run([CustomContext.update_app_sh])
     if cp.returncode:
         logging.info(f"returncode {cp.returncode:d}")
 
 
-async def update_code(update: Update, context: CustomContext) -> None:
-    flag = context.bot_data.get("update_code", False)
+async def update_app(update: Update, context: CustomContext) -> None:
+    flag = context.bot_data.get("update_app", False)
     if flag:
-        logging.info("updating code")
-        await update.message.reply_text("updating code")
+        logging.info("updating app")
+        await update.message.reply_text("updating app")
         return
-    logging.info("start code update")
-    await update.message.reply_text("start code update")
-    context.bot_data["update_code"] = True
-    await _update_code(CustomContext.application_home)
-    context.bot_data["update_code"] = False
-    logging.info("end code update")
-    await update.message.reply_text("end code update")
+    logging.info("start app update")
+    await update.message.reply_text("start app update")
+    context.bot_data["update_app"] = True
+    await _update_app()
+    context.bot_data["update_app"] = False
+    logging.info("end app update")
+    await update.message.reply_text("end app update")
 
 
 def run(
     telegram_home: Path, 
-    telegram_token: str) -> None:
+    telegram_token: str,
+    update_app_sh: Path) -> None:
     """Start the agent."""
     store = TreeStore(telegram_home, "messages")
     if CustomContext.telegram_home is None:
@@ -279,7 +277,7 @@ def run(
     application.add_handler(CommandHandler("news", get_news))
     application.add_handler(CommandHandler("twitter", get_twitter))
     application.add_handler(CommandHandler("sd", shutdown))
-    application.add_handler(CommandHandler("uc", update_code))
+    application.add_handler(CommandHandler("ua", update_app))
 
     # on non commands
     application.add_handler(

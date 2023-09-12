@@ -10,8 +10,10 @@ def filename():
 def main():
     with create_app("observatorio_fce_unpsjb", "india", "test", filename) as app:
         print("app created!")
+        update_app_sh = get_resource(app.fs.commands, "update_app", ".sh")
         run(app.fs.telegram,
-            app.config.authorization_token["telegram"]
+            app.config.authorization_token["telegram"],
+            update_app_sh
         )
         print("The end!")
 
