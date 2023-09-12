@@ -10,6 +10,7 @@ from components.core.text_generator import TextGenerator
 class UpdateCrontabException(Exception):
     pass
 
+import pdb
 
 class Crontab:
     def __init__(self):
@@ -109,6 +110,7 @@ class Crontab:
             day_of_month: str,
             month: str,
             day_of_week: str) -> None:
+        pdb.set_trace()
         try:
             _command = self.check_command(command)
             _minute = self.check_minute(minute)
