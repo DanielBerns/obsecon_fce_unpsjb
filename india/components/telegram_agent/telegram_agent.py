@@ -46,15 +46,15 @@ from telegram.ext import (
 )
 
 from components.core import TreeStore, TreeStoreDriver
-from components.helpers import get_container
+from components.helpers import get_resource
 
 
 # The [ExtBot, dict, dict, dict] is for type checkers like mypy
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
-    application_home: Optional[Path] = None
     telegram_home: Optional[Path] = None
     store: Optional[TreeStore] = None
-
+    shutdown_sh: Optional[Path] = None
+    
     def __init__(
         self, application: Application, chat_id: int = None, user_id: int = None
     ):
@@ -209,7 +209,7 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     # https://phoenixnap.com/kb/linux-at-command
     command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
     logging.info(command)
-    command_path = Path(CustomContext.telegram_home, "shutdown").with_suffix(".sh")
+    command_path = CustomContext.shutdown_sh
     logging.info(str(command_path))
     with open(command_path, "w") as target:
         target.write(command)
@@ -255,17 +255,16 @@ async def update_code(update: Update, context: CustomContext) -> None:
 
 
 def run(
-    application_home: Path, 
     telegram_home: Path, 
     telegram_token: str) -> None:
     """Start the agent."""
     store = TreeStore(telegram_home, "messages")
-    if CustomContext.application_home is None:
-        CustomContext.application_home = application_home
     if CustomContext.telegram_home is None:
         CustomContext.telegram_home = telegram_home
     if CustomContext.store is None:
         CustomContext.store = store
+    if CustomContext.shutdown_sh is None:
+        CustomContext.shutdown_sh = get_resource(telegram_home, "shutdown", ".sh")
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)

@@ -1,16 +1,16 @@
-from application import create_app
-
 from context import components
 from components.telegram_agent import run
 
-NAME = "run_telegram_bot"
+from nlp_news_app import create_app
+
+
+def filename():
+    return __file__[:-3]
 
 def main():
-    with create_app("observatorio_fce_unpsjb", "india", "test", NAME) as app:
+    with create_app("observatorio_fce_unpsjb", "india", "test", filename) as app:
         print("app created!")
-        run(
-            app.fs.application_home,
-            app.fs.telegram,
+        run(app.fs.telegram,
             app.config.authorization_token["telegram"]
         )
         print("The end!")
