@@ -15,7 +15,7 @@ def main() -> None:
         crontab = Crontab()
         crontab.add("run_bots", 
                     str(app.fs.run_bots_sh),
-                    "55", "*", "*", "*", "*")
+                    "58", "*", "*", "*", "*")
         crontab.add("update_app",
                     str(app.fs.update_app_sh),
                     "15", "*", "*", "*", "*")
