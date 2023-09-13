@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 from typing import Generator
 from components.core.metadata import Metadata
+from components.helpers import get_timestamp, get_container
 
 class SampledDataset:
     def __init__(self, home: Path):
         self._home = home
-        self._metadata = Metadata(directory)
+        self._metadata = Metadata(home)
         
     @property
     def home(self) -> Path:
@@ -20,25 +21,21 @@ class SampledDataset:
         container = get_container(self.home, sample)
     
     def start(self) -> None:
-        print('SampledDataset.start')
+        print(f'SampledDataset.start at {str(self.home):s}')
     
     def stop(self) -> None:
-        print('SampledDataset.stop')
+        self.metadata.stop()
+        print(f'SampledDataset.stop  at {str(self.home):s}')
 
-    def samples(self) -> Path:
+    def walk(self) -> Path:
         for root, dirs, files in os.walk(self.home):
             for dd in dirs:
                 yield Path(self.home, dd)
  
- 
-@contextmanager
-def create_sampled_dataset(home: Path) -> Generator[SampledDataset, None, None]:
-    resource = SampledDataset(home)
-    try:
-        resource.start()
-        yield resource
-    except RuntimeError as message:
-        print(str(message))
-    finally:
-        resource.stop()
- 
+    def create_sample_path(self) -> Path:
+        timestamp = get_timestamp()
+        sample = get_container(self.home, timestamp)
+        self.metadata.add_item('samples',timestamp, {'path': str(sample)})
+        return sample
+        
+    

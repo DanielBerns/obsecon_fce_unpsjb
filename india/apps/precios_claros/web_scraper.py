@@ -1,25 +1,15 @@
- from contextlib import contextmanager
+from contextlib import contextmanager
 import requests
 import json
+import logging
 
+from typing import Dict, Generator, Tuple, Any
+from precios_claros_app import PreciosClarosException
 
 def classname(thing: Any) -> str:
     return thing.__class__.__name__
 
-
 indentation = '    '
-
-
-class WebScraperException(Exception):
-    def __init__(self, message, explanation=None):
-        super().__init__(self, message)
-        self._explanation = explanation if explanation else {}
-        self._explanation['message'] = message
-    
-    @property
-    def explanation(self):
-        return json.dumps(self._explanation)
-
 
 class WebScraper:
     def __init__(self) -> None:
@@ -83,19 +73,22 @@ class WebScraper:
                     url,
                     headers={'User-Agent': 'Mozilla/5.0'}
             )
-            logging.info(f'{indentation:s}status_code: {response.status_code:int}')
+        except Exception as message:
+            logging.debug(str(message))
+            explanation = { 'origin': f'{classname(self):s}.get_info 1',
+                            'error': str(message),
+                            'url': url}
+            raise PreciosClarosException(explanation)
+        else:
+            logging.info(f'{indentation:s}status_code: {response.status_code:d}')
             if response.status_code == 200:
                 return response.json()
             else:
-                explanation = {'origin': f'{classname(self):s}.get_info 1',
-                               'error': 'unexpected answer', 
+                explanation = {'origin': f'{classname(self):s}.get_info 2',
+                               'error': 'unexpected status_code', 
+                               'url': url,
                                'status_code': str(response.status_code)}
-                raise WebScraperException('http error', explanation=explanation)
-        except Exception as message:
-            logging.debug(str(message), exc_info=True)
-            explanation = { 'origin': 'WebScraper.get_info 2',
-                            'error': str(message)}
-            raise WebScraperException('Exception', explanation=explanation)
+                raise PreciosClarosException(explanation)
 
     def get_query_limits(self) -> Tuple[int, int, int]:
         info = self.get_info(self.points_of_sale_first_query_url)
@@ -106,11 +99,12 @@ class WebScraper:
         else:
             return self.find_query_limits(info)
 
-    def points_of_sale(self) -> None:
+    def points_of_sale(self) -> Generator[Dict[str, str], None, None]:
         logging.info(f'{classname(self):s}.points_of_sale start')
         max_number_of_pages, total, queries_per_page = self.get_query_limits()
         for page in range(1, max_number_of_pages + 1):
             this_url = self.points_of_sale_page(page, queries_per_page)
+            # print(this_url)
             info = self.get_info(this_url)
             error_message = info.get('error_message', None)
             if error_message:
@@ -126,15 +120,15 @@ class WebScraper:
         logging.info(f'{classname(self):s}.points_of_sale done')
 
 
-    def articles_per_point_of_sale(self, point_of_sale):
+    def articles_per_point_of_sale(self, point_of_sale: Dict[str, str]) -> Generator[Dict[str, str], None, None]:
         identifier = point_of_sale['identifier']
-        print('WebScraper.articles_per_point_of_sale start:', identifier)
+        print(f'{classname(self):s}.articles_per_point_of_sale start: {identifier:s}')
         articles_url = self.articles_url(identifier)
         articles_first_query_url = self.articles_first_query_url(articles_url)
         info = self.get_info(articles_first_query_url)
         error_message = info.get('error_message', None)
         if error_message:
-            logging.error(f'WebScraper.articles_per_point_of_sale 1 {str(error_message):s}')            
+            logging.error(f'{classname(self):s}.articles_per_point_of_sale 1 {str(error_message):s}')            
         else:
             max_number_of_pages, total, queries_per_page = self.query_limits(info)
             for page in range(1, max_number_of_pages + 1):
@@ -146,7 +140,7 @@ class WebScraper:
                 info = self.get_info(this_url)
                 error_message = info.get('error_message', None)
                 if error_message:
-                    logging.error(f'WebScraper.articles_per_point_of_sale 2: {page:d} - {str(error_message):s}')
+                    logging.error(f'{classname(self):s}.articles_per_point_of_sale 2: {page:d} - {str(error_message):s}')
                     continue # don't break
                 articles_list = info.get('productos', None)
                 if articles_list:
@@ -154,14 +148,14 @@ class WebScraper:
                         an_article['point_of_sale'] = identifier
                         yield an_article
                 else:
-                    logging.error(f'WebScraper.articles_per_point_of_sale 3: {page:d} - {str(info):s}')
+                    logging.error(f'{classname(self):s}.articles_per_point_of_sale 3: {page:d} - {str(info):s}')
                     # don't break
-        print('WebScraper.articles_per_point_of_sale done')
+        print(f'{classname(self):s}.articles_per_point_of_sale done')
 
 
 @contextmanager
-def create_webscraper(identifier):
-    resource = WebScraper(identifier)
+def create_webscraper():
+    resource = WebScraper()
     try:
         resource.start()
         yield resource
@@ -169,6 +163,3 @@ def create_webscraper(identifier):
         print(message)
     finally:
         resource.stop()
-
-
-

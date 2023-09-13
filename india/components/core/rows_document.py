@@ -39,7 +39,7 @@ class RowsDocument:
         pass
 
     def rows(self) -> Generator[str, None, None]:
-        with open(self.store, "r") as source:
+        with open(self.store, "r", encoding="utf-8") as source:
             header = source.readline()
             yield header
             for line in source:
@@ -48,7 +48,7 @@ class RowsDocument:
     def write(self, source: EventsSource) -> None:
         keys = source.events_stats.keys()
         header = "|".join(str(k) for k in keys)
-        with open(self.store, "w") as target:
+        with open(self.store, "w", encoding="utf-8") as target:
             target.write(header + "\n")
             for event in source.events():
                 row = "|".join(RowsDocument.function(event[k]) for k in keys)

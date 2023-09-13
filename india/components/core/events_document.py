@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from collections import Counter
+from collections import Counter, defaultdict
 from typing import DefaultDict, List, Dict, Protocol, Generator, Any
 
 from components.helpers import get_directory, get_resource
@@ -66,13 +66,13 @@ class EventsDocument:
         pass
 
     def events(self) -> Generator[Dict[Any, Any], None, None]:
-        with open(self.store, "r") as source:
+        with open(self.store, "r", encoding="utf-8") as source:
             for line in source:
                 event = json.loads(line)
                 yield event
 
     def update(self, source: EventsSource) -> None:
-        with open(self.store, "a") as target:
+        with open(self.store, "a", encoding="utf-8") as target:
             for event in source.events():
                 self.events_stats.update(event)
                 line = json.dumps(event)
