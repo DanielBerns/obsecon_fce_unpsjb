@@ -153,7 +153,7 @@ class WebScraper:
         logging.info(f"queries_per_page: {queries_per_page:d}")        
         for page in range(1, max_number_of_pages + 1):
             pdb.set_trace()
-            articles_list = get_article_list(page, articles_url, queries_per_page)
+            articles_list = self.get_article_list(page, articles_url, queries_per_page)
             if articles_list:
                 for an_article in articles_list:
                     an_article['point_of_sale'] = identifier
