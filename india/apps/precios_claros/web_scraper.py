@@ -6,7 +6,6 @@ import logging
 from typing import Dict, Generator, Tuple, Any, List
 from precios_claros_app import PreciosClarosException
 
-import pdb
 
 def classname(thing: Any) -> str:
     return thing.__class__.__name__
@@ -52,7 +51,6 @@ class WebScraper:
         return this_articles_url + '&limit=0'
 
     def articles_page(self, this_articles_url: str, page: int, queries_per_page: int) -> str:
-        pdb.set_trace()
         return f"{this_articles_url:s}&offset={(page - 1) * queries_per_page:d}&limit={queries_per_page:d}"
 
     def get_info(self, url: str) -> Dict[any, any]:
@@ -140,12 +138,10 @@ class WebScraper:
         logging.info(f"articles_url: {articles_url:s}")        
         articles_first_query_url = self.articles_first_query_url(articles_url)
         max_number_of_pages, total, queries_per_page = self.get_query_limits(articles_first_query_url)
-        pdb.set_trace()
         logging.info(f"max_number_of_pages: {max_number_of_pages:d}")
         logging.info(f"total: {total:d}")
         logging.info(f"queries_per_page: {queries_per_page:d}")        
         for page in range(1, max_number_of_pages + 1):
-            pdb.set_trace()
             articles_list = self.get_article_list(articles_url, page, queries_per_page)
             if articles_list:
                 for an_article in articles_list:

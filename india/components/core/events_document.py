@@ -5,7 +5,6 @@ from typing import DefaultDict, List, Dict, Protocol, Generator, Any
 
 from components.helpers import get_directory, get_resource
 
-import pdb
 
 class EventsSource(Protocol):
     def events(self) -> Generator[Dict[Any, Any], None, None]:
@@ -80,7 +79,6 @@ class EventsDocument:
     def update(self, source: EventsSource) -> None:
         with open(self.store, "w", encoding="utf-8") as target:
             print(str(self.store))
-            pdb.set_trace()
             for event in source.events():
                 self.events_stats.update(event)
                 line = json.dumps(event)
