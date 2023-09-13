@@ -16,7 +16,6 @@ points_of_sale_selection_patterns = [
     {'provincia': 'ar-u', 'localidad': 'rawson'},
 ]
 
-
 def filename() -> str:
     return __file__[:-3]
 

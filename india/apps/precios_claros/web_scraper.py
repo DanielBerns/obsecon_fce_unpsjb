@@ -3,13 +3,14 @@ import requests
 import json
 import logging
 
-from typing import Dict, Generator, Tuple, Any
+from typing import Dict, Generator, Tuple, Any, List
 from precios_claros_app import PreciosClarosException
 
 def classname(thing: Any) -> str:
     return thing.__class__.__name__
 
 indentation = '    '
+
 
 class WebScraper:
     def __init__(self) -> None:
@@ -35,17 +36,6 @@ class WebScraper:
     def stop(self) -> None:
         logging.info(f"{classname(self):s} stop")
 
-    def find_query_limits(self, info: Dict[any, any]) -> Tuple[int, int, int]:
-        logging.info(str(info))                
-        total = info.get('total', 0)        
-        queries_per_page = info.get('maxLimitPermitido', 0)
-        logging.info(str(info))
-        logging.info(f'total {str(total):s} queries_per_page {str(queries_per_page):s}')
-        if total > 0 and queries_per_page > 0:
-            max_number_of_pages = total // queries_per_page
-        else:
-            max_number_of_pages = 0
-        return max_number_of_pages, total, queries_per_page
 
     def points_of_sale_page(self, page: str, queries_per_page: int) -> str:
         return self.points_of_sale_url + \
@@ -90,21 +80,31 @@ class WebScraper:
                                'status_code': str(response.status_code)}
                 raise PreciosClarosException(explanation)
 
-    def get_query_limits(self) -> Tuple[int, int, int]:
-        info = self.get_info(self.points_of_sale_first_query_url)
+    def _get_query_limits(self, info: Dict[any, any]) -> Tuple[int, int, int]:
+        total = info.get('total', 0)        
+        queries_per_page = info.get('maxLimitPermitido', 0)
+        logging.info(f'total {str(total):s} queries_per_page {str(queries_per_page):s}')
+        if total > 0 and queries_per_page > 0:
+            max_number_of_pages = total // queries_per_page
+        else:
+            max_number_of_pages = 0
+        return max_number_of_pages, total, queries_per_page
+
+    def get_query_limits(self, url: str) -> Tuple[int, int, int]:
+        info = self.get_info(url)
         error_message = info.get('error_message', None)
         if error_message:
             logging.debug(str(error_message))
             return 0, 0, 0
         else:
-            return self.find_query_limits(info)
+            return self._get_query_limits(info)
 
     def points_of_sale(self) -> Generator[Dict[str, str], None, None]:
         logging.info(f'{classname(self):s}.points_of_sale start')
-        max_number_of_pages, total, queries_per_page = self.get_query_limits()
+        max_number_of_pages, total, queries_per_page = self.get_query_limits(
+            self.points_of_sale_first_query_url)
         for page in range(1, max_number_of_pages + 1):
             this_url = self.points_of_sale_page(page, queries_per_page)
-            # print(this_url)
             info = self.get_info(this_url)
             error_message = info.get('error_message', None)
             if error_message:
@@ -114,43 +114,51 @@ class WebScraper:
             if points_of_sale:
                 for a_point_of_sale in points_of_sale:
                     yield a_point_of_sale
-            else:                        
+            #else:                        
                 logging.error(f'{classname(self):s}.points_of_sale 3: page {page:d} - {str(info):s}')
                 # don't break
         logging.info(f'{classname(self):s}.points_of_sale done')
 
+    def get_article_list(self,
+                         articles_url: str,
+                         page: int,
+                         queries_per_page: int) -> List:
+        this_url = self.articles_page(
+                articles_url,
+                page,
+                queries_per_page
+        )
+        info = self.get_info(this_url)
+        error_message = info.get('error_message', None)
+        if error_message:
+            logging.warning(f'{classname(self):s}.get_article_list: {page:d} - {str(error_message):s}')
+            logging.warning(f'{str(info):s}')
+            return None
+        articles_list = info.get('productos', None)
+        return articles_list
 
     def articles_per_point_of_sale(self, point_of_sale: Dict[str, str]) -> Generator[Dict[str, str], None, None]:
         identifier = point_of_sale['identifier']
         print(f'{classname(self):s}.articles_per_point_of_sale start: {identifier:s}')
         articles_url = self.articles_url(identifier)
+        print(f"articles_url: {articles_url:s}")     
+        logging.info(f"articles_url: {articles_url:s}")        
         articles_first_query_url = self.articles_first_query_url(articles_url)
-        info = self.get_info(articles_first_query_url)
-        error_message = info.get('error_message', None)
-        if error_message:
-            logging.error(f'{classname(self):s}.articles_per_point_of_sale 1 {str(error_message):s}')            
-        else:
-            max_number_of_pages, total, queries_per_page = self.query_limits(info)
-            for page in range(1, max_number_of_pages + 1):
-                this_url = self.articles_page(
-                        articles_url,
-                        page,
-                        queries_per_page
-                )
-                info = self.get_info(this_url)
-                error_message = info.get('error_message', None)
-                if error_message:
-                    logging.error(f'{classname(self):s}.articles_per_point_of_sale 2: {page:d} - {str(error_message):s}')
-                    continue # don't break
-                articles_list = info.get('productos', None)
-                if articles_list:
-                    for an_article in articles_list:
-                        an_article['point_of_sale'] = identifier
-                        yield an_article
-                else:
-                    logging.error(f'{classname(self):s}.articles_per_point_of_sale 3: {page:d} - {str(info):s}')
-                    # don't break
-        print(f'{classname(self):s}.articles_per_point_of_sale done')
+        max_number_of_pages, total, queries_per_page = self.get_query_limits(articles_first_query_url)
+        pdb.set_trace()
+        logging.info(f"max_number_of_pages: {max_number_of_pages:d}")
+        logging.info(f"total: {total:d}")
+        logging.info(f"queries_per_page: {queries_per_page:d}")        
+        for page in range(1, max_number_of_pages + 1):
+            pdb.set_trace()
+            articles_list = get_article_list(page, articles_url, queries_per_page)
+            if articles_list:
+                for an_article in articles_list:
+                    an_article['point_of_sale'] = identifier
+                    yield an_article
+            else:
+                logging.info("empty article_list")                        
+        print(f'{classname(self):s}.articles_per_point_of_sale done {identifier:s}')
 
 
 @contextmanager

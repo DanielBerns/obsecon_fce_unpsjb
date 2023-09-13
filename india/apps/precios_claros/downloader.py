@@ -48,14 +48,12 @@ class SelectedPointsOfSaleSource(EventsSource):
     @all_the_points_of_sale.setter
     def all_the_points_of_sale(self, value: EventsDocument) -> None:
         self._all_the_points_of_sale = value
-        
 
     def events(self) -> Dict[Any, Any]:
-        pdb.set_trace()
-        for event in self.all_the_points_of_sale.events():
+        for ee in self.all_the_points_of_sale.events():
+            event = EventsDocument.lower_values(ee)
             itera = (event['provincia'] == ss['provincia'] and event['localidad'] == ss['localidad'] for ss in self.selectors)
             if any(itera):
-                pdb.set_trace()                            
                 processed_event = {
                     'identifier': event['id'],
                     'provincia': event['provincia'],
@@ -87,19 +85,20 @@ class ArticlesPerPointOfSaleSource(EventsSource):
         self._points_of_sale = value
     
     def events(self):
-        for this_point_of_sale in self.points_of_sale.load_json():
-            for article in self.web_scraper.articles_per_point_of_sale(this_point_of_sale):
-                new_article = {
-                  'identifier': (f"[{article['id']:s}]").lower(),
-                  'marca': (article['marca']).lower(),
-                  'nombre': (article['nombre']).lower(),
-                  'presentacion': (article['presentacion']).lower(),          
-                  'precio': (article['precio']).lower(),
-                  'precio_max': (article['precioMax']).lower(),
-                  'precio_min': (article['precioMin']).lower(),
-                  'point_of_sale': (article['point_of_sale']).lower()        
+        for this_point_of_sale in self.points_of_sale.events():
+            for aa in self.web_scraper.articles_per_point_of_sale(this_point_of_sale):
+                article = EventsDocument.lower_values(aa)
+                processed_article = {
+                  'identifier': article['id'],
+                  'marca': article['marca'],
+                  'nombre': article['nombre'],
+                  'presentacion': article['presentacion'],          
+                  'precio': article['precio'],
+                  'precio_max': article['precioMax'],
+                  'precio_min': article['precioMin'],
+                  'point_of_sale': article['point_of_sale']        
                 }
-                yield new_article
+                yield processed_article
 
 
 class PreciosClarosSample:
@@ -178,7 +177,16 @@ class Downloader:
         self.selected_points_of_sale_source.all_the_points_of_sale = sample.points_of_sale
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         self.articles_per_point_of_sale_source.points_of_sale = sample.selected_points_of_sale
+        pdb.set_trace()
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()
 
-
+    def test(self, sample_path: Path):
+        sample = PreciosClarosSample(sample_path)
+        sample.start()
+        # sample.points_of_sale.update(self.points_of_sale_source)
+        self.selected_points_of_sale_source.all_the_points_of_sale = sample.points_of_sale
+        sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
+        self.articles_per_point_of_sale_source.points_of_sale = sample.selected_points_of_sale
+        sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
+        sample.stop()

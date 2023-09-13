@@ -5,6 +5,7 @@ from typing import DefaultDict, List, Dict, Protocol, Generator, Any
 
 from components.helpers import get_directory, get_resource
 
+import pdb
 
 class EventsSource(Protocol):
     def events(self) -> Generator[Dict[Any, Any], None, None]:
@@ -42,6 +43,11 @@ class EventsStats:
 
 
 class EventsDocument:
+    
+    @staticmethod
+    def lower_values(event: Dict[str,Any]) -> Dict[str, str]:
+        return {key: str(value).lower() for key, value in event.items()}
+            
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
         self._store: Path = get_resource(self.directory, "store", ".json")
@@ -72,7 +78,9 @@ class EventsDocument:
                 yield event
 
     def update(self, source: EventsSource) -> None:
-        with open(self.store, "a", encoding="utf-8") as target:
+        with open(self.store, "w", encoding="utf-8") as target:
+            print(str(self.store))
+            pdb.set_trace()
             for event in source.events():
                 self.events_stats.update(event)
                 line = json.dumps(event)

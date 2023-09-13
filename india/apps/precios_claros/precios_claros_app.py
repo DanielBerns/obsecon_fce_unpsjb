@@ -100,7 +100,7 @@ def create_app(
     try:
         yield app
     except Exception as message:
-        logging.warning(f"exception: {str(message):s}\n")
+        logging.warning(f"end with exception thrown")
     finally:
         fs.metadata.stop()
         logging.info(f"stop")
