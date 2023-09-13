@@ -52,11 +52,7 @@ class WebScraper:
         return this_articles_url + '&limit=0'
 
     def articles_page(self, this_articles_url: str, page: int, queries_per_page: int) -> str:
-        return this_articles_url + \
-               '&offset=' + \
-               str((page - 1) * queries_per_page) + \
-               '&limit=' + \
-               str(queries_per_page)
+        return f"{this_articles_url:s}&offset={(page - 1) * queries_per_page:d}&limit={queries_per_page:d}"
 
     def get_info(self, url: str) -> Dict[any, any]:
         logging.info(f'url: {url:s}')
