@@ -79,7 +79,9 @@ class EventsDocument:
     def update(self, source: EventsSource) -> None:
         with open(self.store, "w", encoding="utf-8") as target:
             print(str(self.store))
-            for event in source.events():
+            for number, event in enumerate(source.events()):
                 self.events_stats.update(event)
                 line = json.dumps(event)
                 target.write(f"{line:s}\n")
+                if number % 100 == 1:
+                    print(f"#event {number:d}")
