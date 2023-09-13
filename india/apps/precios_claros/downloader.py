@@ -10,7 +10,6 @@ from context import components
 from components.core import EventsSource, EventsDocument
 from components.helpers import get_container
 
-import pdb
 
 class PointsOfSaleSource(EventsSource):
     def __init__(self, 
@@ -177,7 +176,6 @@ class Downloader:
         self.selected_points_of_sale_source.all_the_points_of_sale = sample.points_of_sale
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         self.articles_per_point_of_sale_source.points_of_sale = sample.selected_points_of_sale
-        pdb.set_trace()
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()
 
