@@ -6,6 +6,8 @@ import logging
 from typing import Dict, Generator, Tuple, Any, List
 from precios_claros_app import PreciosClarosException
 
+import pdb
+
 def classname(thing: Any) -> str:
     return thing.__class__.__name__
 
