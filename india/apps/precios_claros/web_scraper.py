@@ -52,6 +52,7 @@ class WebScraper:
         return this_articles_url + '&limit=0'
 
     def articles_page(self, this_articles_url: str, page: int, queries_per_page: int) -> str:
+        pdb.set_trace()
         return f"{this_articles_url:s}&offset={(page - 1) * queries_per_page:d}&limit={queries_per_page:d}"
 
     def get_info(self, url: str) -> Dict[any, any]:
@@ -121,11 +122,7 @@ class WebScraper:
                          articles_url: str,
                          page: int,
                          queries_per_page: int) -> List:
-        this_url = self.articles_page(
-                articles_url,
-                page,
-                queries_per_page
-        )
+        this_url = self.articles_page(articles_url, page, queries_per_page)
         info = self.get_info(this_url)
         error_message = info.get('error_message', None)
         if error_message:
@@ -149,7 +146,7 @@ class WebScraper:
         logging.info(f"queries_per_page: {queries_per_page:d}")        
         for page in range(1, max_number_of_pages + 1):
             pdb.set_trace()
-            articles_list = self.get_article_list(page, articles_url, queries_per_page)
+            articles_list = self.get_article_list(articles_url, page, queries_per_page)
             if articles_list:
                 for an_article in articles_list:
                     an_article['point_of_sale'] = identifier
