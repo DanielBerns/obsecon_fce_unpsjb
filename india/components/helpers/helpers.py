@@ -4,11 +4,17 @@ import datetime
 import json
 import os
 from pathlib import Path
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 from shutil import rmtree
 
 
 indentation = "    "
+
+def classname(thing: Any) -> str:
+    return thing.__class__.__name__
+
+def i(n: int) -> str:
+    return indentation * n
 
 def get_timestamp() -> str:
     now = datetime.datetime.now()

@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Tuple
 from components.core.metadata import Metadata
 from components.helpers import get_timestamp, get_container
 
@@ -17,9 +17,6 @@ class SampledDataset:
     def metadata(self) -> Metadata:
         return self._metadata
 
-    def sample_container(self, identifier: str) -> Path:
-        container = get_container(self.home, sample)
-    
     def start(self) -> None:
         print(f'SampledDataset.start at {str(self.home):s}')
     
@@ -32,10 +29,8 @@ class SampledDataset:
             for dd in dirs:
                 yield Path(self.home, dd)
  
-    def create_sample_path(self) -> Path:
+    def create_sample(self) -> Tuple[str, Path]:
         timestamp = get_timestamp()
-        sample = get_container(self.home, timestamp)
-        self.metadata.add_item('samples',timestamp, {'path': str(sample)})
-        return sample
-        
-    
+        sample_path = get_container(self.home, timestamp)
+        self.metadata.add(timestamp, 'created', str(sample_path))
+        return timestamp, sample_path

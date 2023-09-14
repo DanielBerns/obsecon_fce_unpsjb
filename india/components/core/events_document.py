@@ -47,9 +47,12 @@ class EventsDocument:
     def lower_values(event: Dict[str,Any]) -> Dict[str, str]:
         return {key: str(value).lower() for key, value in event.items()}
             
-    def __init__(self, directory: Path) -> None:
+    def __init__(self, 
+                 directory: Path, 
+                 name: str = "store",
+                 suffix: str = ".json") -> None:
         self._directory: Path = get_directory(directory)
-        self._store: Path = get_resource(self.directory, "store", ".json")
+        self._store: Path = get_resource(self.directory, name, suffix)
         self._events_stats = EventsStats()
 
     @property
@@ -76,12 +79,13 @@ class EventsDocument:
                 event = json.loads(line)
                 yield event
 
-    def update(self, source: EventsSource) -> None:
-        with open(self.store, "w", encoding="utf-8") as target:
+    def update(self, source: EventsSource, mode="w") -> None:
+        _mode = "a" if mode != "w" else "w"
+        with open(self.store, _mode, encoding="utf-8") as target:
             print(str(self.store))
             for number, event in enumerate(source.events()):
                 self.events_stats.update(event)
                 line = json.dumps(event)
                 target.write(f"{line:s}\n")
                 if number % 100 == 1:
-                    print(f"#event {number:d}")
+                    print(f"event #{number:d}")

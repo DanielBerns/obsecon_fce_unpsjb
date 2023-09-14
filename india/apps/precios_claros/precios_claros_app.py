@@ -7,6 +7,7 @@ from context import components
 
 from components.core import Config, FileSystem, Metadata
 from components.helpers import (get_container, 
+                                get_timestamp,
                                 get_resource, 
                                 get_resource_with_timestamp)
 
@@ -14,13 +15,13 @@ from components.helpers import (get_container,
 class PreciosClarosException(Exception):
     def __init__(self, explanation: Dict[str, str]) -> None:
         super().__init__(self)
-        self._explanation = explanation if explanation else {"message": "PreciosClarosException"}
+        self._explanation = explanation if explanation else {"error_message": "empty explanation"}
 
     @property
     def explanation(self) -> Dict[str, str]:
         return self._explanation    
 
-    def __str__() -> str:
+    def __str__(self) -> str:
         return json.dumps(self.explanation)
 
 
@@ -87,10 +88,10 @@ def create_app(
 
     fs = FSPreciosClaros(context, version, instance)
     fs.metadata.start()
+    fs.metadata.add(get_timestamp(), name, "start")
     app = AppPreciosClaros(fs)
 
-    logs_txt = get_resource_with_timestamp(
-        fs.logs, name, '.txt')
+    logs_txt = get_resource_with_timestamp(fs.logs, name, '.txt')
     logging.basicConfig(
         filename=logs_txt, 
         level=app.config.log_level
@@ -100,7 +101,8 @@ def create_app(
     try:
         yield app
     except Exception as message:
-        logging.warning(f"end with exception thrown")
+        logging.warning(f"Warning: {str(message):s}")
     finally:
+        fs.metadata.add(get_timestamp(), name, "stop")        
         fs.metadata.stop()
         logging.info(f"stop")
