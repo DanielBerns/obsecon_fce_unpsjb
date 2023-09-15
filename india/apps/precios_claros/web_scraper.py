@@ -5,18 +5,22 @@ import logging
 
 from typing import Dict, Generator, Tuple, Any, List
 from precios_claros_app import PreciosClarosException
-from components import classname, i
+from components.helpers import classname, i, get_timestamp
 
 
 class WebScraper:
     def __init__(self) -> None:
-        self._remote_home = 'https://d3e6htiiul5ek9.cloudfront.net/dev/'
-        self._points_of_sale_url = self.remote_home + 'sucursales'
+        self._home = 'https://d3e6htiiul5ek9.cloudfront.net/dev/'
+        self._points_of_sale_url = self.home + 'sucursales'
         self._points_of_sale_first_query_url = self.points_of_sale_url + '?limit=0'
 
     @property
-    def remote_home(self) -> str:
-        return self._remote_home
+    def run_identifier(self) -> str:
+        return get_timestamp()
+    
+    @property
+    def home(self) -> str:
+        return self._home
 
     @property
     def points_of_sale_url(self) -> str:
@@ -41,7 +45,7 @@ class WebScraper:
         return self.build_url(self.points_of_sale_url, page, queries_per_page)
 
     def articles_per_point_of_sale_url(self, point_of_sale: str) -> str:
-        return self.remote_home + 'productos?id_sucursal=' + point_of_sale
+        return self.home + 'productos?id_sucursal=' + point_of_sale
 
     def articles_next_query_url(
         self, 
@@ -50,7 +54,7 @@ class WebScraper:
         queries_per_page: int) -> str:
         return f"{this_articles_url:s}&offset={(page - 1) * queries_per_page:d}&limit={queries_per_page:d}"
 
-    def get_info(self, url: str) -> Dict[any, any]:
+    def get_info(self, url: str) -> Dict[Any, Any]:
         logging.info(f'url: {url:s}')
         try:
             response = requests.get(
@@ -159,7 +163,7 @@ class WebScraper:
             else:
                logging.info(f'{classname(self):s}.articles_per_point_of_sale 3:'
                             f'{identifier:s}')
-                logging.info(f"{i(2):s}empty article_list")                        
+               logging.info(f"{i(2):s}empty article_list")                        
         logging.info(f'{classname(self):s}.articles_per_point_of_sale 1:'
                      f'done {identifier:s}')
 

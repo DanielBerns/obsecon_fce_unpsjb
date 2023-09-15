@@ -1,6 +1,11 @@
 import logging
-from typing import Dict, Generator
-from components.helpers import classname, i
+from pathlib import Path
+from typing import Dict, Generator, Optional, List, Tuple
+
+from components.helpers import classname, i, get_container, get_timestamp
+from components.core import EventsDocument
+
+import pdb
 
 class HotelScraper:
     def __init__(self, home: Path) -> None:
@@ -13,6 +18,10 @@ class HotelScraper:
         return self._home
 
     @property
+    def run_identifier(self) -> str:
+        return self.home.parts[-1]
+
+    @property
     def cache(self) -> Optional[List[Dict[str, str]]]:
         return self._cache
 
@@ -21,25 +30,31 @@ class HotelScraper:
         self._cache = value
 
     @property
-    def cache_index(self) -> Dict[str, Tuple[int, int]:
+    def cache_index(self) -> Dict[str, Tuple[int, int]]:
         return self._cache_index
 
     def start(self) -> None:
         logging.info(f"{classname(self):s}.start")
-        container = get_container(self.home, 'points_of_sale')
+        container = get_container(self.home, 'articles_per_point_of_sale')
         doc = EventsDocument(container, "info", ".json.csv")
-        self.cache = [{str(key): str(value).lower()} for key, value in event.items()] 
+        self.cache = [{str(key): str(value).lower() for key, value in event.items()} \
+            for event in doc.events()]
         first_event = self.cache[0]
-        last_key = first_event['identifier']
+        current_key = first_event['point_of_sale']
         cursor = begin = end = 0
         for event in self.cache[1:]:
-            if event['identifier'] == last_key:
+            if event['point_of_sale'] != current_key:
                 cursor += 1
-            else:
                 end = cursor
-                self.cache_index[last_key] = (begin, end)
-                last_key = event['identifier']
-                begin = cursor
+                self.cache_index[current_key] = (begin, end)
+                print(current_key, begin, end)
+                current_key = event['point_of_sale']
+                begin = end = cursor
+            else:
+                cursor += 1
+        end = cursor + 1
+        self.cache_index[current_key] = (begin, end)
+        print(current_key, begin, end)        
     
     def stop(self) -> None:
         logging.info(f"{classname(self):s}.stop")
@@ -48,9 +63,17 @@ class HotelScraper:
         logging.info(f"{classname(self):s}.points_of_sale")        
         container = get_container(self.home, 'points_of_sale')
         doc = EventsDocument(container, "info", ".json.csv")
-        for event in docs.events():
-            pos = {str(key): str(value).lower()} for key, value in event.items()}
+        for event in doc.events():
+            pos = {str(key): str(value).lower() for key, value in event.items()}
             yield pos 
+            
+    def selected_points_of_sale(self) -> Generator[Dict[str, str], None, None]:
+        logging.info(f"{classname(self):s}.selected_points_of_sale")        
+        container = get_container(self.home, 'selected_points_of_sale')
+        doc = EventsDocument(container, "info", ".json.csv")
+        for event in doc.events():
+            pos = {str(key): str(value).lower() for key, value in event.items()}
+            yield pos         
 
     def articles_per_point_of_sale(
         self, 
@@ -59,6 +82,6 @@ class HotelScraper:
         logging.info(f"{classname(self):s}.articles_per_point_of_sale")
         identifier = point_of_sale['identifier']
         begin, end = self.cache_index[identifier]
-        for event in self.cache[begin, end]:
-            appos = {str(key): str(value).lower()} for key, value in event.items()}
+        for event in self.cache[begin: end]:
+            appos = {str(key): str(value).lower() for key, value in event.items()}
             yield appos 

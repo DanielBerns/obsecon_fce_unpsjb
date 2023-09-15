@@ -1,7 +1,10 @@
 import logging
+from pathlib import Path
 from precios_claros_app import create_app
-from web_scraper import WebScraper
-from downloader import Downloader
+from pc_scraper import PreciosClarosScraper
+from hotel_scraper import HotelScraper
+
+from sampler import Sampler
 from context import components
 from components.core import SampledDataset
 
@@ -19,21 +22,23 @@ points_of_sale_selection_patterns = [
 def filename() -> str:
     return __file__[:-3]
 
-def main() -> None:
+def run(scraper: PreciosClarosScraper) -> None:
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
         logging.info("app created!")
-        scraper = WebScraper()
-        downloader = Downloader(scraper, points_of_sale_selection_patterns)
+        identifier = scraper.run_identifier
+        sampler = Sampler(scraper, points_of_sale_selection_patterns)
         downloads = SampledDataset(app.fs.precios_claros)
-        downloader.start()
+        sampler.start()
         downloads.start()
-        sample_key, sample_path = downloads.create_sample()
-        downloader.write(sample_path)
+        sample_key, sample_path = downloads.create_sample(identifier)
+        sampler.write(sample_path)
         downloads.metadata.add(sample_key, "written", "done")
         downloads.stop()        
-        downloader.stop()
+        sampler.stop()
         logging.info("stop!")        
 
 
 if __name__ == "__main__":
-    main()
+    home = Path("~/Data/precios_claros/hotel/downloads/202207292244/")
+    scraper = HotelScraper(home.expanduser())
+    run(scraper)

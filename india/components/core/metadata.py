@@ -1,5 +1,6 @@
 from collections import defaultdict, Counter
 import datetime
+import logging
 import json
 from pathlib import Path
 from typing import Dict, Tuple, DefaultDict, Generator
@@ -10,7 +11,6 @@ from components.helpers import (
     get_timestamp,
     get_resource,
 )
-
 
 class Metadata:
     chrF = chr(15)
@@ -48,7 +48,7 @@ class Metadata:
         with open(self.resource, "r") as source:
             for number, line in enumerate(source):
                 try:
-                    parts = line.split(chrF)
+                    parts = line.split(Metadata.chrF)
                     name, value_json = parts[0], parts[1]
                     value = json.loads(value_json)
                     event = self.events[name]
@@ -56,11 +56,11 @@ class Metadata:
                         event[k] = v
                 except IndexError:
                     logging.warning("components.core.Metadata.load_events")
-                    logging.warning(f"  error at {str(self.store):s} #{number:d}")  
+                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")  
                     logging.warning(f"  {line:s}")
                 except AttributeError:
                     logging.warning("components.core.Metadata.load_events")
-                    logging.warning(f"  error at {str(self.store):s} #{number:d}")  
+                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")  
                     logging.warning(f"  {value_json}")                    
 
     def save_events(self) -> None:

@@ -8,56 +8,81 @@ from typing import Dict, Optional, Generator, Any, List
 from pc_scraper import PreciosClarosScraper
 from context import components
 from components.core import EventsSource, EventsDocument
-from components.helpers import get_container
+from components.helpers import get_container, i
 
 
-class PointsOfSaleSource(EventsSource):
-    def __init__(self, 
-                 identifier: str, 
-                 scraper: PreciosClarosScraper):
-        super().__init__(identifier)
-        self._web_scraper = scraper
+class PointsOfSale:
+    def __init__(self, scraper: PreciosClarosScraper):
+        self._scraper: PreciosClarosScraper = scraper
         
     @property
     def scraper(self) -> PreciosClarosScraper:
-        return self._web_scraper
+        return self._scraper
     
     def events(self) -> Generator[Dict[Any, Any], None, None]:
         for number, event in enumerate(self.scraper.points_of_sale()):
             if number % 100 == 1:
-                print("event #{number:d}")
+                print(f"event #{number:d}")
             yield event
-        
 
-class SelectedPointsOfSaleSource(EventsSource):
+
+
+
+class ArticlesPerPointOfSale:
+    def __init__(self, scraper: PreciosClarosScraper) -> None:
+        self._scraper: PreciosClarosScraper = scraper
+
+    @property
+    def scraper(self) -> PreciosClarosScraper:
+        return self._scraper
+
+    def events(self, point_of_sale: Dict[any, any]) -> Generator[Dict[any, any], None, None]:
+        for number, article in enumerate(self.scraper.articles_per_point_of_sale(point_of_sale)):        
+            if number % 100 == 1:
+                print(f'{i(1):s}event #{number:d}')
+            yield article
+
+
+class SelectedPointsOfSaleSource(SelectedEventsSource):
     def __init__(self, 
-                 identifier: str, 
                  selectors: List[Dict[str, str]]
-                 ):
-        super().__init__(identifier)
+                 ) -> None:
+        super().__init__()
         self._selectors = selectors
-        self._all_the_points_of_sale: Optional[EventsDocument] = None
 
     @property        
     def selectors(self) -> List[Dict[str, str]]:
         return self._selectors
-    
-    @property        
-    def all_the_points_of_sale(self) -> Optional[EventsDocument]:
-        return self._all_the_points_of_sale
-    
-    @all_the_points_of_sale.setter
-    def all_the_points_of_sale(self, value: EventsDocument) -> None:
-        self._all_the_points_of_sale = value
 
-    def events(self) -> Dict[Any, Any]:
-        for ee in self.all_the_points_of_sale.events():
-            event = EventsDocument.lower_values(ee)
-            itera = (event['provincia'] == ss['provincia'] and \
-                     event['localidad'] == ss['localidad'] \
-                         for ss in self.selectors)
-            if any(itera):
-                processed_event = {
+    def select_event(self, event: Dict[Any, Any]) -> bool:
+        itera = (event['provincia'] == ss['provincia'] and \
+                 event['localidad'] == ss['localidad'] \
+                     for ss in self.selectors)
+        return any(itera)
+
+
+class SelectedPointsOfSaleReader:
+    def __init__(self) -> None:
+        self._scraper: PreciosClarosScraper = scraper
+        
+    @property
+    def scraper(self) -> PreciosClarosScraper:
+        return self._scraper
+    
+    def events(self) -> Generator[Dict[Any, Any], None, None]:
+        for number, event in enumerate(self.scraper.selected_points_of_sale()):
+            if number % 100 == 1:
+                print(f"event #{number:d}")
+            yield event
+
+
+class ProcessedPointsOfSaleSource(ProcessedEventsSource):
+    def __init__(self):
+        super().__init__()
+
+    def process_event(self, x: Dict[Any, Any]) -> Dict[Any, Any]:
+        event = Events.lower_values(x)
+        processed_event = {
                     'identifier': event['id'],
                     'provincia': event['provincia'],
                     'localidad': event['localidad'],
@@ -66,46 +91,31 @@ class SelectedPointsOfSaleSource(EventsSource):
                     'comercio' : event['comercioRazonSocial'],
                     'sucursal' : event['sucursalNombre'],
                     }
-                yield processed_event
+        return processed_event
 
-  
-class ArticlesPerPointOfSaleSource(EventsSource):
-    def __init__(self, identifier: str, scraper: PreciosClarosScraper) -> None:
-        super().__init__(identifier)
-        self._web_scraper: PreciosClarosScraper = scraper
-        self._points_of_sale: Optional[EventsSource] = None 
-        
-    @property
-    def scraper(self) -> PreciosClarosScraper:
-        return self._web_scraper
+            
+class ArticlesPerPointOfSaleDriver(CompositeEventsDriver):
+    def __init__(self, 
+                 points_of_sale: PointsOfSale,
+                 articles_per_point_of_sale: ArticlesPerPointOfSale) -> None:
+        super().__init__()
+        self.events_source = points_of_sale
+        self.events_processor = articles_per_point_of_sale
 
-    @property
-    def points_of_sale(self) -> EventsSource:
-        return self._points_of_sale
-    
-    @points_of_sale.setter
-    def points_of_sale(self, value: EventsSource) -> None:
-        self._points_of_sale = value
-    
     def events(self):
-        for this_point_of_sale in self.points_of_sale.events():
-            for number, aa in enumerate(
-                self.scraper.articles_per_point_of_sale(
-                    this_point_of_sale)):
-                if number % 100 == 1:
-                    print(f'{i(1):s}event #{number:d}')
-                article = EventsDocument.lower_values(aa)
-                processed_article = {
-                  'identifier': article['id'],
-                  'marca': article['marca'],
-                  'nombre': article['nombre'],
-                  'presentacion': article['presentacion'],          
-                  'precio': article['precio'],
-                  'precio_max': article['precioMax'],
-                  'precio_min': article['precioMin'],
-                  'point_of_sale': article['point_of_sale']        
-                }
-                yield processed_article
+        for article_0 in super().events():
+            article_1 = Events.lower_values(article_0)
+            article_2 = {
+              'identifier': article_1['id'],
+              'marca': article_1['marca'],
+              'nombre': article_1['nombre'],
+              'presentacion': article_1['presentacion'],          
+              'precio': article_1['precio'],
+              'precio_max': article_1['precioMax'],
+              'precio_min': article_1['precioMin'],
+              'point_of_sale': article_1['point_of_sale']        
+            }
+            yield article_2
 
 
 class PreciosClarosSample:
@@ -147,18 +157,34 @@ class PreciosClarosSample:
 
 class Sampler:
    
-    def __init__(self, 
-                 scraper: PreciosClarosScraper, 
-                 selectors: Dict[str, str]):
-        self._web_scraper = scraper
-        self._points_of_sale_source = PointsOfSaleSource('Sampler.points_of_sale', self.scraper)
-        self._selected_points_of_sale_source = SelectedPointsOfSaleSource('Sampler.selected_points_of_sale', selectors)
-        self._articles_per_point_of_sale_source = ArticlesPerPointOfSaleSource('Sampler.articles_per_point_of_sale', self.scraper)
-
-    @property
-    def scraper(self) -> PreciosClarosScraper:
-        return self._web_scraper
+    @staticmethod
+    def create_sample_from_web(selectors: Dict[str, str]) -> Sampler:
+        scraper = WebScraper()  
+        pos = PointsOfSaleSource(scraper)        
+        spos = SelectedPointsOfSaleSelector(selectors)
+        spos.events_source = pos
+        appos = ArticlesPerPointOfSaleDriver(self.scraper)
+        appos.event_source = appos
+        return Sampler(scraper, pos, spos, appos)
     
+    @staticmethod
+    def create_hotel_sampler() -> Sampler:
+        scraper = HotelScraper()
+        pos = PointsOfSaleSource(scraper)        
+        spos = SelectedPointsOfSaleReader(scraper)
+        appos = ArticlesPerPointOfSaleDriver(scraper)
+        return Sampler(scraper, pos, spos, appos)
+
+
+    def __init__(self, 
+                 points_of_sale_source: EventsSource,
+                 selected_points_of_sale_source: EventsSource,
+                 articles_per_point_of_sale_source: EventsSource
+                 ) -> None:
+        self._points_of_sale_source = points_of_sale_source
+        self._selected_points_of_sale_source = selected_points_of_sale_source
+        self._articles_per_point_of_sale_source = articles_per_point_of_sale_source
+
     @property
     def points_of_sale_source(self) -> PointsOfSaleSource:
         return self._points_of_sale_source
@@ -173,26 +199,18 @@ class Sampler:
     
     def start(self) -> None:
         logging.info("start")
+        # self.scraper.start()
         
     def stop(self) -> None:
+        # self.scraper.stop()        
         logging.info("stop")
         
     def write(self, sample_path: Path):
         sample = PreciosClarosSample(sample_path)
         sample.start()
         sample.points_of_sale.update(self.points_of_sale_source)
-        self.selected_points_of_sale_source.all_the_points_of_sale = sample.points_of_sale
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
-        self.articles_per_point_of_sale_source.points_of_sale = sample.selected_points_of_sale
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()
 
-    def test(self, sample_path: Path):
-        sample = PreciosClarosSample(sample_path)
-        sample.start()
-        # sample.points_of_sale.update(self.points_of_sale_source)
-        self.selected_points_of_sale_source.all_the_points_of_sale = sample.points_of_sale
-        sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
-        self.articles_per_point_of_sale_source.points_of_sale = sample.selected_points_of_sale
-        sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
-        sample.stop()
+ 

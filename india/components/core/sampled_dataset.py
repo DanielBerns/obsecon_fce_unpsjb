@@ -29,8 +29,8 @@ class SampledDataset:
             for dd in dirs:
                 yield Path(self.home, dd)
  
-    def create_sample(self) -> Tuple[str, Path]:
-        timestamp = get_timestamp()
-        sample_path = get_container(self.home, timestamp)
-        self.metadata.add(timestamp, 'created', str(sample_path))
-        return timestamp, sample_path
+    def create_sample(self, identifier: str) -> Tuple[str, Path]:
+        sample_path = get_container(self.home, identifier)
+        self.metadata.add(identifier, 'created', str(sample_path))
+        self.metadata.add(identifier, 'created.timestamp', get_timestamp())        
+        return identifier, sample_path
