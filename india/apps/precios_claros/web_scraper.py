@@ -80,45 +80,53 @@ class WebScraper:
                 # raise PreciosClarosException(explanation)
                 return explanation
 
-    def _get_query_limits(self, info: Dict[any, any]) -> Tuple[int, int, int]:
+    def _get_query_limits(self, info: Dict[any, any]) -> Tuple[int, int, int, int]:
         total = info.get('total', 0)        
         queries_per_page = info.get('maxLimitPermitido', 0)
         logging.info(f'total {str(total):s} queries_per_page {str(queries_per_page):s}')
         if total > 0 and queries_per_page > 0:
             max_number_of_pages = total // queries_per_page
+            last_page = total % queries_per_page
         else:
             max_number_of_pages = 0
-        return max_number_of_pages, total, queries_per_page
+            last_page = 0
+        return max_number_of_pages, total, queries_per_page, last_page
 
     def get_query_limits(self, url: str) -> Tuple[int, int, int]:
         info = self.get_info(url)
         error_message = info.get('error_message', None)
         if error_message:
             logging.debug(str(error_message))
-            return 0, 0, 0
+            return 0, 0, 0, 0
         else:
             return self._get_query_limits(info)
 
+    def _points_of_sale(self, page, queries_per_page) -> Generator[Dict[str, str], None, None]:
+        this_url = self.points_of_sale_next_query_url(page, queries_per_page)
+        info = self.get_info(this_url)
+        error_message = info.get('error_message', None)
+        if error_message:
+            logging.warning(f'{classname(self):s}.points_of_sale 2: '\
+                            f'page {page:d} - {str(error_message):s}')
+            continue
+        points_of_sale = info.get('sucursales', None)
+        if points_of_sale:
+            for a_point_of_sale in points_of_sale:
+                yield a_point_of_sale
+        else:                        
+            logging.warning(f'{classname(self):s}.points_of_sale 3: '\
+                            f'page {page:d} - {str(info):s}')
+            # don't break
+            
     def points_of_sale(self) -> Generator[Dict[str, str], None, None]:
         logging.info(f'{classname(self):s}.points_of_sale 1: start')
-        max_number_of_pages, total, queries_per_page = self.get_query_limits(
+        max_number_of_pages, total, queries_per_page, last_page = self.get_query_limits(
             self.points_of_sale_first_query_url())
-        for page in range(1, max_number_of_pages + 1):
-            this_url = self.points_of_sale_next_query_url(page, queries_per_page)
-            info = self.get_info(this_url)
-            error_message = info.get('error_message', None)
-            if error_message:
-                logging.warning(f'{classname(self):s}.points_of_sale 2: '\
-                                f'page {page:d} - {str(error_message):s}')
-                continue
-            points_of_sale = info.get('sucursales', None)
-            if points_of_sale:
-                for a_point_of_sale in points_of_sale:
-                    yield a_point_of_sale
-            else:                        
-                logging.warning(f'{classname(self):s}.points_of_sale 3: '\
-                                f'page {page:d} - {str(info):s}')
-                # don't break
+        for page in range(1, max_number_of_pages):
+            for pos in self._points_of_sale(page, queries_per_page):
+                yield pos
+        for pos in self._points_of_sale(max_number_of_pages, last_page):
+            yield pos
         logging.info(f'{classname(self):s}.points_of_sale 4: done')
 
     def get_article_list(self,
@@ -138,6 +146,17 @@ class WebScraper:
         logging.info(f'{classname(self):s}.get_article_list 3: done')        
         return articles_list
 
+    def _articles_per_point_of_sale(self, articles_url, page, queries_per_page) -> Generator[Dict[str, str], None, None]:
+        articles_list = self.get_article_list(articles_url, page, queries_per_page)
+        if articles_list:
+            for an_article in articles_list:
+                an_article['point_of_sale'] = identifier
+                yield an_article
+        else:
+           logging.info(f'{classname(self):s}.articles_per_point_of_sale 3:'
+                        f'{identifier:s}')
+           logging.info(f"{i(2):s}empty article_list")                        
+
     def articles_per_point_of_sale(self, 
                                    point_of_sale: Dict[str, str]
                                    ) -> Generator[Dict[str, str], None, None]:
@@ -148,28 +167,21 @@ class WebScraper:
         print(f"articles_url: {articles_url:s}")     
         logging.info(f"articles_url: {articles_url:s}")        
         articles_first_query_url = self.articles_first_query_url(articles_url)
-        max_number_of_pages, total, queries_per_page = self.get_query_limits(articles_first_query_url)
+        max_number_of_pages, total, queries_per_page, last_page = self.get_query_limits(
+            articles_first_query_url)
         logging.info(f'{classname(self):s}.articles_per_point_of_sale 2:'
                      f'{identifier:s}')
         logging.info(f"{i(1):s}max_number_of_pages: {max_number_of_pages:d}")
         logging.info(f"{i(1):s}total: {total:d}")
         logging.info(f"{i(1):s}queries_per_page: {queries_per_page:d}")        
         for page in range(1, max_number_of_pages + 1):
-            articles_list = self.get_article_list(articles_url, page, queries_per_page)
-            if articles_list:
-                for an_article in articles_list:
-                    an_article['point_of_sale'] = identifier
-                    yield an_article
-            else:
-               logging.info(f'{classname(self):s}.articles_per_point_of_sale 3:'
-                            f'{identifier:s}')
-               logging.info(f"{i(2):s}empty article_list")                        
+            self._articles_per_point_of_sale(articles_url, page, queries_per_page)
         logging.info(f'{classname(self):s}.articles_per_point_of_sale 1:'
                      f'done {identifier:s}')
 
 
 @contextmanager
-def create_webscraper():
+def create_web_scraper():
     resource = WebScraper()
     try:
         resource.start()

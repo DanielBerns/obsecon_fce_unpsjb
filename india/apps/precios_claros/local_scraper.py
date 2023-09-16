@@ -7,7 +7,7 @@ from components.core import EventsDocument
 
 import pdb
 
-class HotelScraper:
+class LocalScraper:
     def __init__(self, home: Path) -> None:
         self._home: Path = home
         self._cache: Optional[List[Dict[str, str]]] = None
@@ -85,3 +85,15 @@ class HotelScraper:
         for event in self.cache[begin: end]:
             appos = {str(key): str(value).lower() for key, value in event.items()}
             yield appos 
+            
+            
+@contextmanager
+def create_local_scraper():
+    resource = LocalScraper()
+    try:
+        resource.start()
+        yield resource
+    except RuntimeError as message:
+        print(message)
+    finally:
+        resource.stop()
