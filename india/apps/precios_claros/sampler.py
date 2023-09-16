@@ -3,11 +3,18 @@ import json
 import logging
 from pathlib import Path
 
-from typing import Dict, Optional, Generator, Any, List
+from typing import Dict, Optional, Generator, Any, List, Tuple
 
 from pc_scraper import PreciosClarosScraper
+from web_scraper import WebScraper
+from hotel_scraper import HotelScraper
 from context import components
-from components.core import EventsSource, EventsDocument
+from components.core import (EventsSource, 
+                             EventsDocument, 
+                             SelectedEventsSource,
+                             ProcessedEventsSource,
+                             CompositeEventsDriver,
+                             Events)
 from components.helpers import get_container, i
 
 
@@ -43,10 +50,8 @@ class ArticlesPerPointOfSale:
             yield article
 
 
-class SelectedPointsOfSaleSource(SelectedEventsSource):
-    def __init__(self, 
-                 selectors: List[Dict[str, str]]
-                 ) -> None:
+class SelectedPointsOfSaleGenerator(SelectedEventsSource):
+    def __init__(self, selectors: List[Dict[str, str]]) -> None:
         super().__init__()
         self._selectors = selectors
 
@@ -62,7 +67,7 @@ class SelectedPointsOfSaleSource(SelectedEventsSource):
 
 
 class SelectedPointsOfSaleReader:
-    def __init__(self) -> None:
+    def __init__(self, scraper: PreciosClarosScraper) -> None:
         self._scraper: PreciosClarosScraper = scraper
         
     @property
@@ -73,7 +78,7 @@ class SelectedPointsOfSaleReader:
         for number, event in enumerate(self.scraper.selected_points_of_sale()):
             if number % 100 == 1:
                 print(f"event #{number:d}")
-            yield event
+            yield Events.lower_values(event)
 
 
 class ProcessedPointsOfSaleSource(ProcessedEventsSource):
@@ -81,6 +86,7 @@ class ProcessedPointsOfSaleSource(ProcessedEventsSource):
         super().__init__()
 
     def process_event(self, x: Dict[Any, Any]) -> Dict[Any, Any]:
+        # pdb.set_trace()
         event = Events.lower_values(x)
         processed_event = {
                     'identifier': event['id'],
@@ -95,12 +101,8 @@ class ProcessedPointsOfSaleSource(ProcessedEventsSource):
 
             
 class ArticlesPerPointOfSaleDriver(CompositeEventsDriver):
-    def __init__(self, 
-                 points_of_sale: PointsOfSale,
-                 articles_per_point_of_sale: ArticlesPerPointOfSale) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.events_source = points_of_sale
-        self.events_processor = articles_per_point_of_sale
 
     def events(self):
         for article_0 in super().events():
@@ -158,51 +160,66 @@ class PreciosClarosSample:
 class Sampler:
    
     @staticmethod
-    def create_sample_from_web(selectors: Dict[str, str]) -> Sampler:
+    def create_sample_from_web(selectors: Dict[str, str]) -> 'Sampler':
         scraper = WebScraper()  
-        pos = PointsOfSaleSource(scraper)        
-        spos = SelectedPointsOfSaleSelector(selectors)
-        spos.events_source = pos
-        appos = ArticlesPerPointOfSaleDriver(self.scraper)
-        appos.event_source = appos
-        return Sampler(scraper, pos, spos, appos)
+        pos = PointsOfSale(scraper)   
+        ppos = ProcessedPointsOfSaleSource()
+        ppos.events_source = pos
+        spos = SelectedPointsOfSaleGenerator(selectors)
+        spos.events_source = ppos
+        appos = ArticlesPerPointOfSale(scraper)
+        apposd = ArticlesPerPointOfSaleDriver()
+        apposd.events_source = spos
+        apposd.events_processor = appos
+        return Sampler(scraper, pos, spos, apposd)
     
     @staticmethod
-    def create_hotel_sampler() -> Sampler:
-        scraper = HotelScraper()
-        pos = PointsOfSaleSource(scraper)        
+    def create_sample_from_storage(home: Path) -> 'Sampler':
+        scraper = HotelScraper(home.expanduser())
+        pos = PointsOfSale(scraper)   
+        ppos = ProcessedPointsOfSaleSource()
+        ppos.events_source = pos        
         spos = SelectedPointsOfSaleReader(scraper)
-        appos = ArticlesPerPointOfSaleDriver(scraper)
-        return Sampler(scraper, pos, spos, appos)
+        appos = ArticlesPerPointOfSale(scraper)
+        apposd = ArticlesPerPointOfSaleDriver()
+        apposd.events_source = spos
+        apposd.events_processor = appos
+        return Sampler(scraper, pos, spos, apposd)
 
 
     def __init__(self, 
+                 scraper: PreciosClarosScraper,
                  points_of_sale_source: EventsSource,
                  selected_points_of_sale_source: EventsSource,
                  articles_per_point_of_sale_source: EventsSource
                  ) -> None:
+        self._scraper = scraper
         self._points_of_sale_source = points_of_sale_source
         self._selected_points_of_sale_source = selected_points_of_sale_source
         self._articles_per_point_of_sale_source = articles_per_point_of_sale_source
 
     @property
-    def points_of_sale_source(self) -> PointsOfSaleSource:
+    def scraper(self) -> PreciosClarosScraper:
+        return self._scraper
+    
+    @property
+    def points_of_sale_source(self) -> EventsSource:
         return self._points_of_sale_source
     
     @property
-    def selected_points_of_sale_source(self) -> SelectedPointsOfSaleSource:
+    def selected_points_of_sale_source(self) -> EventsSource:
         return self._selected_points_of_sale_source
     
     @property
-    def articles_per_point_of_sale_source(self) -> ArticlesPerPointOfSaleSource:
+    def articles_per_point_of_sale_source(self) -> EventsSource:
         return self._articles_per_point_of_sale_source
     
     def start(self) -> None:
         logging.info("start")
-        # self.scraper.start()
+        self.scraper.start()
         
     def stop(self) -> None:
-        # self.scraper.stop()        
+        self.scraper.stop()        
         logging.info("stop")
         
     def write(self, sample_path: Path):

@@ -1,10 +1,11 @@
 import json
 from pathlib import Path
 from collections import Counter, defaultdict
-from typing import DefaultDict, List, Dict, Protocol, Generator, Any
+from typing import DefaultDict, List, Dict, Protocol, Generator, Any, Optional
+
+# import pdb
 
 from components.helpers import get_directory, get_resource
-
 
 class Events:
     @staticmethod
@@ -17,8 +18,8 @@ class EventsSource(Protocol):
         yield from ()
 
 
-class EventProcessor(Protocol):
-    def events(self, x: Dict[Any, Any]) -> Generator[Dict[Any, Any], None, None]
+class EventsProcessor(Protocol):
+    def events(self, x: Dict[Any, Any]) -> Generator[Dict[Any, Any], None, None]:
         yield from ()
      
 
@@ -97,8 +98,8 @@ class EventsDocument:
                 target.write(f"{line:s}\n")
                 if number % 100 == 1:
                     print(f"event #{number:d}")
-                    
-    
+
+
 class CompositeEventsSource:
     def __init__(self) -> None:
         self._events_source: Optional[EventsSource] = None
@@ -135,9 +136,10 @@ class CompositeEventsDriver:
     
     @events_processor.setter
     def events_processor(self, value: EventsProcessor) -> None:
-        self._events_source = value
+        self._events_processor = value
 
     def events(self) -> Generator[Dict[Any, Any], None, None]:
+        # pdb.set_trace()
         for x in self.events_source.events():
             for event in self.events_processor.events(x):
                 yield event
@@ -153,7 +155,7 @@ class SelectedEventsSource(CompositeEventsSource):
         return True
 
     def events(self) -> Dict[Any, Any]:
-        for event in self.event_source.events():
+        for event in self.events_source.events():
             if self.select_event(event):
                 yield event
 

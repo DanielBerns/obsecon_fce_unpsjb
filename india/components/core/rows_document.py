@@ -14,7 +14,7 @@ from typing import (
 
 from components.helpers import get_directory, get_resource
 
-from components.core.events_document import EventsSource
+from components.core.events import EventsSource
 
 
 class RowsDocument:
