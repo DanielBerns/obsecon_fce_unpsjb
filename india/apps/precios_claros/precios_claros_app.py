@@ -36,7 +36,7 @@ class FSPreciosClaros(FileSystem):
         self._update_app_sh = get_resource(self.commands, "update_app", ".sh")
         precios_claros_commands = get_container(self.commands, "precios_claros")
         self._run_bots_sh = get_resource(precios_claros_commands, "run_bots", ".sh")
-        precios_claros_storage = get_container(self.storage, "precios_claros")
+        precios_claros_storage = get_container(self.storage, "samples")
         self._precios_claros = precios_claros_storage
         self._metadata = Metadata(get_container(precios_claros_storage, "metadata"))
         

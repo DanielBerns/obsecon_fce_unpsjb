@@ -1,5 +1,6 @@
 from components.core.bot import Bot
 from components.core.config import Config
+from components.core.collector import Collector
 from components.core.commands import Commands
 from components.core.crontab import Crontab
 from components.core.events import (Events,

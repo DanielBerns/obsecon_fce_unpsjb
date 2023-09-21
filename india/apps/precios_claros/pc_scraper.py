@@ -2,6 +2,11 @@
 from typing import Dict, Generator, Protocol
 
 class PreciosClarosScraper(Protocol):
+    
+    @property
+    def run_identifier(self) -> str:
+        pass
+    
     def start(self) -> None:
         # logging.info(f"{classname(self):s}.start")
         pass

@@ -4,7 +4,6 @@ from typing import List
 
 from components.core import FileSystem, Metadata, JSONDocument
 from components.helpers import save_json, get_container, get_resource
-from components.logs import add_stdout_handler
 
 
 def create_metadata(fs: FileSystem):

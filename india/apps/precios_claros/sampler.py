@@ -7,7 +7,7 @@ from typing import Dict, Optional, Generator, Any, List, Tuple
 
 from pc_scraper import PreciosClarosScraper
 from web_scraper import WebScraper
-from hotel_scraper import HotelScraper
+from local_scraper import LocalScraper
 from context import components
 from components.core import (EventsSource, 
                              EventsDocument, 
@@ -29,10 +29,8 @@ class PointsOfSale:
     def events(self) -> Generator[Dict[Any, Any], None, None]:
         for number, event in enumerate(self.scraper.points_of_sale()):
             if number % 100 == 1:
-                print(f"event #{number:d}")
+                print(f"{classname(self):s} event #{number:d}")
             yield event
-
-
 
 
 class ArticlesPerPointOfSale:
@@ -46,7 +44,7 @@ class ArticlesPerPointOfSale:
     def events(self, point_of_sale: Dict[any, any]) -> Generator[Dict[any, any], None, None]:
         for number, article in enumerate(self.scraper.articles_per_point_of_sale(point_of_sale)):        
             if number % 100 == 1:
-                print(f'{i(1):s}event #{number:d}')
+                print(f'{i(1):s}{classname(self):s} event #{number:d}')
             yield article
 
 
@@ -77,7 +75,7 @@ class SelectedPointsOfSaleReader:
     def events(self) -> Generator[Dict[Any, Any], None, None]:
         for number, event in enumerate(self.scraper.selected_points_of_sale()):
             if number % 100 == 1:
-                print(f"event #{number:d}")
+                print(f"{classname(self):s} event #{number:d}")
             yield Events.lower_values(event)
 
 
@@ -157,50 +155,22 @@ class PreciosClarosSample:
         self.articles_per_point_of_sale.stop()
 
 
-class Sampler:
-   
-    @staticmethod
-    def create_sample_from_web(selectors: Dict[str, str]) -> 'Sampler':
-        scraper = WebScraper()  
-        pos = PointsOfSale(scraper)   
-        ppos = ProcessedPointsOfSaleSource()
-        ppos.events_source = pos
-        spos = SelectedPointsOfSaleGenerator(selectors)
-        spos.events_source = ppos
-        appos = ArticlesPerPointOfSale(scraper)
-        apposd = ArticlesPerPointOfSaleDriver()
-        apposd.events_source = spos
-        apposd.events_processor = appos
-        return Sampler(scraper, pos, spos, apposd)
-    
-    @staticmethod
-    def create_sample_from_storage(home: Path) -> 'Sampler':
-        scraper = HotelScraper(home.expanduser())
-        pos = PointsOfSale(scraper)   
-        ppos = ProcessedPointsOfSaleSource()
-        ppos.events_source = pos        
-        spos = SelectedPointsOfSaleReader(scraper)
-        appos = ArticlesPerPointOfSale(scraper)
-        apposd = ArticlesPerPointOfSaleDriver()
-        apposd.events_source = spos
-        apposd.events_processor = appos
-        return Sampler(scraper, pos, spos, apposd)
-
+class PreciosClarosSampleBuilder:
 
     def __init__(self, 
-                 scraper: PreciosClarosScraper,
+                 run_identifier: str,
                  points_of_sale_source: EventsSource,
                  selected_points_of_sale_source: EventsSource,
                  articles_per_point_of_sale_source: EventsSource
                  ) -> None:
-        self._scraper = scraper
+        self._run_identifier = run_identifier
         self._points_of_sale_source = points_of_sale_source
         self._selected_points_of_sale_source = selected_points_of_sale_source
         self._articles_per_point_of_sale_source = articles_per_point_of_sale_source
 
     @property
-    def scraper(self) -> PreciosClarosScraper:
-        return self._scraper
+    def run_identifier(self) -> str:
+        return self._run_identifier
     
     @property
     def points_of_sale_source(self) -> EventsSource:
@@ -230,4 +200,43 @@ class Sampler:
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()
 
- 
+@contextmanager
+def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSampleBuilder:
+    scraper = WebScraper()  
+    pos = PointsOfSale(scraper)   
+    ppos = ProcessedPointsOfSaleSource()
+    ppos.events_source = pos
+    spos = SelectedPointsOfSaleGenerator(selectors)
+    spos.events_source = ppos
+    appos = ArticlesPerPointOfSale(scraper)
+    apposd = ArticlesPerPointOfSaleDriver()
+    apposd.events_source = spos
+    apposd.events_processor = appos
+    resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
+    try:
+        resource.start()
+        yield resource
+    except RuntimeError as message:
+        print(message)
+    finally:
+        resource.stop()
+    
+@contextmanager
+def create_sample_with_local_content(home: Path) -> PreciosClarosSampleBuilder:
+    scraper = LocalScraper(home.expanduser())
+    pos = PointsOfSale(scraper)   
+    ppos = ProcessedPointsOfSaleSource()
+    ppos.events_source = pos        
+    spos = SelectedPointsOfSaleReader(scraper)
+    appos = ArticlesPerPointOfSale(scraper)
+    apposd = ArticlesPerPointOfSaleDriver()
+    apposd.events_source = spos
+    apposd.events_processor = appos
+    resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
+    try:
+        resource.start()
+        yield resource
+    except RuntimeError as message:
+        print(message)
+    finally:
+        resource.stop()

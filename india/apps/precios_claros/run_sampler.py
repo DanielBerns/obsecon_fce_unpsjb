@@ -1,27 +1,33 @@
 import logging
 from pathlib import Path
-from precios_claros_app import create_app
+from precios_claros_app import create_app, AppPreciosClaros
 from pc_scraper import PreciosClarosScraper
-from hotel_scraper import HotelScraper
+from local_scraper import LocalScraper
 
-from sampler import Sampler
+from PreciosClarosSampleBuilder import (PreciosClarosSampleBuilder, 
+                     create_sample_with_web_content, 
+                     create_sample_with_local_content)
 from context import components
 from components.core import SampledDataset
 
-import argparse
 from typing import Dict
 
 def filename() -> str:
     return __file__[:-3]
 
-import pdb
+
+def run(dataset_home: Path, sample_builder: PreciosClarosSampleBuilder) -> None:
+    storage = SampledDataset(dataset_home)
+    storage.start()
+    sample_key, sample_path = storage.create_sample(sample_builder.run_identifier)
+    sample_builder.write(sample_path)
+    storage.metadata.add(sample_key, f"{filename():s}.run", "done")
+    storage.stop()        
 
 def main() -> None:
-    
-    # pdb.set_trace()
-    args = {"web": "no"}
+    args = {"web": "yes"}
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
-        logging.info("app created!")
+        logging.info("app started!")
         if args["web"] == "yes":
             selection_patterns = [
                 {'provincia': 'ar-z', 'localidad': 'caleta olivia'},
@@ -33,20 +39,13 @@ def main() -> None:
                 {'provincia': 'ar-u', 'localidad': 'puerto madryn'},
                 {'provincia': 'ar-u', 'localidad': 'rawson'},
             ]            
-            sampler = Sampler.create_sample_from_web(selection_patterns)
+            with create_sample_with_web_content(selection_patterns) as sample_builder:
+                run(app.fs.precios_claros, sample_builder)    
         else:
             home = Path("~/Data/precios_claros/hotel/downloads/202207292244/")
-            sampler = Sampler.create_sample_from_storage(home)
-        downloads = SampledDataset(app.fs.precios_claros)
-        sampler.start()
-        downloads.start()
-        sample_key, sample_path = downloads.create_sample(sampler.scraper.run_identifier)
-        sampler.write(sample_path)
-        downloads.metadata.add(sample_key, "written", "done")
-        downloads.stop()        
-        sampler.stop()
-        logging.info("stop!")        
-
+            with create_sample_with_local_content(home) as sample_builder:
+                run(app.fs.precios_claros, sample_builder)    
+        logging.info("app stopped!")
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ from typing import DefaultDict, List, Dict, Protocol, Generator, Any, Optional
 
 # import pdb
 
-from components.helpers import get_directory, get_resource
+from components.helpers import get_directory, get_resource, classname
 
 class Events:
     @staticmethod
@@ -97,7 +97,7 @@ class EventsDocument:
                 line = json.dumps(event)
                 target.write(f"{line:s}\n")
                 if number % 100 == 1:
-                    print(f"event #{number:d}")
+                    print(f"{classname(self):s} event #{number:d}")
 
 
 class CompositeEventsSource:
@@ -170,5 +170,5 @@ class ProcessedEventsSource(CompositeEventsSource):
         return event
 
     def events(self) -> Dict[Any, Any]:
-        for event in self.event_source.events():
-            yield process_event(event)
+        for event in self.events_source.events():
+            yield self.process_event(event)

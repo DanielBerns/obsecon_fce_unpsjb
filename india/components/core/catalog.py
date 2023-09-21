@@ -32,8 +32,4 @@ class Catalog:
             raise CatalogException("delete")
             
     def get(self, key: str, on_key_error: Optional[Any] = None) -> Any:
-        try:
-            value = self._table[key]
-            return value
-        except KeyError:
-            return on_key_error
+        return self.table.get(key, on_key_error)
