@@ -15,7 +15,7 @@ from components.core import (EventsSource,
                              ProcessedEventsSource,
                              CompositeEventsDriver,
                              Events)
-from components.helpers import get_container, i
+from components.helpers import get_container, i, classname
 
 
 class PointsOfSale:
@@ -186,10 +186,8 @@ class PreciosClarosSampleBuilder:
     
     def start(self) -> None:
         logging.info("start")
-        self.scraper.start()
         
     def stop(self) -> None:
-        self.scraper.stop()        
         logging.info("stop")
         
     def write(self, sample_path: Path):

@@ -4,7 +4,7 @@ from precios_claros_app import create_app, AppPreciosClaros
 from pc_scraper import PreciosClarosScraper
 from local_scraper import LocalScraper
 
-from PreciosClarosSampleBuilder import (PreciosClarosSampleBuilder, 
+from sampler import (PreciosClarosSampleBuilder, 
                      create_sample_with_web_content, 
                      create_sample_with_local_content)
 from context import components
@@ -15,6 +15,7 @@ from typing import Dict
 def filename() -> str:
     return __file__[:-3]
 
+import pdb
 
 def run(dataset_home: Path, sample_builder: PreciosClarosSampleBuilder) -> None:
     storage = SampledDataset(dataset_home)
@@ -25,6 +26,7 @@ def run(dataset_home: Path, sample_builder: PreciosClarosSampleBuilder) -> None:
     storage.stop()        
 
 def main() -> None:
+    pdb.set_trace()
     args = {"web": "yes"}
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
         logging.info("app started!")

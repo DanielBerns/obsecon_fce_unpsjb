@@ -5,149 +5,157 @@ import math
 import logging
 from dataclasses import dataclass
 
-from components.helpers import get_resource, get_container, i
+from components.helpers import get_resource, get_container, i, classname
 from sampler import PreciosClarosSample
+from models import (Article, 
+                    PointOfSale, 
+                    ArticleWithPricesTable, 
+                    PointsOfSaleTable, 
+                    PreciosClarosTask)
+
+from writers import HTMLTargetFormat
 
 import pdb
 
-@dataclass
-class PointOfSale:
-    identifier: str
-    name: str
-    province: str
-    city: str
-    address: str
+class ReportSamplerException(Exception):
+    pass
 
 
-class PointsOfSalePerPlace:
-    def __init__(self):
-        self._table = defaultdict(list)
-        self._errors = list()
-        
+class PointsOfSaleCollector:
+    
+    def __init__(self) -> None:
+        self._table = PointsOfSaleTable()
+
     @property
-    def table(self) -> DefaultDict[str, List[PointOfSale]]:
+    def table(self) -> PointsOfSaleTable:
         return self._table
-
-    @property
-    def errors(self) -> List[Dict[str, str]]:
-        return self._errors
 
     def update(self, event: Dict[str, str]) -> None:
         identifier = event['identifier']
-        name = f"{event['bandera']:s}:{event['comercio']:s}:{event['sucursal']:s}" 
+        # name = f"{event['bandera']:s}:{event['comercio']:s}:{event['sucursal']:s}"
+        name = f"{event['bandera']:s}"         
         province = event['provincia']
         city = event['localidad']
         address = event['direccion']
 
         place = f"{province:s}:{city:s}".lower()
-        
-        self.table[place].append(
-            PointOfSale(identifier, 
-                        name.lower(), 
-                        province.lower(), 
-                        city.lower(), 
-                        address.lower()))
+
+        point_of_sale = PointOfSale(
+            identifier, 
+            name.lower(), 
+            province.lower(), 
+            city.lower(), 
+            address.lower())
+
+        self.table.add(place, point_of_sale)
 
 
-@dataclass
-class Article:
-    brand: str
-    name: str
-    package: str
-
-            
-class ArticlesPerPointOfSale:
-    def __init__(self):
-        self._table = defaultdict(list)
-        self._errors = list()
-        self._articles_count = Counter()
-        self._articles_per_code = dict()
-        
-    @property
-    def table(self) -> DefaultDict[str, List[Article]]:
-        return self._table
+class ArticlesCollector:
+    def __init__(self) -> None:
+        self._articles_counter = Counter()
+        self._articles: Dict[str, Article] = dict()
+        self._prices: DefaultDict[str, List[Tuple[str, str, int]]] = defaultdict(list)
 
     @property
-    def errors(self) -> List[Dict[str, str]]:
-        return self._errors
+    def articles_counter(self) -> Counter:
+        return self._articles_counter
 
     @property
-    def articles_count(self) -> Counter:
-        return self._articles_count
+    def articles(self) -> Dict[str, Article]:
+        return self._articles
 
     @property
-    def articles_per_code(self) -> Dict[str, Article]:
-        return self._articles_per_code
+    def prices(self) -> DefaultDict[str, List[Tuple[str, str, int]]]:
+        return self._prices
     
     def update(self, event: Dict[str, str]) -> None:
-        code = event['identifier']
+        article_code = event['identifier']
         brand = (event['marca']).lower()
         name = (event['nombre']).lower()
         package = (event['presentacion']).lower()
         _price = event['precio']
         point_of_sale = event['point_of_sale']
         
-        if code.startswith('['):
-            if code.endswith(']'):
-                code = code[1:-1]
+        if article_code.startswith('['):
+            if article_code.endswith(']'):
+                article_code = article_code[1:-1]
             else:
                 self.errors.append(event)
-        elif code.endswith(']'):
+        elif article_code.endswith(']'):
             self.errors.append(event)
+            raise ReportSamplerException(
+                f"{classname(self):s}.update 1")
+        else:
+            pass
         
         try:
             price = int(float(_price) * 100)
         except ValueError:
             price = 0
             self.errors.append(event)
-
-
-        self.articles_count[code] += 1
-        if self.articles_count[code] == 1:
-            an_article = Article(brand, name, package)
-            self.articles_per_code[code] = an_article
+            raise ReportSamplerException(
+                f"{classname(self):s}.update 2")
         else:
-            an_article = self.articles_per_code[code]
-            different_events = True
-            if brand == an_article.brand:
-                if name == an_article.name:
-                    if package == an_article.package:
-                        different_events = False
-            if different_events:
-                self.errors.append(event)
-        self.table[point_of_sale].append((code, price))
+            self.articles_counter[article_code] += 1
+            if self.articles_counter[article_code] == 1:
+                an_article = Article(article_code, brand, name, package)
+                self.articles[article_code] = an_article
+                self.prices[article_code].append((point_of_sale, price))            
+            else:
+                an_article = self.articles[article_code]
+                different_events = True
+                if brand == an_article.brand:
+                    if name == an_article.name:
+                        if package == an_article.package:
+                            different_events = False
+                if different_events:
+                    raise ReportSamplerException(
+                        f"{classname(self):s}.update 3")
 
-        
+
+SampleTables = Tuple[str, ArticleWithPricesTable, PointsOfSaleTable]
+
 class SampleCollector:
     def __init__(self) -> None:
-        self._articles_per_point_of_sale = ArticlesPerPointOfSale()
-        self._points_of_sale_per_place = PointsOfSalePerPlace()
+        self._articles_collector = ArticlesCollector()
+        self._points_of_sale_collector = PointsOfSaleCollector()
         
     @property
-    def articles_per_point_of_sale(self) -> ArticlesPerPointOfSale:
-        return self._articles_per_point_of_sale
+    def articles_collector(self) -> ArticlesCollector:
+        return self._articles_collector
 
     @property
-    def points_of_sale_per_place(self) -> PointsOfSalePerPlace:
-        return self._points_of_sale_per_place 
+    def points_of_sale_collector(self) -> PointsOfSaleCollector:
+        return self._points_of_sale_collector 
 
     def update(self, sample: PreciosClarosSample):
         for event in sample.articles_per_point_of_sale.events():
-            self.articles_per_point_of_sale.update(event)
+            self.articles_collector.update(event)
 
         for event in sample.selected_points_of_sale.events():
-            self.points_of_sale_per_place.update(event)
-    
-    def get_places_with_point_of_sale_and_price_per_code(self) -> \
-        Generator[Tuple[str, Dict[str, Tuple[str, int]]], None, None]:
-        for place, points_of_sale in self.points_of_sale_per_place.table.items():
-            point_of_sale_and_price_per_code = defaultdict(list)
-            for a_point_of_sale in points_of_sale:
-                for (code, price) in self.articles_per_point_of_sale.table[a_point_of_sale.identifier]:
-                    point_of_sale_and_price_per_code[code].append(
-                            (a_point_of_sale, price)
-                    )
-            yield place, point_of_sale_and_price_per_code
+            self.points_of_sale_collector.update(event)
+
+    def get_points_of_sale_table(self) -> PointsOfSaleTable:
+        return self.points_of_sale_collector.table
+        
+    def get_article_with_prices_table(self, sample_key: str, place: str) -> ArticleWithPricesTable:
+        article_with_prices = ArticleWithPricesTable(sample_key, place)
+        for article_code, prices in self.articles_collector.prices.items():
+            article = self.articles_collector.articles[article_code]
+            article_with_prices.add(article, prices)
+        return article_with_prices
+
+    def execute(self, home: Path, sample_key: str) -> Generator[SampleTables, None, None]:
+        logging.debug(f"{classname(self):s}.execute: {sample_key:s} started!")    
+        target_container = get_container(home, sample_key)
+        points_of_sale = self.get_points_of_sale_table()
+        for place, points_of_sale in points_of_sale.per_place.items():
+            article_with_prices = self.get_article_with_prices_table(sample_key, place)
+            logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} started!")                
+            yield place, article_with_prices, points_of_sale
+            logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} done!")
+        logging.debug(f"{classname(self):s}.execute: {sample_key:s} done!")        
+
 
 
 class FullReportSample:
@@ -156,50 +164,18 @@ class FullReportSample:
                  sample: PreciosClarosSample) -> None:
         self._sample_collector = sample_collector
         self.sample_collector.update(sample)
-        
            
     @property
     def sample_collector(self) -> SampleCollector:
         return self._sample_collector
 
-    @property
-    def cities(self) -> DefaultDict[str, List[str]]:
-        return self._cities
 
-    def write_md(self, home: Path, sample_key: str) -> None:
-        sample_container = get_container(home, sample_key)
-        for place, prices_per_article in self.sample_collector.get_places_with_point_of_sale_and_price_per_code():
-            place_container = get_container(sample_container, place)
-            point_of_sale_and_price_per_code_md = get_resource(
-                place_container, 'precios', '.md')
-            with open(point_of_sale_and_price_per_code_md, 'w') as target:
-                target.write(f"# {place:s}\n")
-                logging.debug(f"start with {place:s}")
-                for article_code, count in self.sample_collector.articles_per_point_of_sale.articles_count.items():
-                    prices_list = sorted(prices_per_article[article_code], key = lambda x: x[1])
-                    if len(prices_list) == 0:
-                        logging.debug(f"{article_code:s} len(prices_list) == 0")
-                        continue
-                    prices_min, prices_max = prices_list[0][1], prices_list[-1][1]
-                    if prices_min == prices_max:
-                        prices_min, prices_max, prices_geomean = \
-                            prices_min / 100, prices_max / 100, prices_min / 100 
-                    else:
-                        prices = [math.log(pp[1] / 100, 10) for pp in prices_list]                        
-                        prices_min, prices_max, prices_geomean = \
-                            prices_min / 100, prices_max / 100, 10**sum(prices)
-                    target.write(f"{article_code:s}: ")
-                    this_article = self.sample_collector.articles_per_point_of_sale.articles_per_code[article_code]
-                    target.write(f"{this_article.brand:s} -")
-                    target.write(f" {this_article.name:s} -")
-                    target.write(f" {this_article.package:s}\n")
-                    for (point_of_sale, price) in prices_list:
-                        try:
-                            pp = float(price) / 100
-                            target.write(f"{i(1):s}{pp:>9.2f} - "
-                                         f"{point_of_sale.identifier:>20s} - "
-                                         f"{point_of_sale.name} - "
-                                         f"{point_of_sale.city} - "
-                                         f"{point_of_sale.address}\n" )
-                        except ValueError:
-                            logging.error(f"ERROR {price:s}")
+    def execute(self,
+                home: Path, 
+                sample_key: str,
+                create_target: Generator[PreciosClarosTask, None, None]) -> None:
+        target_container = get_container(home, sample_key)
+        for place, article_with_prices, points_of_sale in self.sample_collector.execute(home, sample_key):
+            with create_target(target_container) as target:
+                target.target_format = HTMLTargetFormat()
+                target.execute(place, article_with_prices, points_of_sale)
