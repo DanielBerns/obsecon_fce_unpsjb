@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import TextIO, Protocol, Tuple, List, Generator, Optional
 from jinja2 import Template
 
+import pdb
+
 from models import (Article, 
                     PointOfSale, 
                     ArticleWithPricesTable, 
@@ -19,125 +21,33 @@ def filename() -> str:
 
 
 class TargetFormat(Protocol):
-    def content(self) -> str:
-        return ""
-    
+    @property    
+    def template(self) -> Template:
+        return Template("")
+
+    @property    
     def suffix(self) -> str:
         return ""
 
     
 class FromFileTargetFormat:    
     def __init__(self, resource: Path) -> None:
-        with open(resource, 'r') as source:
-            self._content = source.read()
+        self._resource = resource
         self._suffix = resource.suffix
 
     @property
-    def content(self) -> str:
-        return self._content
+    def resource(self) -> Path:
+        return self._resource
+
+    @property
+    def template(self) -> Template:
+        with open(self.resource, 'r') as source:
+            return Template(source.read())        
 
     @property
     def suffix(self) -> str:
-        return ".txt"
+        return self.resource.suffix
 
-
-class HTMLTargetFormat:
-    def __init__(self):
-        pass
-    
-    @property
-    def content(self) -> str:
-        return """
-               <!DOCTYPE html>
-               <html>
-               <head>
-               
-               <title>{{ title }}</title>
-               <meta charset="UTF-8">
-               <meta name="viewport" content="width=device-width, initial-scale=1">
-               <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-               <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
-               <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
-               <link href="/static/img/favicon.ico" rel="shortcut icon">
-               <style>
-                   /* width */        
-                   ::-webkit-scrollbar {
-                       width: 10px;
-                   }
-           
-                   /* Track */
-                   ::-webkit-scrollbar-track {
-                       background: #f1f1f1;
-                   }
-           
-                   /* Handle */
-                   ::-webkit-scrollbar-thumb {
-                       background: #050505;
-                   }
-           
-                   /* Handle on hover */
-                   ::-webkit-scrollbar-thumb:hover {
-                       background: #a7ed91;
-                   }
-                   
-                   .scroll {
-                       display: block;
-                       border: 1px solid green;
-                       background: #18bbcf;
-                       padding: 5px;
-                       margin-top: 5px;
-                       margin-bottom: 5px;                       
-                       width: auto;
-                       height: 400px;
-                       overflow-y: scroll;
-                   }
-               </style>
-               </head>
-               <body>
-               
-               <header class="w3-container w3-theme w3-padding" id="myHeader">
-               <div class="w3-row">
-                 <div class="w3-col m1">
-                 <img src="/static/img/chakana.svg" width="50">  
-                 </div>
-                 <div class="w3-rest w3-center">
-                     <h1 class="w3-xxxlarge">Observatorio de precios - FCE - UNPSJB</h1>
-                     <h4 class="w3-animate-bottom">El sur de la información</h4>
-                 </div>
-               </div>
-               </header>
-               
-               <div class="w3-container">
-                     <div class="w3-row w3-pale-green" width="98%">
-                        <div class="w3-col m6 w3-center">Artículo</div>
-                        <div class="w3-col m2 w3-right-align">Precio mínimo</div>
-                        <div class="w3-col m2 w3-right-align">Precio indicativo</div>
-                        <div class="w3-col m2 w3-right-align">Precio máximo</div>
-                     </div>
-                     <div class="w3-container scroll">
-                           {% for article in awpt.values() %}
-                             <div class="w3-row w3-pale-green">
-                               <div class="w3-col m6 w3-left-align">{{article.label()}}</div>
-                               <div class="w3-col m2 w3-right-align">{{article.prices_min(10)}}</div>
-                               <div class="w3-col m2 w3-right-align">{{article.prices_geomean(10)}}</div>
-                               <div class="w3-col m2 w3-right-align">{{article.prices_max(10)}}</div>
-                             </div>
-                           {% endfor %}
-                     </div>
-               </div>
-               <div class="w3-row">
-               </div>
-               <footer class="w3-container w3-theme w3-padding-16">
-               <h3 class="w3-center">Observatorio de precios - FCE - UNPSJB</h3>
-               </footer>
-               </body>
-               </html>
-               """
-               
-    @property
-    def suffix(self) -> str:
-        return ".html"
-              
 
 class WriterWithTargetFormat:
     def __init__(self, home: Path) -> None:
@@ -162,26 +72,39 @@ class WriterWithTargetFormat:
     def stop(self) -> None:
         pass
 
+    def get_city(self, text: str) -> str:
+        parts = text.split(' ')
+        return ' '.join([pp.capitalize() for pp in parts])
+
     def execute(self, 
                 place: str,
+                category: str,
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: PointsOfSaleTable
                 ) -> None:
         
-        container = get_container(self.home, 'articles_with_prices')
+        container = get_container(Path(self.home, 'article_with_prices'), category)
         if article_with_prices.place != place:
             logging.debug("article_with_prices.place != place")
             logging.debug(f"  article_with_prices.place {article_with_prices.place:s}")
             logging.debug(f"  place {place:s}")    
             raise PreciosClarosTaskException(f"{classname(self):s} bad place 1")
+        article_with_prices.load_selectors(category)
         parts = (place).split(':')
-        city = (parts[1]).replace(' ', '_')
+        city = self.get_city(parts[1])
         timestamp = (article_with_prices.timestamp)[:8]
-        title = f"{parts[0]:s} {parts[1]:s} {timestamp:s}"
-        template = Template(self.target_format.content)
-        page = template.render(awpt=article_with_prices, pos=points_of_sale, title=title)
-        articles_with_prices_file = get_resource(container, city, self.target_format.suffix)        
-        with open(articles_with_prices_file, 'w') as target:
+        year, month, day = timestamp[:4], timestamp[4:6], timestamp[6:]
+        title = f"{city:s} - {year:s}/{month:s}/{day:s}"        
+        template = self.target_format.template
+        page = template.render(
+            awpt=article_with_prices, 
+            pos=points_of_sale, 
+            ttl=title)
+        city_in_filename = parts[1].replace(' ', '_')
+    
+        article_with_prices_file = get_resource(
+            container, city_in_filename, self.target_format.suffix)        
+        with open(article_with_prices_file, 'w') as target:
             target.write(page)
 
 
@@ -196,3 +119,121 @@ def writer_with_target_format(container: Path) -> Generator[PreciosClarosTask, N
     finally:
         writer.stop()
 
+
+TABLE_HTML = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>{{ ttl }}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">               
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<link href="/static/img/favicon.ico" rel="shortcut icon">
+<link rel="stylesheet" href="/static/css/table.css">
+</head>
+<body class="w3-pale-green">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-teal w3-large" style="z-index:4">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-green" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <div class="w3-bar-item w3-left">
+  <img src="/static/img/chakana.svg" width="50">  
+  </div>                    
+  <span class="w3-bar-item w3-right">Observatorio de precios - FCE - UNPSJB</span>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <hr>
+  <div class="w3-container">
+    <h5>Tipos de productos</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Cerrar menú</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Harinas</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Lácteos</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Frutas y vegetales</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Aceite</a>                      
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Bebidas alcohólicas</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Gaseosas y agua de mesa</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Conservas</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Otros</a>                      
+    <a href="#" class="w3-bar-item w3-button w3-padding"> Otros</a><br><br>
+  </div>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" 
+     onclick="w3_close()" 
+     style="cursor:pointer" 
+     title="Cerrar menú lateral" id="myOverlay">
+</div>
+
+<!-- Main content container -->   
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+   
+   <!-- Header -->
+   <header class="w3-container w3-sand" style="padding-top:22px">
+     <p class="w3-center"><b>Precios {{ ttl }}</b></p>
+   </header>
+   <div class="w3-container">
+   <!-- Search -->
+     <p>Búsqueda de artículos</p>
+     <input class="w3-input w3-border w3-padding" 
+            type="text" 
+            placeholder="Buscar..." 
+            id="searchInput" 
+            onkeyup="searchArticleTable()">
+     <hr>
+     <div class="tableFixedHeader">
+       <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white" 
+              id="articleTable" >
+       <thead class="w3-sand">
+       <tr>
+         <th class="w3-center">Artículo</th>
+         <th class="w3-center">Precio mínimo</th>
+         <th class="w3-center">Precio indicativo</th>
+         <th class="w3-center">Precio máximo</th>
+       </tr>
+       </thead>
+       <tbody>
+            {% for article in awpt.values() %}
+            <tr>                      
+            <td>{{article.label()}}</td>
+            <td class="w3-right-align">{{article.prices_min(10)}}</td>
+            <td class="w3-right-align">{{article.prices_geomean(10)}}</td>
+            <td class="w3-right-align">{{article.prices_max(10)}}</td>
+             </tr>
+            {% endfor %}
+       </tbody>
+       </table><br>
+     </div> <!-- End of tableFixedHeader -->
+   </div> <!-- End of unnamed w3-container -->
+   <hr>
+  
+   </div>    <!-- End w3-main -->
+
+      <!-- Footer -->
+   <footer class="w3-container w3-sand w3-right-align w3-bottom">
+     <p>Hecho por GIPIS - DIE - FI - UNPSJB</p>
+   </footer>
+
+   <script src="/static/js/table.js"></script>   
+</body>
+</html>
+"""
+
+class ArticleWithPricesTableTargetFormat:
+    def __init__(self):
+        pass
+    
+    @property
+    def template(self) -> Template:
+        return Template(TABLE_HTML)
+               
+    @property
+    def suffix(self) -> str:
+        return ".html"

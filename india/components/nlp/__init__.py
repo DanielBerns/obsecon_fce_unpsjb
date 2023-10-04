@@ -3,7 +3,9 @@ from components.nlp.eda import (text_characters,
                   text_characters_to_integers, 
                   text_fragments, 
                   text_hmm)
+
 from components.nlp.tokenizer import Tokenizer
+from components.nlp.nlp import TokensNode
 from components.nlp.nlp_get_text import (GetTextSampleTask, 
                                          GetTextFacadeSampleTask, 
                                          GetTextFacadeSampleTaskFactory)

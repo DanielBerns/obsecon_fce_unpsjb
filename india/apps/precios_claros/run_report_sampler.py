@@ -22,7 +22,10 @@ def run(dataset_home: Path,
     sample_collector = SampleCollector()
     full_report_sample = FullReportSample(sample_collector, sample)
     try:
-        full_report_sample.execute(report_path, sample_key, writer_with_target_format)
+        full_report_sample.execute(
+            report_path, 
+            sample_key, 
+            writer_with_target_format)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.run", "done")
@@ -32,7 +35,7 @@ def run(dataset_home: Path,
 def main() -> None:
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
         logging.info("instance started!")
-        identifier = "20230925163551"
+        identifier = "20231002154534"
         run(app.fs.precios_claros, identifier, app.fs.reports) 
         logging.info("instance stopped!")
 

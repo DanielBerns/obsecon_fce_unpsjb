@@ -43,7 +43,7 @@ class Tokenizer:
             else:
                 continue
 
-        # add the last token to the list of tokens (if any)
+        # add the last token (if any)
         if -1 < word_start < cursor:
             this_token = ''.join(text[word_start:cursor])
             yield this_token.strip()

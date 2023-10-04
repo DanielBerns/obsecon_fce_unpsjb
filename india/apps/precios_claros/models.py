@@ -1,11 +1,14 @@
 from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 import logging
-from typing import Tuple, List, Protocol, Dict, Generator, DefaultDict
+from typing import Tuple, List, Protocol, Dict, Generator, DefaultDict, Optional
 from math import log
 
 from context import components
-from components.helpers import classname
+from components.helpers import classname, get_container, get_resource
+
+import pdb
 
 @dataclass
 class PointOfSale:
@@ -99,25 +102,37 @@ class ArticleWithPrices:
         return f"{self.article.code:s}: {self.article.brand:s} - {self.article.name:s}"
     
     def prices_min(self, width: int) -> str:
-        return f"{sp(width, self.prices_stats[0]):s}"
+        if self.prices_stats[0] == self.prices_stats[2]:
+            return " "
+        else:
+            return f"{sp(width, self.prices_stats[0]):s}"
 
     def prices_geomean(self, width: int) -> str:
         return f"{sp(width, self.prices_stats[1]):s}"
 
     def prices_max(self, width: int) -> str:
-        return f"{sp(width, self.prices_stats[2]):s}"
+        if self.prices_stats[0] == self.prices_stats[2]:
+            return " "
+        else:
+            return f"{sp(width, self.prices_stats[2]):s}"
 
 
 class ArticleWithPricesTable:
+
     def __init__(self, 
+                 home: Path,
                  timestamp: str, 
-                 place: str,
-                 some_keys: Optional[List] = None) -> None:
+                 place: str) -> None:
+        self._home = home
         self._timestamp = timestamp        
         self._place = place
-        self._some_keys = some_keys
+        self._selectors = None
         self._article_with_prices: Dict[str, ArticleWithPrices] = dict()
-
+        
+    @property
+    def home(self) -> Path:
+        return self._home
+    
     @property
     def timestamp(self) -> str:
         return self._timestamp
@@ -127,12 +142,22 @@ class ArticleWithPricesTable:
         return self._place
 
     @property   
-    def some_keys(self) -> List[str]:
-        return self._some_keys
-    
-    @some_keys.setter
-    def some_keys(self, value: List[str]) -> None:
-        self._some_keys = value
+    def selectors(self) -> Optional[List[str]]:
+        return self._selectors
+
+    @selectors.setter
+    def selectors(self, value: List[str]) -> None:
+        self._selectors = value if value else None
+        
+    def load_selectors(self, category: str) -> None:
+        resource = get_resource(
+            Path(self.home, "article_with_prices_selectors", category), 
+            "selectors", ".txt")
+        if resource.exists():
+            with open(resource, "r") as origin:
+                self.selectors = [line[:-1] for line in origin]
+        else:
+            pass
 
     @property
     def article_with_prices(self) -> Dict[str, ArticleWithPrices]:
@@ -144,21 +169,25 @@ class ArticleWithPricesTable:
         self.article_with_prices[article.code] = ArticleWithPrices(article, prices)
 
     def values(self) -> Generator[ArticleWithPrices, None, None]:
-        if self.some_keys:
-            for code in self.some_keys:
-                yield self.article_with_prices[code]
+        if self.selectors:
+            method = self.selectors[0]
+            if method == "article_code":
+                for code in self.selectors[1:]:
+                    try:
+                        yield self.article_with_prices[code]
+                    except KeyError:
+                        continue
+            elif method == "prefix":
+                for a_prefix in self.selectors[1:]:
+                    for code, article_with_prices in self.article_with_prices.items():
+                        if article_with_prices.article.name.startswith(a_prefix):
+                            yield article_with_prices                
+            else:
+                logging.warning(f"{classname(self):s}.values: bad method {method:s}")
         else:       
             for code, article_with_prices in self.article_with_prices.items():
                 yield article_with_prices
 
-    def all_the_values(self) -> Generator[ArticleWithPrices, None, None]:
-        for code, article_with_prices in self.article_with_prices.items():
-            yield article_with_prices
-
-    def some_values(self) -> Generator[ArticleWithPrices, None, None]:
-        if self.some_keys:
-            for code in self.some_keys:
-                yield self.article_with_prices[code]
 
 
 class PricesPerPointOfSaleTable:

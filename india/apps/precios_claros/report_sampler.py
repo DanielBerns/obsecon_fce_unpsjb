@@ -2,6 +2,7 @@ from collections import defaultdict, Counter
 from pathlib import Path
 from typing import DefaultDict, List, Generator, Dict, Tuple
 import math
+from os import walk
 import logging
 from dataclasses import dataclass
 
@@ -13,7 +14,7 @@ from models import (Article,
                     PointsOfSaleTable, 
                     PreciosClarosTask)
 
-from writers import HTMLTargetFormat
+from writers import ArticleWithPricesTableTargetFormat
 
 import pdb
 
@@ -115,6 +116,7 @@ class ArticlesCollector:
 
 SampleTables = Tuple[str, ArticleWithPricesTable, PointsOfSaleTable]
 
+
 class SampleCollector:
     def __init__(self) -> None:
         self._articles_collector = ArticlesCollector()
@@ -138,8 +140,11 @@ class SampleCollector:
     def get_points_of_sale_table(self) -> PointsOfSaleTable:
         return self.points_of_sale_collector.table
         
-    def get_article_with_prices_table(self, sample_key: str, place: str) -> ArticleWithPricesTable:
-        article_with_prices = ArticleWithPricesTable(sample_key, place)
+    def get_article_with_prices_table(self, 
+                                      home: Path, 
+                                      sample_key: str, 
+                                      place: str) -> ArticleWithPricesTable:
+        article_with_prices = ArticleWithPricesTable(home, sample_key, place)
         for article_code, prices in self.articles_collector.prices.items():
             article = self.articles_collector.articles[article_code]
             article_with_prices.add(article, prices)
@@ -150,7 +155,7 @@ class SampleCollector:
         target_container = get_container(home, sample_key)
         points_of_sale = self.get_points_of_sale_table()
         for place, points_of_sale in points_of_sale.per_place.items():
-            article_with_prices = self.get_article_with_prices_table(sample_key, place)
+            article_with_prices = self.get_article_with_prices_table(home, sample_key, place)
             logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} started!")                
             yield place, article_with_prices, points_of_sale
             logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} done!")
@@ -169,13 +174,19 @@ class FullReportSample:
     def sample_collector(self) -> SampleCollector:
         return self._sample_collector
 
-
+    def get_categories(self, home: Path, identifier: str) -> Generator[str, None, None]:
+        container = get_container(home, identifier)
+        for root, dirs, files in walk(container):
+            for category in dirs:
+                yield category
+                
     def execute(self,
                 home: Path, 
                 sample_key: str,
                 create_target: Generator[PreciosClarosTask, None, None]) -> None:
         target_container = get_container(home, sample_key)
         for place, article_with_prices, points_of_sale in self.sample_collector.execute(home, sample_key):
-            with create_target(target_container) as target:
-                target.target_format = HTMLTargetFormat()
-                target.execute(place, article_with_prices, points_of_sale)
+            for category in self.get_categories(home, "article_with_prices_selectors"):
+                with create_target(target_container) as target:
+                    target.target_format = ArticleWithPricesTableTargetFormat()
+                    target.execute(place, category, article_with_prices, points_of_sale)

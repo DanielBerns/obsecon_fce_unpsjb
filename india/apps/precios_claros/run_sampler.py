@@ -26,7 +26,6 @@ def run(dataset_home: Path, sample_builder: PreciosClarosSampleBuilder) -> None:
     storage.stop()        
 
 def main() -> None:
-    pdb.set_trace()
     args = {"web": "yes"}
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
         logging.info("app started!")
