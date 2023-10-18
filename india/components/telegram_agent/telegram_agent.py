@@ -74,7 +74,7 @@ async def start(update: Update, context: CustomContext) -> None:
 async def help_command(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
     await update.message.reply_text(
-        "/start, /help, /telegram, /news, /twitter, /sd, /ua"
+        "/start, /help, /telegram, /news, /twitter"
     )
 
 
