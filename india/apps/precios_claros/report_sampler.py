@@ -14,7 +14,7 @@ from models import (Article,
                     PointsOfSaleTable, 
                     PreciosClarosTask)
 
-from writers import ArticleWithPricesTableTargetFormat
+from writers import ArticleWithPricesTableHTML, ArticleWithPricesTableMD
 
 import pdb
 
@@ -33,7 +33,6 @@ class PointsOfSaleCollector:
 
     def update(self, event: Dict[str, str]) -> None:
         identifier = event['identifier']
-        # name = f"{event['bandera']:s}:{event['comercio']:s}:{event['sucursal']:s}"
         name = f"{event['bandera']:s}"         
         province = event['provincia']
         city = event['localidad']
@@ -82,10 +81,12 @@ class ArticlesCollector:
                 article_code = article_code[1:-1]
             else:
                 self.errors.append(event)
+                raise ReportSamplerException(
+                   f"{classname(self):s}.update 1")                
         elif article_code.endswith(']'):
             self.errors.append(event)
             raise ReportSamplerException(
-                f"{classname(self):s}.update 1")
+                f"{classname(self):s}.update 2")
         else:
             pass
         
@@ -95,13 +96,13 @@ class ArticlesCollector:
             price = 0
             self.errors.append(event)
             raise ReportSamplerException(
-                f"{classname(self):s}.update 2")
+                f"{classname(self):s}.update 3")
         else:
             self.articles_counter[article_code] += 1
+            self.prices[article_code].append((point_of_sale, price))
             if self.articles_counter[article_code] == 1:
                 an_article = Article(article_code, brand, name, package)
                 self.articles[article_code] = an_article
-                self.prices[article_code].append((point_of_sale, price))            
             else:
                 an_article = self.articles[article_code]
                 different_events = True
@@ -111,7 +112,8 @@ class ArticlesCollector:
                             different_events = False
                 if different_events:
                     raise ReportSamplerException(
-                        f"{classname(self):s}.update 3")
+                        f"{classname(self):s}.update 4")
+                
 
 
 SampleTables = Tuple[str, ArticleWithPricesTable, PointsOfSaleTable]
@@ -131,9 +133,11 @@ class SampleCollector:
         return self._points_of_sale_collector 
 
     def update(self, sample: PreciosClarosSample):
+        # pdb.set_trace()
         for event in sample.articles_per_point_of_sale.events():
             self.articles_collector.update(event)
 
+        # pdb.set_trace()
         for event in sample.selected_points_of_sale.events():
             self.points_of_sale_collector.update(event)
 
@@ -144,6 +148,7 @@ class SampleCollector:
                                       home: Path, 
                                       sample_key: str, 
                                       place: str) -> ArticleWithPricesTable:
+        # pdb.set_trace()
         article_with_prices = ArticleWithPricesTable(home, sample_key, place)
         for article_code, prices in self.articles_collector.prices.items():
             article = self.articles_collector.articles[article_code]
@@ -186,7 +191,10 @@ class FullReportSample:
                 create_target: Generator[PreciosClarosTask, None, None]) -> None:
         target_container = get_container(home, sample_key)
         for place, article_with_prices, points_of_sale in self.sample_collector.execute(home, sample_key):
-            for category in self.get_categories(home, "article_with_prices_selectors"):
-                with create_target(target_container) as target:
-                    target.target_format = ArticleWithPricesTableTargetFormat()
-                    target.execute(place, category, article_with_prices, points_of_sale)
+            with create_target(target_container) as target:
+                target.target_format = ArticleWithPricesTableMD()
+                target.execute(place, "todos", article_with_prices, points_of_sale)
+            # for category in self.get_categories(home, "article_with_prices_selectors"):
+            #     with create_target(target_container) as target:            
+            #         target.target_format = ArticleWithPricesTableHTML()
+            #         target.execute(place, category, article_with_prices, points_of_sale)

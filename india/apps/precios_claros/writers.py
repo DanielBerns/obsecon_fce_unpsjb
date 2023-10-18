@@ -89,19 +89,20 @@ class WriterWithTargetFormat:
             logging.debug(f"  article_with_prices.place {article_with_prices.place:s}")
             logging.debug(f"  place {place:s}")    
             raise PreciosClarosTaskException(f"{classname(self):s} bad place 1")
-        article_with_prices.load_selectors(category)
+        if self.target_format.selectors:
+            article_with_prices.load_selectors(category)
         parts = (place).split(':')
         city = self.get_city(parts[1])
         timestamp = (article_with_prices.timestamp)[:8]
         year, month, day = timestamp[:4], timestamp[4:6], timestamp[6:]
-        title = f"{city:s} - {year:s}/{month:s}/{day:s}"        
+        title = f"{category.replace('_',' '):s} en {city:s} - {year:s}/{month:s}/{day:s}"        
+        city_in_filename = parts[1].replace(' ', '_')
         template = self.target_format.template
         page = template.render(
             awpt=article_with_prices, 
             pos=points_of_sale, 
-            ttl=title)
-        city_in_filename = parts[1].replace(' ', '_')
-    
+            ttl=title,
+            this_city=city_in_filename)
         article_with_prices_file = get_resource(
             container, city_in_filename, self.target_format.suffix)        
         with open(article_with_prices_file, 'w') as target:
@@ -122,113 +123,102 @@ def writer_with_target_format(container: Path) -> Generator[PreciosClarosTask, N
 
 TABLE_HTML = """
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<title>{{ ttl }}</title>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">               
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
 <link href="/static/img/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/css/table.css">
 </head>
-<body class="w3-pale-green">
+<body>
 
-<!-- Top container -->
-<div class="w3-bar w3-top w3-teal w3-large" style="z-index:4">
-  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-green" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
-  <div class="w3-bar-item w3-left">
-  <img src="/static/img/chakana.svg" width="50">  
-  </div>                    
-  <span class="w3-bar-item w3-right">Observatorio de precios - FCE - UNPSJB</span>
+<div class="top-container w3-light-blue">
+  <div class="w3-bar w3-teal" style="z-index:4">
+    <div class="w3-bar-item w3-left"><img src="/static/img/chakana.svg" width="50px"></div>                    
+    <h1 class="w3-bar-item w3-right w3-hide-small">Web de Precios - Observatorio de Economía - FCE
+    </h1>
+    <h1 class="w3-bar-item w3-right w3-hide-medium w3-hide-large">Web de Precios
+    </h1>
+    <div class="w3-bar-item">
+        <h2 class="w3-center w3-padding-8">Precios {{ ttl }}</h2>
+    </div>
+  </div>
 </div>
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <hr>
+<!-- Sidebar -->
+<div class="w3-display-container">
+<div class="w3-sidebar w3-border-right w3-display-topleft" style="display:none" id="mySidebar">
+<div class="w3-bar-block">
+  <button onclick="w3_close('mySidebar')" class="w3-bar-item w3-large">Cerrar &times;</button>
+  <a href="/info/lacteos/{{this_city}}"             class="w3-bar-item w3-button w3-padding"> Lácteos</a>  
+  <a href="/info/harinas/{{this_city}}"             class="w3-bar-item w3-button w3-padding"> Harinas</a>  
+  <a href="/info/vegetales/{{this_city}}"           class="w3-bar-item w3-button w3-padding"> Vegetales</a>  
+  <a href="/info/carnes/{{this_city}}"              class="w3-bar-item w3-button w3-padding"> Carnes</a>                        
+  <a href="/info/bebidas_con_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas con alcohol</a>  
+  <a href="/info/bebidas_sin_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas sin alcohol</a>  
+  <a href="/info/acba/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
+  <a href="/index"                                  class="w3-bar-item w3-button w3-padding">Volver al índice</a>
+</div>
+</div>
+</div>
+
+<div class="header w3-pale-green w3-text-black" id="myHeader">
+    <div class="w3-row-padding">
+      <div class="w3-col w3-left l2 m2 s2">
+        <button class="w3-button w3-hover-none" onclick="w3_open('mySidebar');"><i class="fa fa-bars"></i></button>
+      </div>
+      <div class="w3-col l10 m10 s10">
+         <input class="w3-input w3-border w3-padding" 
+                type="text" 
+                placeholder="Buscar..." 
+                id="searchInput" 
+                onkeyup="searchArticleTable()">
+      </div>
+    </div>
+    <div class="w3-row-padding">
+      <div class="w3-col w3-left l10 m10 s10">
+        <p>Artículo</p>
+      </div>
+      <div class="w3-col w3-left l2 m2 s2">
+        <p class="w3-tooltip">Precio de referencia 
+        <span class="w3-text">. El precio de referencia es el promedio geométrico de los precios observados.</span></p>
+      </div>  
+    </div>
+</div>
+
+<div class="content w3-light-gray" id="articleTable">
   <div class="w3-container">
-    <h5>Tipos de productos</h5>
+  <table class="w3-table w3-bordered w3-hoverable">
+      {% for article in awpt.values() %}
+      <tr class="row">      
+          <td>
+            <p class="searchThis w3-tooltip">
+            {{article.label()}}.&nbsp;<span class="w3-text">{{article.prices_range()}}</span>
+            </p>
+          </td>
+          <td>
+            <p>
+            <span class="w3-right">{{article.prices_geomean()}}</span>
+            </p>
+          </td>
+      </tr>
+      {% endfor %}
+  </table>
   </div>
-  <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Cerrar menú</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Harinas</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Lácteos</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Frutas y vegetales</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Aceite</a>                      
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Bebidas alcohólicas</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Gaseosas y agua de mesa</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Conservas</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Otros</a>                      
-    <a href="#" class="w3-bar-item w3-button w3-padding"> Otros</a><br><br>
-  </div>
-</nav>
-
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large w3-animate-opacity" 
-     onclick="w3_close()" 
-     style="cursor:pointer" 
-     title="Cerrar menú lateral" id="myOverlay">
 </div>
-
-<!-- Main content container -->   
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
-   
-   <!-- Header -->
-   <header class="w3-container w3-sand" style="padding-top:22px">
-     <p class="w3-center"><b>Precios {{ ttl }}</b></p>
-   </header>
-   <div class="w3-container">
-   <!-- Search -->
-     <p>Búsqueda de artículos</p>
-     <input class="w3-input w3-border w3-padding" 
-            type="text" 
-            placeholder="Buscar..." 
-            id="searchInput" 
-            onkeyup="searchArticleTable()">
-     <hr>
-     <div class="tableFixedHeader">
-       <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white" 
-              id="articleTable" >
-       <thead class="w3-sand">
-       <tr>
-         <th class="w3-center">Artículo</th>
-         <th class="w3-center">Precio mínimo</th>
-         <th class="w3-center">Precio indicativo</th>
-         <th class="w3-center">Precio máximo</th>
-       </tr>
-       </thead>
-       <tbody>
-            {% for article in awpt.values() %}
-            <tr>                      
-            <td>{{article.label()}}</td>
-            <td class="w3-right-align">{{article.prices_min(10)}}</td>
-            <td class="w3-right-align">{{article.prices_geomean(10)}}</td>
-            <td class="w3-right-align">{{article.prices_max(10)}}</td>
-             </tr>
-            {% endfor %}
-       </tbody>
-       </table><br>
-     </div> <!-- End of tableFixedHeader -->
-   </div> <!-- End of unnamed w3-container -->
-   <hr>
-  
-   </div>    <!-- End w3-main -->
-
-      <!-- Footer -->
-   <footer class="w3-container w3-sand w3-right-align w3-bottom">
-     <p>Hecho por GIPIS - DIE - FI - UNPSJB</p>
-   </footer>
-
-   <script src="/static/js/table.js"></script>   
+<script src="/static/js/table.js"></script>
 </body>
 </html>
 """
 
-class ArticleWithPricesTableTargetFormat:
-    def __init__(self):
-        pass
+class ArticleWithPricesTableHTML:
+    def __init__(self, selectors: bool = True) -> None:
+        self._selectors: bool = selectors
+        
+    @property
+    def selectors(self) -> bool:
+        return self._selectors
     
     @property
     def template(self) -> Template:
@@ -237,3 +227,37 @@ class ArticleWithPricesTableTargetFormat:
     @property
     def suffix(self) -> str:
         return ".html"
+
+
+# TABLE_MD = """
+# # {{ ttl }} 
+# 
+# ## Artículo: mínimo - indicativo - mínimo - máximo
+# {% for aa in awpt.all_of_them() %} 
+#     {{aa.label()}}: {{aa.prices_geomean()}} - {{aa.prices_min()}} - {{aa.prices_max()}}
+#     {% for pos, pp, fpp in aa.formatted_prices %}{{pos}}: ${{fpp}}
+#     {% endfor %}
+# {% endfor %}
+# """
+
+TABLE_MD = """
+# Código - artículo - indicativo - mínimo - máximo
+{% for aa in awpt.all_of_them() %} {{aa.label()}} - {{aa.prices_geomean()}} - {{aa.prices_min()}} - {{aa.prices_max()}} 
+{% endfor %}
+"""
+
+class ArticleWithPricesTableMD:
+    def __init__(self, selectors: bool = False) -> None:
+        self._selectors: bool = selectors
+        
+    @property
+    def selectors(self) -> bool:
+        return self._selectors
+    
+    @property
+    def template(self) -> Template:
+        return Template(TABLE_MD)
+               
+    @property
+    def suffix(self) -> str:
+        return ".csv"

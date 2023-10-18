@@ -145,7 +145,7 @@ async def process_text(update: Update, context: CustomContext) -> None:
                 update.effective_user.full_name, 
                 update.message.text)
             await update.message.reply_text(
-                f"Text: {update.message.text:s} from {update.effective_user.full_name:s}"
+                f"Gracias por tu mensaje {update.effective_user.full_name:s}!"
             )
         else:
             # None
@@ -187,11 +187,11 @@ async def process_photo(update: Update, context: CustomContext) -> None:
             else:
                 # None
                 logging.info("Not found update.message.caption!")
-            await update.message.reply_text(f"Photo from {user.full_name:s}")
+            await update.message.reply_text(f"Gracias por la foto {user.full_name:s}!")
         else:
             # None
             logging.info("Not found update.message.photo!")
-            await update.message.reply_text("No photo nor caption")
+            await update.message.reply_text("No pude recibir la foto!")
     else:
         logging.info("Not found update.message!")
 

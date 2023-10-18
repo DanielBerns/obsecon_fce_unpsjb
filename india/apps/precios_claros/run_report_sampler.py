@@ -35,7 +35,7 @@ def run(dataset_home: Path,
 def main() -> None:
     with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
         logging.info("instance started!")
-        identifier = "20231002154534"
+        identifier = "20231016090436"
         run(app.fs.precios_claros, identifier, app.fs.reports) 
         logging.info("instance stopped!")
 

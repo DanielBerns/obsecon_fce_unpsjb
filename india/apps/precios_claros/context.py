@@ -6,4 +6,3 @@ q = str(p.parents[1])
 sys.path.insert(0, q)
 
 import components
- 

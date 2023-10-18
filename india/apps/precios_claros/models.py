@@ -27,9 +27,9 @@ class Article:
 
 PointOfSaleAndPrice = Tuple[PointOfSale, int]
 
-def sp(width: int, data: str) -> str:
-    sp_width = width - len(data) - 1
-    return ' '*sp_width + '$' + data if sp_width > 0 else '$' + data
+# def sp(width: int, data: str) -> str:
+#     sp_width = width - len(data) - 1
+#     return ' '*sp_width + '$' + data if sp_width > 0 else '$' + data
 
 
 class ModelsException(Exception):
@@ -78,7 +78,9 @@ class ArticleWithPrices:
             log_float_prices = [log(pp, 10) for pp in float_prices]                        
             log_prices_geomean = sum(log_float_prices) / len(log_float_prices)
             prices_geomean = 10**log_prices_geomean        
-            self._prices_stats = tuple((f"{pp:>.2f}" for pp in (prices_min, prices_geomean, prices_max)))
+            self._prices_stats = tuple(
+                (f"{pp:>.2f}" for pp in (prices_min, prices_geomean, prices_max))
+                )
             self._formatted_prices = [(a, b, c) for a, b, c in zip(
                                               (pos for pos, pp in ordered_prices),
                                               (pp for pos, pp in ordered_prices),
@@ -99,22 +101,25 @@ class ArticleWithPrices:
         return self._prices_stats
 
     def label(self) -> str:
-        return f"{self.article.code:s}: {self.article.brand:s} - {self.article.name:s}"
+        v0 = f"{self.article.code:s} - {self.article.brand:s}: {self.article.name:s}"
+        return v0 
     
-    def prices_min(self, width: int) -> str:
-        if self.prices_stats[0] == self.prices_stats[2]:
-            return " "
-        else:
-            return f"{sp(width, self.prices_stats[0]):s}"
+    def prices_min(self) -> str:
+        return f"{self.prices_stats[0]:s}"
 
-    def prices_geomean(self, width: int) -> str:
-        return f"{sp(width, self.prices_stats[1]):s}"
+    def prices_geomean(self) -> str:
+        return f"{self.prices_stats[1]:s}"
 
-    def prices_max(self, width: int) -> str:
+    def prices_max(self) -> str:
+        return f"{self.prices_stats[2]:s}"
+        
+    def prices_range(self) -> str:
         if self.prices_stats[0] == self.prices_stats[2]:
-            return " "
+            variable = f"precio uniforme de {self.prices_min():s}"
         else:
-            return f"{sp(width, self.prices_stats[2]):s}"
+            variable = f"precio mínimo de {self.prices_min():s} y un precio máximo de {self.prices_max():s}"
+        return "Para este artículo se observó un " + variable
+        
 
 
 class ArticleWithPricesTable:
@@ -166,6 +171,7 @@ class ArticleWithPricesTable:
     def add(self, 
             article: Article, 
             prices: List[PointOfSaleAndPrice]) -> None:
+        # pdb.set_trace()
         self.article_with_prices[article.code] = ArticleWithPrices(article, prices)
 
     def values(self) -> Generator[ArticleWithPrices, None, None]:
@@ -188,7 +194,10 @@ class ArticleWithPricesTable:
             for code, article_with_prices in self.article_with_prices.items():
                 yield article_with_prices
 
-
+    def all_of_them(self) -> Generator[ArticleWithPrices, None, None]:
+        for code, article_with_prices in self.article_with_prices.items():
+            yield article_with_prices
+        
 
 class PricesPerPointOfSaleTable:
     def __init__(self) -> None:    
