@@ -54,6 +54,7 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     telegram_home: Optional[Path] = None
     store: Optional[TreeStore] = None
     shutdown_sh: Optional[Path] = None
+    update_app_sh: Optional[Path] = None
     
     def __init__(
         self, application: Application, chat_id: int = None, user_id: int = None
@@ -263,6 +264,8 @@ def run(
         CustomContext.store = store
     if CustomContext.shutdown_sh is None:
         CustomContext.shutdown_sh = get_resource(telegram_home, "shutdown", ".sh")
+    if CustomContext.shutdown_sh is None:
+        CustomContext.shutdown_sh = update_app_sh        
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)
