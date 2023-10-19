@@ -19,6 +19,8 @@ import json
 from typing import Dict, Optional
 import logging
 
+from components.helpers import get_timestamp
+
 from telegram import __version__ as TG_VER
 
 try:
@@ -74,23 +76,24 @@ async def start(update: Update, context: CustomContext) -> None:
 async def help_command(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
     await update.message.reply_text(
-        "/start, /help, /telegram, /news, /twitter"
+        "/inicio, /ayuda, /telegram, /noticias"
     )
 
 
 async def get_telegram(update: Update, context: CustomContext) -> None:
-    """Send a message when the command /help is issued."""
-    await update.message.reply_text("get telegram data")
+    """Send a message when the command /telegram is issued."""
+    ts = CustomContext.store
+    await update.message.reply_text(f"telegram {ts.index:d}")
 
 
 async def get_news(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
-    await update.message.reply_text("get news data")
+    await update.message.reply_text("noticias")
 
 
-async def get_twitter(update: Update, context: CustomContext) -> None:
-    """Send a message when the command /help is issued."""
-    await update.message.reply_text("get twitter data")
+# async def get_website(update: Update, context: CustomContext) -> None:
+#     """Send a message when the command /help is issued."""
+#     await update.message.reply_text("website")
 
 
 class TelegramSample:
@@ -274,11 +277,11 @@ def run(
 
     logging.info(f"PID {os.getpid():d}")
     # on different commands - answer in Telegram
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("inicio", start))
+    application.add_handler(CommandHandler("ayuda", help_command))
     application.add_handler(CommandHandler("telegram", get_telegram))
-    application.add_handler(CommandHandler("news", get_news))
-    application.add_handler(CommandHandler("twitter", get_twitter))
+    application.add_handler(CommandHandler("noticias", get_news))
+    application.add_handler(CommandHandler("website", get_website))
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("ua", update_app))
 
@@ -290,7 +293,7 @@ def run(
         MessageHandler(filters.PHOTO & ~filters.COMMAND, process_photo)
     )
 
-    logging.debug("start: saturday 9, september, 2023")
+    logging.debug(f"start: {get_timestamp():s}")
     # Run the bot until the user presses Ctrl-C
     application.run_polling()
-    logging.debug("stop: saturday 9, september, 2023")
+    logging.debug(f"stop: {get_timestamp():s}")
