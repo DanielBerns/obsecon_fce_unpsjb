@@ -1,4 +1,5 @@
 from context import components
+from components.core import CLIConfig
 from components.telegram_agent import run
 
 from nlp_news_app import create_app
@@ -9,10 +10,11 @@ def filename():
 
 
 def main():
-    with create_app("observatorio_fce_unpsjb", "india", "test", filename()) as app:
+    cli_cfg = CLIConfig()
+    with create_app("observatorio_fce_unpsjb", "india", filename(), cli_cfg) as app:
         print("app created!")
         run(app.fs.telegram,
-            app.config.authorization_token["telegram"],
+            app.cfg.authorization_token["telegram"],
             app.fs.update_app_sh
         )
         print("The end!")

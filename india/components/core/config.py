@@ -1,6 +1,6 @@
 import logging
 
-import argparse
+from argparse import ArgumentParser
 import os
 from pathlib import Path
 from typing import Dict, Tuple
@@ -8,19 +8,35 @@ from typing import Dict, Tuple
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
-def get_args() -> Dict[str, str]:
-    """Construct the argument parser and parse the arguments"""
-    parser = argparse.ArgumentParser()
+class CLIConfig:
+    def __init__(self) -> None:
+        self._parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "-d",
-        "--dotenv",
-        type=str,
-        default=".env",
-        help="name of dotenv file",
-    )
-    args = vars(parser.parse_args())
-    return args
+    @property
+    def parser(self) -> ArgumentParser:
+        return self._parser
+
+    @property
+    def args(self) -> Dict[str, str]:
+        value = vars(parser.parse_args())
+        return {str(k): str(v) for k, v in value.items()}
+    
+    def add_arguments(self) -> None:
+        self.parser.add_argument(
+            "-d",
+            "--dotenv",
+            type=str,
+            default=".env",
+            help="name of dotenv file",
+        )
+        self.parser.add_argument(
+            "-m",
+            "--mode",
+            choices=["test", "live"],
+            type=str,
+            default="test", required=False
+            help="how to run? test or live",
+        )
 
 
 def write_dotenv(dotenv_full_filename: Path) -> None:
@@ -30,7 +46,6 @@ def write_dotenv(dotenv_full_filename: Path) -> None:
     """
     with open(dotenv_full_filename, "w") as target:
         target.write("LOG_LEVEL=DEBUG\n")
-        target.write("TWITTER_TOKEN=112358132134\n")
         target.write("TELEGRAM_TOKEN=112358132134\n")
 
 
@@ -42,22 +57,21 @@ def load_environment_variables(home: str, dotenv: str) -> None:
 
 
 class Config:
-    def __init__(self, info_home: Path) -> None:
-        args = get_args()
+    def __init__(self, home: Path, args: Dict[str, str]) -> None:
         try:
-            dotenv = args['dotenv']
+            dotenv = args["dotenv"]
         except KeyError:
-            dotenv = '.env'
-        if not dotenv.startswith('.'):
-            dotenv = '.env'
-        load_environment_variables(info_home, dotenv)
+            dotenv = ".env"
+        if not dotenv.startswith("."):
+            dotenv = ".env"
+        load_environment_variables(home, dotenv)
         self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"
         telegram_token = os.environ.get("TELEGRAM_TOKEN") or "112358132134"
-        twitter_token = os.environ.get("TWITTER_TOKEN") or "112358132134"
         self._authorization_token = {
             "telegram": telegram_token,
-            "twitter": twitter_token,
         }
+        mode = args["mode"]
+        self._mode = mode if mode in ["test", "live"] else "test"
 
     @property
     def log_level(self) -> int:
@@ -66,3 +80,7 @@ class Config:
     @property
     def authorization_token(self) -> Dict[str, str]:
         return self._authorization_token
+
+    @property
+    def mode(self) -> str:
+        return self._mode
