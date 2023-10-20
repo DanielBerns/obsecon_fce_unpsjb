@@ -16,11 +16,22 @@ class FSNLPNews(FileSystem):
         super().__init__(context, version, mode)
         self._crontab = get_container(self.commands, "crontab")
         self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
-        self._template_update_app_sh = get_resource(
-            Path('~', 'Apps', context, version), "update_app", ".sh")
-        self._update_app_sh = get_resource(self.commands, "update_app", ".sh")
-        nlp_news_container = get_container(self.commands, "nlp_news")
-        self._run_news_bots_sh = get_resource(nlp_news_container, "run_news_bots", ".sh")
+        
+        templates_container = get_container(Path('~', 'Apps', context, version, "templates"))
+        self._template_update_repo_sh = get_resource(
+            templates_container, "update_repo", ".sh")
+        self._template_run_nlp_news_telegram_bot_sh = get_resource(
+            templates_container, "run_nlp_news_telegram_bot", ".sh")
+        self._template_run_nlp_news_websites_bot_sh = get_resource(
+            templates_container, "run_nlp_news_websites_bot", ".sh")
+        self._update_repo_sh = get_resource(self.commands, "update_repo", ".sh")
+        
+        nlp_news_container = get_container(self.commands, "nlp_news")        
+        self._run_nlp_news_telegram_bot_sh = get_resource(
+            nlp_news_container, "run_nlp_news_telegram_bot", ".sh")
+        self._run_nlp_news_websites_bot_sh = get_resource(
+            nlp_news_container, "run_nlp_news_websites_bot", ".sh")
+        
         self._news = get_container(self.storage, "news")
         self._telegram = get_container(self.storage, "telegram")
         self._nlp = get_container(self.results, "nlp")
@@ -41,6 +52,10 @@ class FSNLPNews(FileSystem):
     @property
     def update_app_sh(self) -> Path:
         return self._update_app_sh
+
+    @property
+    def template_run_nlp_news_telegram_bot_sh(self) -> Path:
+        return self._template_nlp_news_telegram_bot_sh
 
     @property
     def run_news_bots_sh(self) -> Path:

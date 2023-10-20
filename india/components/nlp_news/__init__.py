@@ -1,1 +1,3 @@
- 
+from components.nlp_news_start import nlp_news_start
+from components.nlp_news.nlp_news_telegram_bot import nlp_news_telegram_bot
+from components.nlp_news.nlp_news_websites_bot import nlp_news_websites_bot

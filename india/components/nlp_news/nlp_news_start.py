@@ -17,6 +17,10 @@ def nlp_news_start() -> None:
         template_builder = FromFileTargetTemplate(app.fs.template_update_app_sh)
         text = template_builder.template.render()
         write_text(app.fs.update_app_sh, text)
+        template_builder = FromFileTargetTemplate(app.fs.template_run_telegram_bot_sh)
+        text = template_builder.template.render(mode=cli_cfg.args["mode"])
+        write_text(app.fs.run_telegram_bot_sh, text)        
+        
         crontab = Crontab()
         crontab.add("run_news_bots", 
                     str(app.fs.run_news_bots_sh),
