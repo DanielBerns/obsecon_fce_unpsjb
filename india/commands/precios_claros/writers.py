@@ -33,7 +33,6 @@ class TargetFormat(Protocol):
 class FromFileTargetFormat:    
     def __init__(self, resource: Path) -> None:
         self._resource = resource
-        self._suffix = resource.suffix
 
     @property
     def resource(self) -> Path:
@@ -41,8 +40,8 @@ class FromFileTargetFormat:
 
     @property
     def template(self) -> Template:
-        with open(self.resource, 'r') as source:
-            return Template(source.read())        
+        with open(self.resource, 'r') as origin:
+            return Template(origin.read())        
 
     @property
     def suffix(self) -> str:

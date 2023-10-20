@@ -21,6 +21,9 @@ from components.core.treestore import (TreeStore,
                                        SampleTaskFactory, 
                                        create_treestore_driver)
 from components.core.text_generator import TextGenerator
+from components.target_template import (TargetTemplate, 
+                                        FromFileTargetTemplate, 
+                                        FromStringTargetTemplate)
 from components.core.file_processor import FileProcessor
 from components.core.image_file_processor import (
     ImageFileProcessorWithTesseractAndPIL,

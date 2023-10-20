@@ -7,7 +7,6 @@ from local_scraper import LocalScraper
 from sampler import (PreciosClarosSampleBuilder, 
                      create_sample_with_web_content, 
                      create_sample_with_local_content)
-from context import components
 from components.core import SampledDataset
 
 from typing import Dict
