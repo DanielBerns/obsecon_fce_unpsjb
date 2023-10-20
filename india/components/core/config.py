@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 class CLIConfig:
     def __init__(self) -> None:
-        self._parser = argparse.ArgumentParser()
+        self._parser = ArgumentParser()
 
     @property
     def parser(self) -> ArgumentParser:
@@ -18,7 +18,7 @@ class CLIConfig:
 
     @property
     def args(self) -> Dict[str, str]:
-        value = vars(parser.parse_args())
+        value = vars(self.parser.parse_args())
         return {str(k): str(v) for k, v in value.items()}
     
     def add_arguments(self) -> None:
@@ -34,7 +34,7 @@ class CLIConfig:
             "--mode",
             choices=["test", "live"],
             type=str,
-            default="test", required=False
+            default="live", required=False,
             help="how to run? test or live",
         )
 

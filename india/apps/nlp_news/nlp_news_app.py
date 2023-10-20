@@ -1,11 +1,11 @@
 from pathlib import Path
 import logging
 from contextlib import contextmanager
-from typing import List, Tuple, Generator
+from typing import Dict, List, Tuple, Generator
 
 from context import components
 
-from components.core import CLIConfig, Config, FileSystem, Metadata
+from components.core import Config, FileSystem, Metadata
 from components.helpers import (get_container, 
                                 get_resource, 
                                 get_resource_with_timestamp)
@@ -98,9 +98,8 @@ def create_app(
     context: str,
     version: str,
     name: str,
-    cli_cfg: CLIConfig) -> Generator[AppNLPNews, None, None]:
+    args: Dict[str, str]) -> Generator[AppNLPNews, None, None]:
 
-    args = cli_cfg.args()
     fs = FSNLPNews(context, version, args["mode"])
     fs.metadata.start()
     cfg = Config(fs.home, args)
