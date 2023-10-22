@@ -3,7 +3,7 @@ import logging
 from contextlib import contextmanager
 from typing import Dict, List, Tuple, Generator
 
-from components.core import Config, FileSystem, Metadata
+from components.core import CLIConfig, Config, FileSystem, Metadata
 from components.helpers import (get_container, 
                                 get_resource, 
                                 get_resource_with_timestamp)
@@ -20,7 +20,7 @@ class FSNLPNews(FileSystem):
         templates_container = get_container(Path('~', 'Apps', context, version), "templates")
         self._template_run_nlp_news_telegram_bot_sh = get_resource(templates_container, "run_nlp_news_telegram_bot", ".sh")
         self._template_run_nlp_news_websites_bot_sh = get_resource(templates_container, "run_nlp_news_websites_bot", ".sh")
-        self._template_update_repo_sh = get_resource(templates_container, "update_repo", ".sh"
+        self._template_update_repo_sh = get_resource(templates_container, "update_repo", ".sh")
         
         nlp_news_container = get_container(self.commands, "nlp_news")        
         self._run_nlp_news_telegram_bot_sh = get_resource(nlp_news_container, "run_nlp_news_telegram_bot", ".sh")
@@ -74,9 +74,10 @@ class FSNLPNews(FileSystem):
 
 
 class AppNLPNews:
-    def __init__(self, fs: FSNLPNews, cfg: Config) -> None:
+    def __init__(self, fs: FSNLPNews, cfg: Config, args: Dict[str, str]) -> None:
         self._fs: FSNLPNews = fs
         self._cfg: Config = cfg
+        self._cli_args: Dict[str, str] = args
 
     @property
     def fs(self) -> FSNLPNews:
@@ -85,21 +86,26 @@ class AppNLPNews:
     @property
     def cfg(self) -> Config:
         return self._cfg
-
-import pdb
+    
+    @property
+    def cli_args(self) -> Dict[str, str]:
+        return self._cli_args
+    
 
 @contextmanager
 def create_app(
     context: str,
     version: str,
-    name: str,
-    args: Dict[str, str]) -> Generator[AppNLPNews, None, None]:
+    name: str) -> Generator[AppNLPNews, None, None]:
 
+    cli_cfg = CLIConfig()   
+    cli_cfg.add_arguments()
+    args = cli_cfg.args
+    
     fs = FSNLPNews(context, version, args["mode"])
     fs.metadata.start()
     cfg = Config(fs.home, args)
 
-    pdb.set_trace()
     logs_txt = get_resource_with_timestamp(fs.logs, "nlp_news", '.txt')
     logging.basicConfig(
         filename=logs_txt, 
@@ -107,7 +113,8 @@ def create_app(
     )
 
     logging.info(f"start")
-    app = AppNLPNews(fs, cfg)    
+    app = AppNLPNews(fs, cfg, args)    
+    print("app started!")    
     try:
         yield app
     except Exception as message:
@@ -115,4 +122,4 @@ def create_app(
     finally:
         fs.metadata.stop()
         logging.info(f"stop")
-    
+        print("app stopped!")    

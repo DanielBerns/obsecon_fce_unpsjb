@@ -1,7 +1,6 @@
-from components.core import CLIConfig
 from components.telegram_agent import run
 
-from components.nlp_news.nlp_news_app import create_app
+from components.nlp_news.app import create_app
 
 
 def filename():
@@ -9,9 +8,7 @@ def filename():
 
 
 def run_telegram_bot() -> None:
-    cli_cfg = CLIConfig()   
-    cli_cfg.add_arguments()
-    with create_app("observatorio_fce_unpsjb", "india", filename(), cli_cfg.args) as app:
+    with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         print("app started!")
         run(app.fs.telegram,
             app.cfg.authorization_token["telegram"],

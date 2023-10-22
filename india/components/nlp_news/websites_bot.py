@@ -3,8 +3,8 @@ import logging
 
 from components.core import create_treestore_driver
 from components.website_agent import GrabURLSampleTask
-from components.nlp_news.nlp_news_app import create_app
-from components.nlp_news.nlp_news_websites import get_websites
+from components.nlp_news.app import create_app
+from components.nlp_news.websites import get_websites
 
 def filename():
     return __file__[:-3]
@@ -26,11 +26,7 @@ def run_websites_bot() -> None:
                 driver.create_sample()
                 driver.pipeline.remove(identifier)                
 
-    cli_cfg = CLIConfig()   
-    cli_cfg.add_arguments()
-    with create_app("observatorio_fce_unpsjb", "india", filename(), cli_cfg.args) as app:
-        print("app started!")
+    with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         for identifier, urls in websites_items():
             logging.info(f"done {identifier:s}")
             process_item(identifier, urls)
-        print("app stopped!")

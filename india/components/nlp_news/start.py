@@ -1,8 +1,8 @@
 import logging
 
-from components.core import CLIConfig, Crontab
+from components.core import Crontab
 from components.core import FromFileTargetTemplate
-from components.nlp_news.nlp_news_app import create_app
+from components.nlp_news.app import create_app
 
 
 def filename():
@@ -10,17 +10,15 @@ def filename():
 
 
 def run_start() -> None:
-    cli_cfg = CLIConfig()   
-    cli_cfg.add_arguments()
-    with create_app("observatorio_fce_unpsjb", "india", filename(), cli_cfg.args) as app:
-        print("app started!")
+    with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         template_builder = FromFileTargetTemplate(app.fs.template_update_repo_sh)
         text = template_builder.template.render()
         write_text(app.fs.update_repo_sh, text)
+
         template_builder = FromFileTargetTemplate(app.fs.template_run_telegram_bot_sh)
-        text = template_builder.template.render(mode=cli_cfg.args["mode"])
+        text = template_builder.template.render(mode=app.cli_args["mode"])
         write_text(app.fs.run_telegram_bot_sh, text)        
-        
+
         crontab = Crontab()
         crontab.add("run_news_bots", 
                     str(app.fs.run_news_bots_sh),
@@ -29,4 +27,3 @@ def run_start() -> None:
                     str(app.fs.update_repo_sh),
                     "15", "*", "*", "*", "*")
         crontab.update(app.fs.crontab_txt)
-        print("app stopped!")
