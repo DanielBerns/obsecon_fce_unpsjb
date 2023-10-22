@@ -1,6 +1,7 @@
 import logging
 
 from components.core import Crontab
+from components.helpers import write_text
 from components.core import FromFileTargetTemplate
 from components.nlp_news.app import create_app
 
