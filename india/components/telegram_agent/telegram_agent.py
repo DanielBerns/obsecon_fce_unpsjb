@@ -86,14 +86,9 @@ async def get_telegram(update: Update, context: CustomContext) -> None:
     await update.message.reply_text(f"telegram {ts.index:d}")
 
 
-async def get_news(update: Update, context: CustomContext) -> None:
+async def get_websites(update: Update, context: CustomContext) -> None:
     """Send a message when the command /help is issued."""
     await update.message.reply_text("noticias")
-
-
-# async def get_website(update: Update, context: CustomContext) -> None:
-#     """Send a message when the command /help is issued."""
-#     await update.message.reply_text("website")
 
 
 class TelegramSample:
@@ -280,8 +275,7 @@ def run(
     application.add_handler(CommandHandler("inicio", start))
     application.add_handler(CommandHandler("ayuda", help_command))
     application.add_handler(CommandHandler("telegram", get_telegram))
-    application.add_handler(CommandHandler("noticias", get_news))
-    application.add_handler(CommandHandler("website", get_website))
+    application.add_handler(CommandHandler("noticias", get_websites))
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("ua", update_app))
 
