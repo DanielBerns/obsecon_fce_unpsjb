@@ -50,7 +50,15 @@ class FSNLPNews(FileSystem):
 
     @property
     def template_run_nlp_news_telegram_bot_sh(self) -> Path:
-        return self._template_nlp_news_telegram_bot_sh
+        return self._template_run_nlp_news_telegram_bot_sh
+
+    @property
+    def run_nlp_news_telegram_bot_sh(self) -> Path:
+        return self._run_nlp_news_telegram_bot_sh
+
+    @property
+    def template_run_nlp_news_websites_bot_sh(self) -> Path:
+        return self._template_run_nlp_news_websites_bot_sh
 
     @property
     def run_nlp_news_websites_bot_sh(self) -> Path:
