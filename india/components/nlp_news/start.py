@@ -16,15 +16,19 @@ def run_start() -> None:
         text = template_builder.template.render()
         write_text(app.fs.update_repo_sh, text)
 
-        template_builder = FromFileTargetTemplate(app.fs.template_run_telegram_bot_sh)
+        template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_telegram_bot_sh)
         text = template_builder.template.render(mode=app.cli_args["mode"])
-        write_text(app.fs.run_telegram_bot_sh, text)        
+        write_text(app.fs.run_nlp_news_telegram_bot_sh, text)        
+
+        template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_websites_bot_sh)
+        text = template_builder.template.render(mode=app.cli_args["mode"])
+        write_text(app.fs.run_nlp_news_websites_bot_sh, text)        
 
         crontab = Crontab()
-        crontab.add("run_news_bots", 
-                    str(app.fs.run_news_bots_sh),
-                    "58", "*", "*", "*", "*")
         crontab.add("update_repo",
                     str(app.fs.update_repo_sh),
                     "15", "*", "*", "*", "*")
+        crontab.add("run_news_bots", 
+                    str(app.fs.run_news_websites_bot_sh),
+                    "58", "*", "*", "*", "*")
         crontab.update(app.fs.crontab_txt)
