@@ -9,13 +9,15 @@ from components.nlp_news.app import create_app
 def filename():
     return __file__[:-3]
 
+import pdb
 
 def run_start() -> None:
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         template_builder = FromFileTargetTemplate(app.fs.template_update_repo_sh)
         text = template_builder.template.render()
         write_text(app.fs.update_repo_sh, text)
-
+        
+        pdb.set_trace()
         template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_telegram_bot_sh)
         text = template_builder.template.render(mode=app.cli_args["mode"])
         write_text(app.fs.run_nlp_news_telegram_bot_sh, text)        
