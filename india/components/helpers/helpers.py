@@ -65,22 +65,22 @@ def get_container(base: Path, identifier: str):
     return get_directory(Path(base, identifier))
 
 
-def get_reorigin(
+def get_resource(
     base: Path, 
     name: str, 
     suffix: str
     ) -> Path:
     return Path(base, name).with_suffix(suffix)
 
-def get_reorigin_with_timestamp(
+def get_resource_with_timestamp(
     base: Path, 
     name: str,
     suffix: str) -> Path:
     timestamp = get_timestamp()
-    reorigin = get_reorigin(
+    resource = get_resource(
         base, f"{name:s}_{timestamp:s}", suffix
     )
-    return reorigin
+    return resource
 
 
 def remove_directory(base: Path) -> None:

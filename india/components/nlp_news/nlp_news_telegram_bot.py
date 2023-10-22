@@ -1,7 +1,7 @@
 from components.core import CLIConfig
 from components.telegram_agent import run
 
-from nlp_news_app import create_app
+from components.nlp_news.nlp_news_app import create_app
 
 
 def filename():

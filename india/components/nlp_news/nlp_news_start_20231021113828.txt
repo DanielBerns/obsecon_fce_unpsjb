@@ -1,0 +1,4 @@
+INFO:root:start
+WARNING:root:exception: 'FSNLPNews' object has no attribute '_template_update_app_sh'
+
+INFO:root:stop

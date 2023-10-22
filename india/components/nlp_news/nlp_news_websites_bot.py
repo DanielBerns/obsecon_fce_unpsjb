@@ -1,10 +1,10 @@
 import logging
 
-from nlp_news_app import create_app
-from nlp_news_websites import get_websites
 
 from components.core import create_treestore_driver
 from components.website_agent import GrabURLSampleTask
+from components.nlp_news.nlp_news_app import create_app
+from components.nlp_news.nlp_news_websites import get_websites
 
 def filename():
     return __file__[:-3]

@@ -17,24 +17,19 @@ class FSNLPNews(FileSystem):
         self._crontab = get_container(self.commands, "crontab")
         self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
         
-        templates_container = get_container(Path('~', 'Apps', context, version, "templates"))
-        self._template_update_repo_sh = get_resource(
-            templates_container, "update_repo", ".sh")
-        self._template_run_nlp_news_telegram_bot_sh = get_resource(
-            templates_container, "run_nlp_news_telegram_bot", ".sh")
-        self._template_run_nlp_news_websites_bot_sh = get_resource(
-            templates_container, "run_nlp_news_websites_bot", ".sh")
-        self._update_repo_sh = get_resource(self.commands, "update_repo", ".sh")
+        templates_container = get_container(Path('~', 'Apps', context, version), "templates")
+        self._template_run_nlp_news_telegram_bot_sh = get_resource(templates_container, "run_nlp_news_telegram_bot", ".sh")
+        self._template_run_nlp_news_websites_bot_sh = get_resource(templates_container, "run_nlp_news_websites_bot", ".sh")
+        self._template_update_repo_sh = get_resource(templates_container, "update_repo", ".sh"
         
         nlp_news_container = get_container(self.commands, "nlp_news")        
-        self._run_nlp_news_telegram_bot_sh = get_resource(
-            nlp_news_container, "run_nlp_news_telegram_bot", ".sh")
-        self._run_nlp_news_websites_bot_sh = get_resource(
-            nlp_news_container, "run_nlp_news_websites_bot", ".sh")
+        self._run_nlp_news_telegram_bot_sh = get_resource(nlp_news_container, "run_nlp_news_telegram_bot", ".sh")
+        self._run_nlp_news_websites_bot_sh = get_resource(nlp_news_container, "run_nlp_news_websites_bot", ".sh")
+        self._update_repo_sh = get_resource(self.commands, "update_repo", ".sh")
         
-        self._news = get_container(self.storage, "news")
-        self._telegram = get_container(self.storage, "telegram")
-        self._nlp = get_container(self.results, "nlp")
+        self._nlp_news_telegram = get_container(self.storage, "nlp_news_telegram")
+        self._nlp_news_websites = get_container(self.storage, "nlp_news_websites")
+        self._nlp_news = get_container(self.results, "nlp_news")
         self._metadata = Metadata(get_container(self.storage, "metadata"))
         
     @property
@@ -46,19 +41,19 @@ class FSNLPNews(FileSystem):
         return self._crontab_txt
 
     @property
-    def template_update_app_sh(self) -> Path:
-        return self._template_update_app_sh
+    def template_update_repo_sh(self) -> Path:
+        return self._template_update_repo_sh
 
     @property
-    def update_app_sh(self) -> Path:
-        return self._update_app_sh
+    def update_repo_sh(self) -> Path:
+        return self._update_repo_sh
 
     @property
     def template_run_nlp_news_telegram_bot_sh(self) -> Path:
         return self._template_nlp_news_telegram_bot_sh
 
     @property
-    def run_news_bots_sh(self) -> Path:
+    def run_nlp_news_bots_sh(self) -> Path:
         return self._run_news_bots_sh
 
     @property
@@ -91,6 +86,7 @@ class AppNLPNews:
     def cfg(self) -> Config:
         return self._cfg
 
+import pdb
 
 @contextmanager
 def create_app(
@@ -103,7 +99,8 @@ def create_app(
     fs.metadata.start()
     cfg = Config(fs.home, args)
 
-    logs_txt = get_resource_with_timestamp(fs.logs, name, '.txt')
+    pdb.set_trace()
+    logs_txt = get_resource_with_timestamp(fs.logs, "nlp_news", '.txt')
     logging.basicConfig(
         filename=logs_txt, 
         level=cfg.log_level

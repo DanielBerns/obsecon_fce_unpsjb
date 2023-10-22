@@ -1,4 +1,5 @@
 from jinja2 import Template
+from pathlib import Path
 from typing import Protocol
 
 class TargetTemplate(Protocol):
@@ -14,7 +15,7 @@ class TargetTemplate(Protocol):
         return ".txt"
 
 
-class FromFileTargetFormat:    
+class FromFileTargetTemplate:    
     def __init__(self, resource: Path) -> None:
         self._resource = resource
 
