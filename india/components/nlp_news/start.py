@@ -30,7 +30,7 @@ def run_start() -> None:
         crontab.add("update_repo",
                     str(app.fs.update_repo_sh),
                     "15", "*", "*", "*", "*")
-        crontab.add("run_news_bots", 
-                    str(app.fs.run_news_websites_bot_sh),
+        crontab.add("run_nlp_news_websites_bot", 
+                    str(app.fs.run_nlp_news_websites_bot_sh),
                     "58", "*", "*", "*", "*")
         crontab.update(app.fs.crontab_txt)
