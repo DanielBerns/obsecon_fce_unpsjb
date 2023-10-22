@@ -10,7 +10,7 @@ def filename():
 def run_telegram_bot() -> None:
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         print("app started!")
-        run(app.fs.telegram,
+        run(app.fs.nlp_news_telegram,
             app.cfg.authorization_token["telegram"],
             app.fs.update_app_sh
         )
