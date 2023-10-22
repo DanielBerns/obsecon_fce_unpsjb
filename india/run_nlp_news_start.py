@@ -1,3 +1,3 @@
-from components.nlp_news import nlp_news_start
+from components.nlp_news import run_start
 
-nlp_news_start() 
+run_start() 

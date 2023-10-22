@@ -9,7 +9,7 @@ from components.nlp_news.nlp_news_websites import get_websites
 def filename():
     return __file__[:-3]
 
-def nlp_news_websites_bot() -> None:
+def run_websites_bot() -> None:
     def websites_items() -> Generator[Tuple[str, List[str]], None, None]:
         websites = get_websites()
         for identifier, urls in websites.items():        
