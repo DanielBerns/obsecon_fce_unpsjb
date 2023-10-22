@@ -65,17 +65,21 @@ class FSNLPNews(FileSystem):
         return self._run_nlp_news_websites_bot_sh
 
     @property
-    def news(self) -> Path:
-        return self._news
-
-    @property
     def telegram(self) -> Path:
         return self._telegram
 
     @property
-    def nlp(self) -> Path:
-        return self._nlp
+    def nlp_news(self) -> Path:
+        return self._nlp_news
 
+    @property
+    def nlp_news_telegram(self) -> Path:
+        return self._nlp_news_telegram
+
+    @property
+    def nlp_news_websites(self) -> Path:
+        return self._nlp_news_websites
+    
     @property
     def metadata(self) -> Metadata:
         return self._metadata
