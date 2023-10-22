@@ -18,7 +18,7 @@ def run_websites_bot() -> None:
             yield identifier, urls
 
     def process_item(identifier: str, urls: List[str]) -> None:
-        with create_treestore_driver(app.fs.news, identifier) as driver:
+        with create_treestore_driver(app.fs.nlp_news_websites, identifier) as driver:
             for an_url in urls:
                 print(f"    {an_url:s}")     
                 logging.info(f"    {an_url:s}")                    
