@@ -230,6 +230,7 @@ async def shutdown(update: Update, context: CustomContext) -> None:
 
 
 async def _update_repo() -> None:
+    print(CustomContext.update_repo_sh)
     cp = subprocess.run([CustomContext.update_repo_sh])
     if cp.returncode:
         logging.info(f"returncode {cp.returncode:d}")
@@ -238,11 +239,11 @@ async def _update_repo() -> None:
 async def update_repo(update: Update, context: CustomContext) -> None:
     flag = context.bot_data.get("update_repo", False)
     if flag:
-        logging.info("updating app")
-        await update.message.reply_text("updating app")
+        logging.info("updating repo")
+        await update.message.reply_text("updating repo")
         return
-    logging.info("start app update")
-    await update.message.reply_text("start app update")
+    logging.info("start repo update")
+    await update.message.reply_text("start repo update")
     context.bot_data["update_repo"] = True
     await _update_repo()
     context.bot_data["update_repo"] = False
