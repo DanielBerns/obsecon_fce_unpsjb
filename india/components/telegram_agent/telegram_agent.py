@@ -56,7 +56,7 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     telegram_home: Optional[Path] = None
     store: Optional[TreeStore] = None
     shutdown_sh: Optional[Path] = None
-    update_app_sh: Optional[Path] = None
+    update_repo_sh: Optional[Path] = None
     
     def __init__(
         self, application: Application, chat_id: int = None, user_id: int = None
@@ -229,23 +229,23 @@ async def shutdown(update: Update, context: CustomContext) -> None:
     await update.message.reply_text("executing shutdown")
 
 
-async def _update_app() -> None:
-    cp = subprocess.run([CustomContext.update_app_sh])
+async def _update_repo() -> None:
+    cp = subprocess.run([CustomContext.update_repo_sh])
     if cp.returncode:
         logging.info(f"returncode {cp.returncode:d}")
 
 
-async def update_app(update: Update, context: CustomContext) -> None:
-    flag = context.bot_data.get("update_app", False)
+async def update_repo(update: Update, context: CustomContext) -> None:
+    flag = context.bot_data.get("update_repo", False)
     if flag:
         logging.info("updating app")
         await update.message.reply_text("updating app")
         return
     logging.info("start app update")
     await update.message.reply_text("start app update")
-    context.bot_data["update_app"] = True
-    await _update_app()
-    context.bot_data["update_app"] = False
+    context.bot_data["update_repo"] = True
+    await _update_repo()
+    context.bot_data["update_repo"] = False
     logging.info("end app update")
     await update.message.reply_text("end app update")
 
@@ -253,7 +253,7 @@ async def update_app(update: Update, context: CustomContext) -> None:
 def run(
     telegram_home: Path, 
     telegram_token: str,
-    update_app_sh: Path) -> None:
+    update_repo_sh: Path) -> None:
     """Start the agent."""
     store = TreeStore(telegram_home, "messages")
     if CustomContext.telegram_home is None:
@@ -262,8 +262,8 @@ def run(
         CustomContext.store = store
     if CustomContext.shutdown_sh is None:
         CustomContext.shutdown_sh = get_resource(telegram_home, "shutdown", ".sh")
-    if CustomContext.shutdown_sh is None:
-        CustomContext.shutdown_sh = update_app_sh        
+    if CustomContext.update_repo_sh is None:
+        CustomContext.update_repo_sh = update_repo_sh        
     context_types = ContextTypes(context=CustomContext)
     builder = Application.builder()
     builder.token(telegram_token)
@@ -277,7 +277,7 @@ def run(
     application.add_handler(CommandHandler("telegram", get_telegram))
     application.add_handler(CommandHandler("noticias", get_websites))
     application.add_handler(CommandHandler("sd", shutdown))
-    application.add_handler(CommandHandler("ua", update_app))
+    application.add_handler(CommandHandler("ur", update_repo))
 
     # on non commands
     application.add_handler(
