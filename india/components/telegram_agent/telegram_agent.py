@@ -241,14 +241,14 @@ async def update_repo(update: Update, context: CustomContext) -> None:
     if flag:
         logging.info("updating repo")
         await update.message.reply_text("updating repo")
-        return
-    logging.info("start repo update")
-    await update.message.reply_text("start repo update")
-    context.bot_data["update_repo"] = True
-    await _update_repo()
-    context.bot_data["update_repo"] = False
-    logging.info("end app update")
-    await update.message.reply_text("end app update")
+    else:
+        logging.info("start repo update")
+        await update.message.reply_text("start repo update")
+        context.bot_data["update_repo"] = True
+        await _update_repo()
+        context.bot_data["update_repo"] = False
+        logging.info("end app update")
+        await update.message.reply_text("end app update")
 
 
 def run(
