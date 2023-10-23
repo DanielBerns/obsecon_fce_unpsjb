@@ -1,4 +1,5 @@
 import logging
+from os import chmod
 
 from components.core import Crontab
 from components.helpers import write_text
@@ -9,23 +10,23 @@ from components.nlp_news.app import create_app
 def filename():
     return __file__[:-3]
 
-import pdb
-
 def run_start() -> None:
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         template_builder = FromFileTargetTemplate(app.fs.template_update_repo_sh)
         text = template_builder.template.render()
         write_text(app.fs.update_repo_sh, text)
+        chmod(app.fs.update_repo_sh, 0x700)
         
-        pdb.set_trace()
         template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_telegram_bot_sh)
         text = template_builder.template.render(mode=app.cli_args["mode"])
         write_text(app.fs.run_nlp_news_telegram_bot_sh, text)        
-
+        chmod(app.fs.run_nlp_news_telegram_bot_sh, 0x700)
+        
         template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_websites_bot_sh)
         text = template_builder.template.render(mode=app.cli_args["mode"])
         write_text(app.fs.run_nlp_news_websites_bot_sh, text)        
-
+        chmod(app.fs.run_nlp_news_websites_bot_sh, 0x700)
+        
         crontab = Crontab()
         crontab.add("update_repo",
                     str(app.fs.update_repo_sh),

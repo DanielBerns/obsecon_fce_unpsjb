@@ -230,7 +230,6 @@ async def shutdown(update: Update, context: CustomContext) -> None:
 
 
 async def _update_repo() -> None:
-    print(CustomContext.update_repo_sh)
     cp = subprocess.run([CustomContext.update_repo_sh])
     if cp.returncode:
         logging.info(f"returncode {cp.returncode:d}")
@@ -247,15 +246,15 @@ async def update_repo(update: Update, context: CustomContext) -> None:
         context.bot_data["update_repo"] = True
         await _update_repo()
         context.bot_data["update_repo"] = False
-        logging.info("end app update")
-        await update.message.reply_text("end app update")
+        logging.info("end repo update")
+        await update.message.reply_text("end repo update")
 
 
 def run(
     telegram_home: Path, 
     telegram_token: str,
     update_repo_sh: Path) -> None:
-    """Start the agent."""
+
     store = TreeStore(telegram_home, "messages")
     if CustomContext.telegram_home is None:
         CustomContext.telegram_home = telegram_home
@@ -272,7 +271,6 @@ def run(
     application = builder.build()
 
     logging.info(f"PID {os.getpid():d}")
-    # on different commands - answer in Telegram
     application.add_handler(CommandHandler("inicio", start))
     application.add_handler(CommandHandler("ayuda", help_command))
     application.add_handler(CommandHandler("telegram", get_telegram))
@@ -280,7 +278,6 @@ def run(
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("ur", update_repo))
 
-    # on non commands
     application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, process_text)
     )
