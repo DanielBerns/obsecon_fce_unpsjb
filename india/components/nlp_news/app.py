@@ -16,6 +16,7 @@ class FSNLPNews(FileSystem):
         super().__init__(context, version, mode)
         self._crontab = get_container(self.commands, "crontab")
         self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
+        self._logs_txt = get_resource_with_timestamp(self.logs, "nlp_news", '.txt')
         
         templates_container = get_container(Path('~', 'Apps', context, version), "templates")
         self._template_run_nlp_news_telegram_bot_sh = get_resource(templates_container, "run_nlp_news_telegram_bot", ".sh")
@@ -31,6 +32,7 @@ class FSNLPNews(FileSystem):
         self._nlp_news_websites = get_container(self.storage, "nlp_news_websites")
         self._nlp_news = get_container(self.results, "nlp_news")
 
+
         
     @property
     def crontab(self) -> Path:
@@ -39,6 +41,10 @@ class FSNLPNews(FileSystem):
     @property
     def crontab_txt(self) -> Path:
         return self._crontab_txt
+
+    @property
+    def logs_txt(self) -> Path:
+        return self._logs_txt
 
     @property
     def template_update_repo_sh(self) -> Path:
