@@ -11,7 +11,7 @@ from components.helpers import get_timestamp, get_container, classname
 class FlatStore(SampleStore):
     def __init__(self, container: Path, identifier: str) -> None:
         super().__init__(container, identifier)
-        self._metadata = Metadata()
+        self._metadata = Metadata(get_container(self.home, "metadata")
         self.metadata.start()
 
     @property

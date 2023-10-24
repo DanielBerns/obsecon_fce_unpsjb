@@ -39,6 +39,7 @@ class FileSystem:
         self._results = get_container(self.home, "Results")
         self._reports = get_container(self.home, "Reports")
         self._logs = get_container(self.home, "Logs")
+        self._metadata = Metadata(get_container(self.home, "metadata"))        
 
     @property
     def context(self) -> str:
@@ -75,6 +76,10 @@ class FileSystem:
     @property
     def logs(self) -> Path:
         return self._logs
+
+    @property
+    def metadata(self) -> Metadata:
+        return self._metadata
 
     def clear(self) -> None:
         if self.home.exists():

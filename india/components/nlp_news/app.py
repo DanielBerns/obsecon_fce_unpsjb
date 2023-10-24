@@ -30,7 +30,7 @@ class FSNLPNews(FileSystem):
         self._nlp_news_telegram = get_container(self.storage, "nlp_news_telegram")
         self._nlp_news_websites = get_container(self.storage, "nlp_news_websites")
         self._nlp_news = get_container(self.results, "nlp_news")
-        self._metadata = Metadata(get_container(self.storage, "metadata"))
+
         
     @property
     def crontab(self) -> Path:
@@ -80,9 +80,6 @@ class FSNLPNews(FileSystem):
     def nlp_news_websites(self) -> Path:
         return self._nlp_news_websites
     
-    @property
-    def metadata(self) -> Metadata:
-        return self._metadata
 
 
 class AppNLPNews:

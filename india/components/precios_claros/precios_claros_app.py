@@ -5,37 +5,36 @@ from typing import Dict, List, Tuple, Generator
 
 from context import components
 
-from components.core import Config, FileSystem, Metadata
+from components.core import CLIConfig, Config, FileSystem, Metadata
 from components.helpers import (get_container, 
                                 get_timestamp,
                                 get_resource, 
                                 get_resource_with_timestamp)
 
 
-class PreciosClarosException(Exception):
-    def __init__(self, explanation: Dict[str, str]) -> None:
-        super().__init__(self)
-        self._explanation = explanation if explanation else {"error_message": "empty explanation"}
-
-    @property
-    def explanation(self) -> Dict[str, str]:
-        return self._explanation    
-
-    def __str__(self) -> str:
-        return json.dumps(self.explanation)
-
-
 class FSPreciosClaros(FileSystem):
     def __init__(self, 
                  context: str,
                  version: str,
-                 instance: str) -> None:
-        super().__init__(context, version, instance)
+                 mode: str) -> None:
+        super().__init__(context, version, mode)
+
+        self._crontab = get_container(self.commands, "crontab")
+        self._crontab_txt = get_resource(self.crontab, "crontab", ".txt")
         
-        precios_claros_commands = get_container(self.commands, "precios_claros")
+        precios_claros_templates = get_container(Path('~', 'Apps', context, version), "templates")
+        self._template_run_precios_claros_bot_sh = get_resource(precios_claros_templates, "run_precios_claros_bot", ".sh")
+
+        precios_claros_commands = get_container(self.commands, "precios_claros")        
         self._run_precios_claros_bot_sh = get_resource(precios_claros_commands, "run_precios_claros_bot", ".sh")
-        precios_claros_storage = get_container(self.storage, "precios_claros")
-        self._precios_claros = precios_claros_storage
+
+        self._precios_claros = get_container(self.storage, "precios_claros")
+        
+        self._logs_txt = get_resource_with_timestamp(self.logs, "precios_claros", '.txt')
+
+    @property
+    def template_run_precios_claros_bot_sh(self) -> Path:
+        return self._template_run_precios_claros_bot_sh
         
     @property
     def run_precios_claros_bot_sh(self) -> Path:
@@ -46,48 +45,56 @@ class FSPreciosClaros(FileSystem):
         return self._precios_claros
 
     @property
-    def metadata(self) -> Metadata:
-        return self._metadata
+    def logs_txt(self) -> Path:
+        return self._logs_txt
 
 
 class AppPreciosClaros:
-    def __init__(self, fs: FSPreciosClaros) -> None:
+    def __init__(self, fs: FSPreciosClaros, cfg: Config, args: Dict[str, str]) -> None:
         self._fs: FSPreciosClaros = fs
-        self._config = Config(fs.home)
+        self._cfg: Config = cfg
+        self._cli_args: Dict[str, str] = args
 
     @property
     def fs(self) -> FSPreciosClaros:
         return self._fs
     
     @property
-    def config(self) -> Config:
-        return self._config
+    def cfg(self) -> Config:
+        return self._cfg
+    
+    @property
+    def cli_args(self) -> Dict[str, str]:
+        return self._cli_args
 
 
 @contextmanager
 def create_app(
     context: str,
     version: str,
-    instance: str,
     name: str) -> Generator[AppPreciosClaros, None, None]:
 
-    fs = FSPreciosClaros(context, version, instance)
-    fs.metadata.start()
-    fs.metadata.add(get_timestamp(), name, "start")
-    app = AppPreciosClaros(fs)
-
-    logs_txt = get_resource_with_timestamp(fs.logs, name, '.txt')
-    logging.basicConfig(
-        filename=logs_txt, 
-        level=app.config.log_level
-    )
+    cli_cfg = CLIConfig()   
+    cli_cfg.add_arguments()
+    args = cli_cfg.args
     
+    fs = FSPreciosClaros(context, version, args["mode"])
+    fs.metadata.start()
+    cfg = Config(fs.home, args)
+
+    logging.basicConfig(
+        filename=fs.logs_txt, 
+        level=cfg.log_level
+    )
+
     logging.info(f"start")
+    app = AppPreciosClaros(fs, cfg, args)    
+    print("app started!")    
     try:
         yield app
     except Exception as message:
-        logging.warning(f"Warning: {str(message):s}")
+        logging.warning(f"exception: {str(message):s}\n")
     finally:
-        fs.metadata.add(get_timestamp(), name, "stop")        
         fs.metadata.stop()
         logging.info(f"stop")
+        print("app stopped!")    
