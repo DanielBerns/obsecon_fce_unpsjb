@@ -1,6 +1,7 @@
-from typing import Dict, List, Tuple, Generator
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
+from typing import Dict, List, Tuple, Generator
+
 from components.helpers import load_json, get_container
 
 
@@ -9,7 +10,7 @@ class TextTXT:
     
     @staticmethod
     def write(container: Path,
-              content: List[str]) -> None:
+              content: List[List[str]]) -> None:
         text_txt = Path(container, TextTXT.filename)
         with open(text_txt, 'w') as target:
             for event in content:
@@ -50,16 +51,15 @@ class CharactersMD:
     title: str = "# Characters\n"
     
     @staticmethod
-    def write(base: Path, 
-              store_characters: Counter) -> None:
+    def write(base: Path, characters: Counter) -> None:
         container = NLPContainer.get(base)
         characters_md = Path(container, CharactersMD.filename)
         with open(characters_md, "w") as target:
             target.write(CharactersMD.title)
             characters = get_sorted_characters(
-                [cc for cc in store_characters.keys()])
+                [cc for cc in characters.keys()])
             for key in characters:
-                value = store_characters[key]
+                value = characters[key]
                 if ord(key) < 32:
                     target.write(f"&{ord(key):>8d}: {value:d}\n")
                 elif 32 <= ord(key) < 127:
@@ -73,19 +73,19 @@ class TokensMD:
     title: str = "# Tokens\n"
     
     @staticmethod
-    def write(base: Path,
-              store_tokens: Counter) -> None:
+    def write(base: Path, tokens: Counter) -> None:
         container = NLPContainer.get(base)        
         tokens_md = Path(container, TokensMD.filename)
         with open(tokens_md, "w") as target:        
             target.write(TokensMD.title)
             max_token_length = 0
-            for key, value in sorted(store_tokens.items(), 
+            for key, value in sorted(tokens.items(), 
                                      key=lambda pair: pair[1],
                                      reverse=True):
                 target.write(f"{key:<25s}{NLPContainer.separator:s}{value:d}\n")
-                if len(key) > max_token_length:
-                    max_token_length = len(key)
+                token_length = len(key)
+                if token_length > max_token_length:
+                    max_token_length = token_length
                     
     @staticmethod
     def read(base: Path) -> Dict[str, int]:

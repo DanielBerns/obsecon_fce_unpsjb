@@ -31,60 +31,15 @@ def erase_directory(base: Path) -> None:
     rmtree(base, ignore_errors=True)
 
 
-class TreeStore:
-    def __init__(self, home: Path, identifier: str) -> None:
-        """
-        home: path where TreeStore lives
-        identifier: the name of the TreeStore
-        """
-        self._base = get_container(home, identifier)
-        self._tree = get_container(self.base, "tree")
-        self._index_resource = get_resource(self.base, "index", ".json")
-        self._index = 0
-        if self.index_resource.exists():
-            # restarting treestore
-            values = self.read()
-            self._index = values["index"]
-        else:
-            # creating treestore
-            self.write()
+class TreeStore(SampleStore):
+    def __init__(self, container: Path, identifier: str) -> None:
+        super().__init__(container: Path, identifier: str)
 
-    @property
-    def base(self) -> Path:
-        return self._base
-
-    @property
-    def tree(self) -> Path:
-        return self._tree
-
-    @property
-    def index_resource(self) -> Path:
-        return self._index_resource
-
-    @property
-    def index(self) -> int:
-        return self._index
-
-    @index.setter
-    def index(self, value: int) -> None:
-        self._index = value
-        self.write()
-
-    def write(self) -> None:
-        values = {"index": self.index}
-        with open(self.index_resource, "w") as target:
-            json.dump(values, target)
-
-    def read(self) -> dict:
-        with open(self.index_resource, "r") as source:
-            values = json.load(source)
-        return values
-
-    def new_sample(self) -> Path:
-        first_digit, second_digit, third_digit = base_256(self.index)
-        self.index += 1
+    def create_sample(self) -> Path:
+        first_digit, second_digit, third_digit = base_256(self.index.value)
+        self.index.value += 1
         sample = Path(
-            self.tree,
+            self.base,
             f"{first_digit:>03d}",
             f"{second_digit:>03d}",
             f"{third_digit:>03d}",
@@ -92,35 +47,23 @@ class TreeStore:
         sample.mkdir(mode=0o700, parents=True, exist_ok=False)
         return sample
 
-    def start(self):
-        logging.info(f"treestore.start() with index {self.index:d}")
-
-    def stop(self):
-        self.write()
-        logging.info(f"treestore.stop() with index {self.index:d}")        
-
-    def samples(self, first: int = 0, top: int = -1) -> Generator[Path, None, None]:
-        if first < 0:
-            raise TreeStoreError(
-                f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
+    def get_sample(self, key: Optional[str] = None, number: int = -1) -> Path:
+        if 0 <= number < self.index.value:
+            first_digit, second_digit, third_digit = base_256(number)
+            sample = Path(
+                self.base,
+                f"{first_digit:>03d}",
+                f"{second_digit:>03d}",
+                f"{third_digit:>03d}",
             )
-        elif self.index < first:
-            raise TreeStoreError(
-                f"TreeStore.samples: first {first:d} out of range (0, {self.index:d})"
-            )
-        if top == -1:
-            top = self.index
-        elif 0 <= top <= self.index:
-            pass
+            return sample
         else:
             raise TreeStoreError(
-                f"TreeStore.samples: top {top:d} out of range (0, {self.index:d})"
-            )
-        if first <= top:
-            pass
-        else:
-            raise TreeStoreError(f"TreeStore.samples: top {top:d} < first {first:d}")
-        for k in range(first, top):
+                f"{classname(self):s}.get_sample: {number:d} out of range [0,{self.index.value:d})"
+                )
+                                                                         
+    def samples(self) -> Generator[Path, None, None]:
+        for k in range(0, self.index.value):
             first_digit, second_digit, third_digit = base_256(k)
             sample = Path(
                 self.tree,
@@ -131,85 +74,6 @@ class TreeStore:
             yield sample
 
 
-class SampleTask:
-    def __init__(self, identifier: str):
-        self._identifier = identifier
-        self._iteration = 0
-
-    @property
-    def identifier(self) -> int:
-        return self._identifier
-        
-    @property
-    def iteration(self) -> int:
-        return self._iteration
-    
-    @iteration.setter
-    def iteration(self, value: int) -> None:
-        self._iteration = value
-    
-    def start(self, target: Path) -> None:
-        print(f"start {self.identifier:<20s} - total iteration: {self.iteration:d}")
-        
-    def execute(self, sample: Path) -> None:
-        self.iteration += 1
-        print(f"{self.identifier:<20s} - {str(sample):s}: {self.iteration:d}")
-
-    def stop(self, target: Path) -> None:
-        print(f"stop {self.identifier:<20s} - total iteration: {self.iteration:d}")
-        
-
-class EmptySampleTask(SampleTask):
-    def __init__(self):
-        super().__init__('EmptySampleTask')
-
-    def start(self, target: Path) -> None:
-        super().start(target)
-    
-    def execute(self, sample: Path) -> None:
-        super().execute(sample)
-
-    def stop(self, target: Path) -> None:
-        super().stop(target)
-
-
-
-class SampleTaskFactory(Protocol):
-    def execute(self) -> Generator[SampleTask, None, None]:
-        pass
-
-
-class TreeStoreMetadata(Metadata):
-    def __init__(self, base: Path):
-        super().__init__(base)
-
-    @property
-    def next_to_process(self) -> Tuple[int, int]:
-        processed_samples = self.events["samples"]["processed"]
-        return processed_samples.get("next_to_process", 0)
-
-    @next_to_process.setter
-    def next_to_process(self, value: int) -> None:
-        self.events["samples"]["processed"]["next_to_process"] = value
-        self.save_events()
-
-
-class Pipeline:
-    def __init__(self) -> None:
-        self._tasks: Dict[str, SampleTask] = {}
-
-    def add(self, task: SampleTask) -> None:
-        self._tasks[task.identifier] = task
-        
-    def execute(self) -> Generator[SampleTask, None, None]:
-        for identifier, task in self._tasks.items():
-            yield task
-
-    def remove(self, identifier: str) -> None:
-        try:
-            del self._tasks[identifier]
-        except KeyError:
-            pass
 
 
 class TreeStoreDriver:

@@ -31,6 +31,8 @@ class FileSystem:
         self._version: str = version
         self._instance: str = instance
         self._catalog: Dict[str, Path] = {}   
+        apps = Path('~', 'Apps', 'observatorio_fce_unpsjb', 'india').expanduser()
+        self._templates = get_container(apps, "templates")
         self._home = FileSystem.get_home(context, version, instance)
         self._commands = get_container(self.home, "Commands")
         self._storage = get_container(self.home, "Storage")

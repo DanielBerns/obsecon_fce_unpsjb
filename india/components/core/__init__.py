@@ -11,15 +11,13 @@ from components.core.events import (Events,
                                     SelectedEventsSource, 
                                     ProcessedEventsSource)
 from components.core.rows_document import RowsDocument
-from components.core.sampled_dataset import SampledDataset
+from components.core.sample_store import SampleStore, SampleTask, 
+                                       EmptySampleTask, 
+                                       SampleTaskFactory
 from components.core.metadata import Metadata
 from components.core.filesystem import FileSystem
-from components.core.treestore import (TreeStore, 
-                                       TreeStoreDriver, 
-                                       SampleTask, 
-                                       EmptySampleTask, 
-                                       SampleTaskFactory, 
-                                       create_treestore_driver)
+from components.core.treestore import TreeStore
+from components.core.flatstore import FlatStore
 from components.core.text_generator import TextGenerator
 from components.core.target_template import (TargetTemplate, 
                                         FromFileTargetTemplate, 

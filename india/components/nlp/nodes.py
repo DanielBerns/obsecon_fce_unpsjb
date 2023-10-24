@@ -1,7 +1,8 @@
-import logging
-import math
+from logging import debug
+from math import log
 from collections import Counter, defaultdict
 from typing import Tuple, Callable, List, Dict
+
 from components.nlp.tokenizer import Tokenizer
 from components.helpers import classname
 
@@ -35,7 +36,7 @@ class IDFNode:
     @property
     def idf(self) -> Dict[int, float]:
         number_of_docs = self.number_of_docs + 1
-        return {nn: math.log((number_of_docs / (1 + len(set(tt))))) for nn, tt in self.terms.items()}
+        return {nn: log((number_of_docs / (1 + len(set(tt))))) for nn, tt in self.terms.items()}
 
 
 class TFNode:
@@ -70,7 +71,7 @@ class TFNode:
         try:
             code = self._encode(sentence)
         except KeyError:
-            logging.debug(f"{classname(self):s}.encode 1: {sentence:s}")
+            debug(f"{classname(self):s}.encode 1: {sentence:s}")
             code = []
         return code
 
@@ -78,7 +79,7 @@ class TFNode:
         try:
             sentence = self._decode(code)
         except KeyError:
-            logging.debug(f"{classname(self):s}.decode 1: {str(code):s}")
+            debug(f"{classname(self):s}.decode 1: {str(code):s}")
             sentence = ""
         return sentence
         
