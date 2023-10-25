@@ -24,7 +24,7 @@ def execute(
     sample_builder: PreciosClarosSampleBuilder
     ) -> None:
     sample_key = sample_builder.run_identifier
-    storage = FlatStore(home)    
+    storage = FlatStore(home, "samples")    
     storage.start()    
     sample_path = storage.create_sample(sample_key)
     sample_builder.write(sample_path)
