@@ -24,6 +24,7 @@ def execute(
     sample_builder: PreciosClarosSampleBuilder
     ) -> None:
     sample_key = sample_builder.run_identifier
+    pdb.set_trace()
     storage = FlatStore(home, "samples")    
     storage.start()    
     sample_path = storage.create_sample(sample_key)
@@ -33,7 +34,6 @@ def execute(
 
 def run_precios_claros_bot() -> None:
     web = True
-    pdb.set_trace()
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         if web:
             selection_patterns = [
