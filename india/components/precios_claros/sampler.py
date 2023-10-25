@@ -8,10 +8,10 @@ from typing import Dict, Optional, Generator, List, Tuple
 from components.precios_claros.pc_scraper import PreciosClarosScraper
 from components.precios_claros.web_scraper import WebScraper
 from components.precios_claros.local_scraper import LocalScraper
-from components.core import (EventsSource, 
+from components.core import (EventsOrigin, 
                              EventsDocument, 
-                             SelectedEventsSource,
-                             ProcessedEventsSource,
+                             SelectedEventsOrigin,
+                             ProcessedEventsOrigin,
                              CompositeEventsDriver,
                              Events)
 from components.helpers import get_container, i, classname
@@ -47,7 +47,7 @@ class ArticlesPerPointOfSale:
             yield article
 
 
-class SelectedPointsOfSaleGenerator(SelectedEventsSource):
+class SelectedPointsOfSaleGenerator(SelectedEventsOrigin):
     def __init__(self, selectors: List[Dict[str, str]]) -> None:
         super().__init__()
         self._selectors = selectors
@@ -78,7 +78,7 @@ class SelectedPointsOfSaleReader:
             yield Events.lower_values(event)
 
 
-class ProcessedPointsOfSaleSource(ProcessedEventsSource):
+class ProcessedPointsOfSaleSource(ProcessedEventsOrigin):
     def __init__(self):
         super().__init__()
 
@@ -158,9 +158,9 @@ class PreciosClarosSampleBuilder:
 
     def __init__(self, 
                  run_identifier: str,
-                 points_of_sale_source: EventsSource,
-                 selected_points_of_sale_source: EventsSource,
-                 articles_per_point_of_sale_source: EventsSource
+                 points_of_sale_source: EventsOrigin,
+                 selected_points_of_sale_source: EventsOrigin,
+                 articles_per_point_of_sale_source: EventsOrigin
                  ) -> None:
         self._run_identifier = run_identifier
         self._points_of_sale_source = points_of_sale_source
@@ -172,15 +172,15 @@ class PreciosClarosSampleBuilder:
         return self._run_identifier
     
     @property
-    def points_of_sale_source(self) -> EventsSource:
+    def points_of_sale_source(self) -> EventsOrigin:
         return self._points_of_sale_source
     
     @property
-    def selected_points_of_sale_source(self) -> EventsSource:
+    def selected_points_of_sale_source(self) -> EventsOrigin:
         return self._selected_points_of_sale_source
     
     @property
-    def articles_per_point_of_sale_source(self) -> EventsSource:
+    def articles_per_point_of_sale_source(self) -> EventsOrigin:
         return self._articles_per_point_of_sale_source
     
     def start(self) -> None:
@@ -193,6 +193,7 @@ class PreciosClarosSampleBuilder:
         sample = PreciosClarosSample(sample_path)
         sample.start()
         sample.points_of_sale.update(self.points_of_sale_source)
+        pdb.set_trace()
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()

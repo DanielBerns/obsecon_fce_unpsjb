@@ -14,7 +14,8 @@ class Catalog:
     def create(self, key: str, value: Any) -> None:
         try:
             _ = self.table[key]
-            raise CatalogException("create")
+            raise CatalogException(
+                f"{classname(self):s}.create")
         except KeyError:
             self.table[key] = value            
     
@@ -23,7 +24,8 @@ class Catalog:
             _ = self._table[key]
             self.table[key] = value        
         except KeyError:
-            raise CatalogException("update")
+            raise CatalogException(
+                f"{classname(self):s}.update")
 
     def delete(self, key: str) -> None:
         try:

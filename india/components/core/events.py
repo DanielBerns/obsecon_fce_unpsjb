@@ -13,7 +13,7 @@ class Events:
         return {str(key): str(value).lower() for key, value in event.items()}
 
 
-class EventsSource(Protocol):
+class EventsOrigin(Protocol):
     def events(self) -> Generator[Dict[Any, Any], None, None]:
         yield from ()
 
@@ -83,16 +83,16 @@ class EventsDocument:
         pass
 
     def events(self) -> Generator[Dict[Any, Any], None, None]:
-        with open(self.store, "r", encoding="utf-8") as source:
-            for line in source:
+        with open(self.store, "r", encoding="utf-8") as origin:
+            for line in origin:
                 event = json.loads(line)
                 yield event
 
-    def update(self, source: EventsSource, mode="w") -> None:
+    def update(self, origin: EventsOrigin, mode="w") -> None:
         _mode = "a" if mode != "w" else "w"
         with open(self.store, _mode, encoding="utf-8") as target:
             print(str(self.store))
-            for number, event in enumerate(source.events()):
+            for number, event in enumerate(origin.events()):
                 self.events_stats.update(event)
                 line = json.dumps(event)
                 target.write(f"{line:s}\n")
@@ -100,35 +100,35 @@ class EventsDocument:
                     print(f"{classname(self):s} event #{number:d}")
 
 
-class CompositeEventsSource:
+class CompositeEventsOrigin:
     def __init__(self) -> None:
-        self._events_source: Optional[EventsSource] = None
+        self._events_origin: Optional[EventsOrigin] = None
 
     @property        
-    def events_source(self) -> Optional[EventsSource]:
-        return self._events_source
+    def events_origin(self) -> Optional[EventsOrigin]:
+        return self._events_origin
     
-    @events_source.setter
-    def events_source(self, value: EventsSource) -> None:
-        self._events_source = value
+    @events_origin.setter
+    def events_origin(self, value: EventsOrigin) -> None:
+        self._events_origin = value
 
     def events(self) -> Generator[Dict[Any, Any], None, None]:
-        for event in self.events_source.events():
+        for event in self.events_origin.events():
             yield event
 
 
 class CompositeEventsDriver:
     def __init__(self) -> None:
-        self._events_source: Optional[EventsSource] = None
+        self._events_origin: Optional[EventsOrigin] = None
         self._events_processor: Optional[EventsProcessor] = None
 
     @property        
-    def events_source(self) -> Optional[EventsSource]:
-        return self._events_source
+    def events_origin(self) -> Optional[EventsOrigin]:
+        return self._events_origin
     
-    @events_source.setter
-    def events_source(self, value: EventsSource) -> None:
-        self._events_source = value
+    @events_origin.setter
+    def events_origin(self, value: EventsOrigin) -> None:
+        self._events_origin = value
 
     @property        
     def events_processor(self) -> Optional[EventsProcessor]:
@@ -140,12 +140,12 @@ class CompositeEventsDriver:
 
     def events(self) -> Generator[Dict[Any, Any], None, None]:
         # pdb.set_trace()
-        for x in self.events_source.events():
+        for x in self.events_origin.events():
             for event in self.events_processor.events(x):
                 yield event
 
 
-class SelectedEventsSource(CompositeEventsSource):
+class SelectedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
     
@@ -155,12 +155,12 @@ class SelectedEventsSource(CompositeEventsSource):
         return True
 
     def events(self) -> Dict[Any, Any]:
-        for event in self.events_source.events():
+        for event in self.events_origin.events():
             if self.select_event(event):
                 yield event
 
 
-class ProcessedEventsSource(CompositeEventsSource):
+class ProcessedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
     
@@ -170,5 +170,5 @@ class ProcessedEventsSource(CompositeEventsSource):
         return event
 
     def events(self) -> Dict[Any, Any]:
-        for event in self.events_source.events():
+        for event in self.events_origin.events():
             yield self.process_event(event)

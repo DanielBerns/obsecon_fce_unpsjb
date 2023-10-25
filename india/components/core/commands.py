@@ -1,6 +1,7 @@
 from typing import Dict
 from pathlib import Path
 
+
 class Commands:
     def __init__(self) -> None:
         self._table: Dict[str, str] = {}
@@ -14,4 +15,3 @@ class Commands:
             file_identifier = Path(commands_home, key)
             with open(file_identifier, "w") as target:
                 target.write(value + "\n")
-                                   

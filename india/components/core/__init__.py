@@ -5,11 +5,11 @@ from components.core.commands import Commands
 from components.core.crontab import Crontab
 from components.core.events import (Events,
                                     EventsDocument, 
-                                    EventsSource, 
-                                    CompositeEventsSource,
+                                    EventsOrigin, 
+                                    CompositeEventsOrigin,
                                     CompositeEventsDriver,
-                                    SelectedEventsSource, 
-                                    ProcessedEventsSource)
+                                    SelectedEventsOrigin, 
+                                    ProcessedEventsOrigin)
 from components.core.rows_document import RowsDocument
 from components.core.sample_store import (SampleStore, 
                                           SampleTask, 

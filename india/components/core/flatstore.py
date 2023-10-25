@@ -32,7 +32,7 @@ class FlatStore(SampleStore):
         number: int = -1
         ) -> Path:
         identifier = key if key else get_timestamp()
-        sample = get_container(self.home, identifier)
+        sample = get_container(self.base, identifier)
         self.metadata.add("samples", identifier, str(self.index.value))
         return sample
 
@@ -46,7 +46,7 @@ class FlatStore(SampleStore):
             raise SampleStoreError(
                 f"{classname(self):s}.get_sample: key is None"
                 )
-        sample = Path(self.home, key)
+        sample = Path(self.base, key)
         if sample.exists():
             pass
         else:
