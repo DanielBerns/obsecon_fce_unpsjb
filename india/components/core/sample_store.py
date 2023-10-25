@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Generator, Tuple, Dict, Protocol
 
 from components.core.metadata import Metadata
-from components.helpers import get_container, classname
+from components.helpers import get_container, get_resource, classname
 
 
 class Index:
