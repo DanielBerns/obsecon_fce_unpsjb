@@ -16,6 +16,7 @@ from components.core import (EventsOrigin,
                              Events)
 from components.helpers import get_container, i, classname
 
+import pdb
 
 class PointsOfSale:
     def __init__(self, scraper: PreciosClarosScraper):
