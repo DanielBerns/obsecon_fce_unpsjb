@@ -3,7 +3,7 @@ import json
 import logging
 from pathlib import Path
 
-from typing import Dict, Optional, Generator, str, List, Tuple
+from typing import Dict, Optional, Generator, List, Tuple
 
 from components.precios_claros.pc_scraper import PreciosClarosScraper
 from components.precios_claros.web_scraper import WebScraper

@@ -1,7 +1,7 @@
 from logging import error
 import os
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Optional
 
 from components.core.metadata import Metadata
 from components.core.sample_store import SampleStore
@@ -11,7 +11,7 @@ from components.helpers import get_timestamp, get_container, classname
 class FlatStore(SampleStore):
     def __init__(self, container: Path, identifier: str) -> None:
         super().__init__(container, identifier)
-        self._metadata = Metadata(get_container(self.home, "metadata")
+        self._metadata = Metadata(get_container(self.home, "metadata"))
         self.metadata.start()
 
     @property

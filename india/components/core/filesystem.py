@@ -8,6 +8,7 @@ from components.helpers import (
     get_resource,
     get_timestamp,
 )
+from components.core import Metadata
 
 
 class FileSystem:

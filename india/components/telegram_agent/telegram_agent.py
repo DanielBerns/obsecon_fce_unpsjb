@@ -47,7 +47,7 @@ from telegram.ext import (
     filters,
 )
 
-from components.core import TreeStore, TreeStoreDriver
+from components.core import TreeStore
 from components.helpers import get_resource
 
 

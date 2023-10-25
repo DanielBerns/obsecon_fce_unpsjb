@@ -3,7 +3,6 @@ import logging
 from contextlib import contextmanager
 from typing import Dict, List, Tuple, Generator
 
-from context import components
 
 from components.core import CLIConfig, Config, FileSystem, Metadata
 from components.helpers import (get_container, 
@@ -31,6 +30,10 @@ class FSPreciosClaros(FileSystem):
         self._precios_claros = get_container(self.storage, "precios_claros")
         
         self._logs_txt = get_resource_with_timestamp(self.logs, "precios_claros", '.txt')
+
+    @property
+    def crontab(self) -> Path:
+        return self._crontab
 
     @property
     def template_run_precios_claros_bot_sh(self) -> Path:

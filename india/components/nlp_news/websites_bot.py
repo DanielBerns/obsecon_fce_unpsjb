@@ -1,7 +1,7 @@
 import logging
 
 from typing import Generator, Tuple, List
-from components.core import create_treestore_driver
+from components.core.treestore import create_treestore_driver
 from components.website_agent import GrabURLSampleTask
 from components.nlp_news.app import create_app
 from components.nlp_news.websites import get_websites

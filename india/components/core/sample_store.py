@@ -1,7 +1,8 @@
 from logging import info, debug, error
 from pathlib import Path
-from typing import Generator, Tuple
+from typing import Generator, Tuple, Dict, Protocol
 
+from components.core.metadata import Metadata
 from components.helpers import get_container, classname
 
 
@@ -135,12 +136,13 @@ class NextToProcessMetadata(Metadata):
         super().__init__(base)
 
     @property
-    def next_to_process(self) -> Tuple[int, int]:
-        return self.events.get("next_to_process", 0)
+    def next_to_process(self) -> int:
+        value = self.events["next_to_process"]["value"]
+        return int(value)
 
     @next_to_process.setter
     def next_to_process(self, value: int) -> None:
-        self.add("", "", str(value))
+        self.add("next_to_process", "value", str(value))
         self.save_events()
 
 

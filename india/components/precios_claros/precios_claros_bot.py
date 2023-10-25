@@ -1,34 +1,41 @@
 import logging
 from pathlib import Path
-from precios_claros_app import create_app, AppPreciosClaros
-from pc_scraper import PreciosClarosScraper
-from local_scraper import LocalScraper
 
+from components.precios_claros.pc_scraper import PreciosClarosScraper
+from components.precios_claros.local_scraper import LocalScraper
+
+from components.precios_claros.app import create_app
 from components.precios_claros.sampler import (PreciosClarosSampleBuilder, 
                                                create_sample_with_web_content, 
                                                create_sample_with_local_content)
-from components.core import FlatStore
+from components.core.flatstore import FlatStore
 
 from typing import Dict
+
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
 
 import pdb
 
-def run(home: Path, sample_builder: PreciosClarosSampleBuilder) -> None:
-    storage = FlatDataset(home)
-    storage.start()
+def execute(
+    home: Path, 
+    sample_builder: PreciosClarosSampleBuilder
+    ) -> None:
     sample_key = sample_builder.run_identifier
+    storage = FlatStore(home)    
+    storage.start()    
     sample_path = storage.create_sample(sample_key)
     sample_builder.write(sample_path)
     storage.metadata.add(sample_key, f"{filename():s}.run", "done")
     storage.stop()        
 
-def main() -> None:
-    args = {"web": "yes"}
-    with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
-        if args["web"] == "yes":
+def run_precios_claros_bot() -> None:
+    web = True
+    pdb.set_trace()
+    with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
+        if web:
             selection_patterns = [
                 {'provincia': 'ar-z', 'localidad': 'caleta olivia'},
                 {'provincia': 'ar-z', 'localidad': 'rio gallegos'},
@@ -40,11 +47,9 @@ def main() -> None:
                 {'provincia': 'ar-u', 'localidad': 'rawson'},
             ]            
             with create_sample_with_web_content(selection_patterns) as sample_builder:
-                run(app.fs.precios_claros, sample_builder)    
+                execute(app.fs.precios_claros, sample_builder)    
         else:
-            home = Path("~/Data/precios_claros/hotel/downloads/202207292244/")
-            with create_sample_with_local_content(home) as sample_builder:
-                run(app.fs.precios_claros, sample_builder)    
-
-if __name__ == "__main__":
-    main()
+            pass
+            # home = Path("~/Data/precios_claros/hotel/downloads/202207292244/")
+            # with create_sample_with_local_content(home) as sample_builder:
+            #     execute(app.fs.precios_claros, sample_builder)    

@@ -5,10 +5,13 @@ import logging
 from dataclasses import dataclass, field
 
 from typing import Dict, Generator, Tuple, Any, List
-from precios_claros_app import PreciosClarosException
+
 from components.helpers import classname, i, get_timestamp
 
 # import pdb
+
+class WebScraperException(Exception):
+    pass
 
 @dataclass
 class QueryLimits:
@@ -88,7 +91,7 @@ class WebScraper:
             explanation = { 'origin': f'{classname(self):s}.get_info 1',
                             'errorMessage': str(message),
                             'url': url}
-            # raise PreciosClarosException(explanation)
+            # raise WebScraperException(explanation)
             return explanation
         else:
             logging.info(f'{i(1):s}status_code: {response.status_code:d}')
@@ -99,7 +102,7 @@ class WebScraper:
                                'errorMessage': 'unexpected status_code', 
                                'url': url,
                                'status_code': str(response.status_code)}
-                # raise PreciosClarosException(explanation)
+                # raise WebScraperException(explanation)
                 return explanation
 
     def get_query_limits(self, url: str) -> QueryLimits:
