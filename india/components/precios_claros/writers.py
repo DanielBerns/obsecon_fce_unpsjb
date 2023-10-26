@@ -163,6 +163,9 @@ TABLE_HTML = """
 
 <div class="header w3-pale-green w3-text-black" id="myHeader">
     <div class="w3-row-padding">
+      <div class="w3-col w3-center l12 m12 s12">
+        <h2 class="w3-center w3-padding-8">Precios {{ ttl }}</h2>
+      </div>
       <div class="w3-col w3-left l2 m2 s2">
         <button class="w3-button w3-hover-none" onclick="w3_open('mySidebar');"><i class="fa fa-bars"></i></button>
       </div>
