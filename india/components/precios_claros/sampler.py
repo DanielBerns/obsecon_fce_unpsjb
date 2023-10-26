@@ -58,6 +58,7 @@ class SelectedPointsOfSaleGenerator(SelectedEventsOrigin):
         return self._selectors
 
     def select_event(self, event: Dict[str, str]) -> bool:
+        pdb.set_trace()
         itera = (event['provincia'] == ss['provincia'] and \
                  event['localidad'] == ss['localidad'] \
                      for ss in self.selectors)

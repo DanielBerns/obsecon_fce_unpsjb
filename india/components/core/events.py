@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from collections import Counter, defaultdict
-from typing import DefaultDict, List, Dict, Protocol, Generator, Any, Optional
+from typing import DefaultDict, List, Dict, Protocol, Generator, Optional
 
 # import pdb
 
@@ -9,17 +9,17 @@ from components.helpers import get_directory, get_resource, classname
 
 class Events:
     @staticmethod
-    def lower_values(event: Dict[Any, Any]) -> Dict[str, str]:
+    def lower_values(event: Dict[str, str]) -> Dict[str, str]:
         return {str(key): str(value).lower() for key, value in event.items()}
 
 
 class EventsOrigin(Protocol):
-    def events(self) -> Generator[Dict[Any, Any], None, None]:
+    def events(self) -> Generator[Dict[str, str], None, None]:
         yield from ()
 
 
 class EventsProcessor(Protocol):
-    def events(self, x: Dict[Any, Any]) -> Generator[Dict[Any, Any], None, None]:
+    def events(self, x: Dict[str, str]) -> Generator[Dict[str, str], None, None]:
         yield from ()
      
 
@@ -29,13 +29,13 @@ class EventsException(Exception):
 
 class EventsStats:
     def __init__(self) -> None:
-        self._counters: DefaultDict[Any, Counter] = defaultdict(Counter)
+        self._counters: DefaultDict[str, Counter] = defaultdict(Counter)
 
     @property
-    def counters(self) -> DefaultDict[Any, Counter]:
+    def counters(self) -> DefaultDict[str, Counter]:
         return self._counters
 
-    def update(self, event: Dict[Any, Any]) -> None:
+    def update(self, event: Dict[str, str]) -> None:
         for key, value in event.items():
             self.counters[key]["total"] += 1
             value_type = type(value).__name__
@@ -82,7 +82,7 @@ class EventsDocument:
     def stop(self) -> None:
         pass
 
-    def events(self) -> Generator[Dict[Any, Any], None, None]:
+    def events(self) -> Generator[Dict[str, str], None, None]:
         with open(self.store, "r", encoding="utf-8") as origin:
             for line in origin:
                 event = json.loads(line)
@@ -112,7 +112,7 @@ class CompositeEventsOrigin:
     def events_origin(self, value: EventsOrigin) -> None:
         self._events_origin = value
 
-    def events(self) -> Generator[Dict[Any, Any], None, None]:
+    def events(self) -> Generator[Dict[str, str], None, None]:
         for event in self.events_origin.events():
             yield event
 
@@ -138,7 +138,7 @@ class CompositeEventsDriver:
     def events_processor(self, value: EventsProcessor) -> None:
         self._events_processor = value
 
-    def events(self) -> Generator[Dict[Any, Any], None, None]:
+    def events(self) -> Generator[Dict[str, str], None, None]:
         # pdb.set_trace()
         for x in self.events_origin.events():
             for event in self.events_processor.events(x):
@@ -149,12 +149,12 @@ class SelectedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
     
-    def select_event(self, event: Dict[Any, Any]) -> bool:
+    def select_event(self, event: Dict[str, str]) -> bool:
         # This is the base class
         # Change this in the child class
         return True
 
-    def events(self) -> Dict[Any, Any]:
+    def events(self) -> Dict[str, str]:
         for event in self.events_origin.events():
             if self.select_event(event):
                 yield event
@@ -164,11 +164,11 @@ class ProcessedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
     
-    def process_event(self, event: Dict[Any, Any]) -> Dict[Any, Any]:
+    def process_event(self, event: Dict[str, str]) -> Dict[str, str]:
         # This is the base class
         # Change this in the child class
         return event
 
-    def events(self) -> Dict[Any, Any]:
+    def events(self) -> Dict[str, str]:
         for event in self.events_origin.events():
             yield self.process_event(event)
