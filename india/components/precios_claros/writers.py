@@ -4,21 +4,18 @@ from pathlib import Path
 from typing import TextIO, Protocol, Tuple, List, Generator, Optional
 from jinja2 import Template
 
-import pdb
-
-from models import (Article, 
-                    PointOfSale, 
-                    ArticleWithPricesTable, 
-                    PointsOfSaleTable, 
-                    PreciosClarosTask,
-                    PreciosClarosTaskException)
-from context import components
+from components.precios_claros.models import (Article, 
+                                              PointOfSale, 
+                                              ArticleWithPricesTable, 
+                                              PointsOfSaleTable, 
+                                              PreciosClarosTask)
 from components.helpers import get_container, get_resource, i, classname
 
 def filename() -> str:
     return __file__[:-3]
 
-
+class WriterException(Exception):
+    pass
 
 class TargetFormat(Protocol):
     @property    
@@ -87,7 +84,7 @@ class WriterWithTargetFormat:
             logging.debug("article_with_prices.place != place")
             logging.debug(f"  article_with_prices.place {article_with_prices.place:s}")
             logging.debug(f"  place {place:s}")    
-            raise PreciosClarosTaskException(f"{classname(self):s} bad place 1")
+            raise WriterException(f"{classname(self):s} bad place 1")
         if self.target_format.selectors:
             article_with_prices.load_selectors(category)
         parts = (place).split(':')
