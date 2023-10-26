@@ -3,7 +3,7 @@ from pathlib import Path
 
 from components.core import FlatStore
 
-from precios_claros_app import create_app
+from app import create_app
 from sampler import PreciosClarosSample
 from report_sample import FullReportSample, SampleCollector
 from writers import writer_with_target_format
