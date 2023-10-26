@@ -161,9 +161,9 @@ TABLE_HTML = """
 </div>
 </div>
 
-<div class="header w3-pale-green w3-text-black" id="myHeader">
+<div class="header w3-pale-green w3-text-black w3-mobile" id="myHeader">
     <div class="w3-row-padding">
-      <div class="w3-col w3-center l12 m12 s12">
+      <div class="w3-col w3-center w3-hide-large m12 s12">
         <h2 class="w3-center w3-padding-8">Precios {{ ttl }}</h2>
       </div>
       <div class="w3-col w3-left l2 m2 s2">
@@ -188,7 +188,7 @@ TABLE_HTML = """
     </div>
 </div>
 
-<div class="content w3-light-gray" id="articleTable">
+<div class="content w3-light-gray w3-mobile" id="articleTable">
   <div class="w3-container">
   <table class="w3-table w3-bordered w3-hoverable">
       {% for article in awpt.values() %}
