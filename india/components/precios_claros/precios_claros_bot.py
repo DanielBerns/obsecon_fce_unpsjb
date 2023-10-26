@@ -29,7 +29,7 @@ def execute(
     storage.metadata.add(sample_key, f"{filename():s}.run", "done")
     storage.stop()        
 
-def run_precios_claros_bot() -> None:
+def run_bot() -> None:
     web = True
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         if web:

@@ -16,7 +16,6 @@ from components.precios_claros.models import (Article,
 
 from writers import ArticleWithPricesTableHTML, ArticleWithPricesTableMD
 
-import pdb
 
 class ReportSamplerException(Exception):
     pass
@@ -194,7 +193,7 @@ class FullReportSample:
             with create_target(target_container) as target:
                 target.target_format = ArticleWithPricesTableMD()
                 target.execute(place, "todos", article_with_prices, points_of_sale)
-            # for category in self.get_categories(home, "article_with_prices_selectors"):
-            #     with create_target(target_container) as target:            
-            #         target.target_format = ArticleWithPricesTableHTML()
-            #         target.execute(place, category, article_with_prices, points_of_sale)
+            for category in self.get_categories(home, "article_with_prices_selectors"):
+                with create_target(target_container) as target:            
+                    target.target_format = ArticleWithPricesTableHTML()
+                    target.execute(place, category, article_with_prices, points_of_sale)

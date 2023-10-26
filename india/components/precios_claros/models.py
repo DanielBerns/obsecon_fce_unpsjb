@@ -5,10 +5,8 @@ import logging
 from typing import Tuple, List, Protocol, Dict, Generator, DefaultDict, Optional
 from math import log
 
-from context import components
 from components.helpers import classname, get_container, get_resource
 
-import pdb
 
 @dataclass
 class PointOfSale:
@@ -26,10 +24,6 @@ class Article:
     package: str
 
 PointOfSaleAndPrice = Tuple[PointOfSale, int]
-
-# def sp(width: int, data: str) -> str:
-#     sp_width = width - len(data) - 1
-#     return ' '*sp_width + '$' + data if sp_width > 0 else '$' + data
 
 
 class ModelsException(Exception):
@@ -171,7 +165,6 @@ class ArticleWithPricesTable:
     def add(self, 
             article: Article, 
             prices: List[PointOfSaleAndPrice]) -> None:
-        # pdb.set_trace()
         self.article_with_prices[article.code] = ArticleWithPrices(article, prices)
 
     def values(self) -> Generator[ArticleWithPrices, None, None]:
