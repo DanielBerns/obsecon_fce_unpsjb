@@ -14,7 +14,8 @@ from components.precios_claros.models import (Article,
                     PointsOfSaleTable, 
                     PreciosClarosTask)
 
-from writers import ArticleWithPricesTableHTML, ArticleWithPricesTableMD
+from components.precios_claros.writers import (ArticleWithPricesTableHTML,
+                                               ArticleWithPricesTableMD)
 
 
 class ReportSamplerException(Exception):
