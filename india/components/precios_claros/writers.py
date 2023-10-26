@@ -153,8 +153,8 @@ TABLE_HTML = """
   <a href="/info/carnes/{{this_city}}"              class="w3-bar-item w3-button w3-padding"> Carnes</a>                        
   <a href="/info/bebidas_con_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas con alcohol</a>  
   <a href="/info/bebidas_sin_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas sin alcohol</a>  
-  <a href="/info/aseo/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
-  <a href="/info/limpieza/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>    
+  <a href="/info/aseo/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de aseo personal</a>  
+  <a href="/info/limpieza/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de limpieza</a>    
   <a href="/info/acba/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
   <a href="/index"                                  class="w3-bar-item w3-button w3-padding">Volver al índice</a>
 </div>
