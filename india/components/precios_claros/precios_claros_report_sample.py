@@ -3,10 +3,10 @@ from pathlib import Path
 
 from components.core import FlatStore
 
-from app import create_app
-from sampler import PreciosClarosSample
-from report_sample import FullReportSample, SampleCollector
-from writers import writer_with_target_format
+from components.precios_claros.app import create_app
+from components.precios_claros.sampler import PreciosClarosSample
+from components.precios_claros.report_sample import FullReportSample, SampleCollector
+from components.precios_claros.writers import writer_with_target_format
 
 def filename() -> str:
     return __file__[:-3]
