@@ -85,7 +85,7 @@ class ProcessedPointsOfSaleSource(ProcessedEventsOrigin):
         super().__init__()
 
     def process_event(self, x: Dict[str, str]) -> Dict[str, str]:
-        # pdb.set_trace()
+        pdb.set_trace()
         event = Events.lower_values(x)
         processed_event = {
                     'identifier': event['id'],
@@ -208,6 +208,7 @@ def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSa
     ppos = ProcessedPointsOfSaleSource()
     ppos.events_source = pos
     spos = SelectedPointsOfSaleGenerator(selectors)
+    pdb.set_trace()
     spos.events_source = ppos
     appos = ArticlesPerPointOfSale(scraper)
     apposd = ArticlesPerPointOfSaleDriver()
