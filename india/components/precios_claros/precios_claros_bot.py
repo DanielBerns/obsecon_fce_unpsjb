@@ -12,19 +12,16 @@ from components.core.flatstore import FlatStore
 
 from typing import Dict
 
-import pdb
 
 def filename() -> str:
     return __file__[:-3]
 
-import pdb
 
 def execute(
     home: Path, 
     sample_builder: PreciosClarosSampleBuilder
     ) -> None:
     sample_key = sample_builder.run_identifier
-    pdb.set_trace()
     storage = FlatStore(home, "samples")    
     storage.start()    
     sample_path = storage.create_sample(sample_key)

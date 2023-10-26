@@ -122,6 +122,7 @@ class ArticlesPerPointOfSaleDriver(CompositeEventsDriver):
 class PreciosClarosSample:
     def __init__(self, home: Path) -> None:
         self._home = home
+        pdb.set_trace()
         self._points_of_sale = EventsDocument(
             get_container(self.home, 'points_of_sale'))
         self._selected_points_of_sale = EventsDocument(
