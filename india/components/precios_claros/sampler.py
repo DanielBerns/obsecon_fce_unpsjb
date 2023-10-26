@@ -16,7 +16,7 @@ from components.core import (EventsOrigin,
                              Events)
 from components.helpers import get_container, i, classname
 
-import pdb
+# import pdb
 
 class PointsOfSale:
     def __init__(self, scraper: PreciosClarosScraper):
@@ -84,7 +84,7 @@ class ProcessedPointsOfSaleOrigin(ProcessedEventsOrigin):
         super().__init__()
 
     def process_event(self, x: Dict[str, str]) -> Dict[str, str]:
-        # pdb.set_trace()
+        # # pdb.set_trace()
         event = Events.lower_values(x)
         processed_event = {
                     'identifier': event['id'],
@@ -121,7 +121,7 @@ class ArticlesPerPointOfSaleDriver(CompositeEventsDriver):
 class PreciosClarosSample:
     def __init__(self, home: Path) -> None:
         self._home = home
-        # pdb.set_trace()
+        # # pdb.set_trace()
         self._points_of_sale = EventsDocument(
             get_container(self.home, 'points_of_sale'))
         self._selected_points_of_sale = EventsDocument(
@@ -195,7 +195,6 @@ class PreciosClarosSampleBuilder:
         sample = PreciosClarosSample(sample_path)
         sample.start()
         sample.points_of_sale.update(self.points_of_sale_source)
-        pdb.set_trace()
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()

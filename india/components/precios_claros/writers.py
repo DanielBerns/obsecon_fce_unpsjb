@@ -129,7 +129,7 @@ TABLE_HTML = """
 </head>
 <body>
 
-<div class="top-container w3-light-blue">
+<div class="top-container w3-light-blue w3-hide-small w3-hide-medium">
   <div class="w3-bar w3-teal" style="z-index:4">
     <div class="w3-bar-item w3-left"><img src="/static/img/chakana.svg" width="50px"></div>                    
     <h1 class="w3-bar-item w3-right w3-hide-small">Web de Precios - Observatorio de Economía - FCE
@@ -153,6 +153,8 @@ TABLE_HTML = """
   <a href="/info/carnes/{{this_city}}"              class="w3-bar-item w3-button w3-padding"> Carnes</a>                        
   <a href="/info/bebidas_con_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas con alcohol</a>  
   <a href="/info/bebidas_sin_alcohol/{{this_city}}" class="w3-bar-item w3-button w3-padding"> Bebidas sin alcohol</a>  
+  <a href="/info/aseo/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
+  <a href="/info/limpieza/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>    
   <a href="/info/acba/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
   <a href="/index"                                  class="w3-bar-item w3-button w3-padding">Volver al índice</a>
 </div>
@@ -177,7 +179,7 @@ TABLE_HTML = """
         <p>Artículo</p>
       </div>
       <div class="w3-col w3-left l2 m2 s2">
-        <p class="w3-tooltip">Precio de referencia 
+        <p class="w3-tooltip">Referencia 
         <span class="w3-text">. El precio de referencia es el promedio geométrico de los precios observados.</span></p>
       </div>  
     </div>
@@ -195,7 +197,7 @@ TABLE_HTML = """
           </td>
           <td>
             <p>
-            <span class="w3-right">{{article.prices_geomean()}}</span>
+            <span class="w3-right">${{article.prices_geomean()}}</span>
             </p>
           </td>
       </tr>
