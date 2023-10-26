@@ -16,7 +16,7 @@ from components.core import (EventsOrigin,
                              Events)
 from components.helpers import get_container, i, classname
 
-# import pdb
+import pdb
 
 class PointsOfSale:
     def __init__(self, scraper: PreciosClarosScraper):
@@ -196,7 +196,7 @@ class PreciosClarosSampleBuilder:
         sample = PreciosClarosSample(sample_path)
         sample.start()
         sample.points_of_sale.update(self.points_of_sale_source)
-        # pdb.set_trace()
+        pdb.set_trace()
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
         sample.stop()
