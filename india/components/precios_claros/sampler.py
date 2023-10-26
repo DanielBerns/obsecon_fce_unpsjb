@@ -48,7 +48,7 @@ class ArticlesPerPointOfSale:
             yield article
 
 
-class SelectedPointsOfSaleGenerator(SelectedEventsOrigin):
+class SelectedPointsOfSaleOrigin(SelectedEventsOrigin):
     def __init__(self, selectors: List[Dict[str, str]]) -> None:
         super().__init__()
         self._selectors = selectors
@@ -80,7 +80,7 @@ class SelectedPointsOfSaleReader:
             yield Events.lower_values(event)
 
 
-class ProcessedPointsOfSaleSource(ProcessedEventsOrigin):
+class ProcessedPointsOfSaleOrigin(ProcessedEventsOrigin):
     def __init__(self):
         super().__init__()
 
@@ -205,9 +205,9 @@ class PreciosClarosSampleBuilder:
 def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSampleBuilder:
     scraper = WebScraper()  
     pos = PointsOfSale(scraper)   
-    ppos = ProcessedPointsOfSaleSource()
+    ppos = ProcessedPointsOfSaleOrigin()
     ppos.events_source = pos
-    spos = SelectedPointsOfSaleGenerator(selectors)
+    spos = SelectedPointsOfSaleOrigin(selectors)
     pdb.set_trace()
     spos.events_source = ppos
     appos = ArticlesPerPointOfSale(scraper)
@@ -227,7 +227,7 @@ def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSa
 def create_sample_with_local_content(home: Path) -> PreciosClarosSampleBuilder:
     scraper = LocalScraper(home.expanduser())
     pos = PointsOfSale(scraper)   
-    ppos = ProcessedPointsOfSaleSource()
+    ppos = ProcessedPointsOfSaleOrigin()
     ppos.events_source = pos        
     spos = SelectedPointsOfSaleReader(scraper)
     appos = ArticlesPerPointOfSale(scraper)
