@@ -206,13 +206,13 @@ def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSa
     scraper = WebScraper()  
     pos = PointsOfSale(scraper)   
     ppos = ProcessedPointsOfSaleOrigin()
-    ppos.events_source = pos
-    spos = SelectedPointsOfSaleOrigin(selectors)
     pdb.set_trace()
-    spos.events_source = ppos
+    ppos.events_origin = pos
+    spos = SelectedPointsOfSaleOrigin(selectors)
+    spos.events_origin = ppos
     appos = ArticlesPerPointOfSale(scraper)
     apposd = ArticlesPerPointOfSaleDriver()
-    apposd.events_source = spos
+    apposd.events_origin = spos
     apposd.events_processor = appos
     resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
     try:
