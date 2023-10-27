@@ -151,11 +151,13 @@ TABLE_HTML = """
   <div class="w3-center">
   <h2>Web de precios - Observatorio de Economía - FCE</h2>
   <h1 class="w3-xxxlarge w3-animate-bottom">{{ttl}}</h1>
+  <!--
     <div class="w3-padding-32">
       <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('modal01').style.display='block'" style="font-weight:900;">
       Buscar
       </button>
     </div>
+  -->
   </div>
 </header>
 
