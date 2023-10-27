@@ -121,32 +121,18 @@ TABLE_HTML = """
 <!DOCTYPE html>
 <html>
 <head>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
-<link href="/static/img/favicon.ico" rel="shortcut icon">
-<link rel="stylesheet" href="/static/css/table.css">
 </head>
 <body>
 
-<div class="top-container w3-light-blue w3-hide-small w3-hide-medium">
-  <div class="w3-bar w3-teal" style="z-index:4">
-    <div class="w3-bar-item w3-left"><img src="/static/img/chakana.svg" width="50px"></div>                    
-    <h1 class="w3-bar-item w3-right w3-hide-small">Web de Precios - Observatorio de Economía - FCE
-    </h1>
-    <h1 class="w3-bar-item w3-right w3-hide-medium w3-hide-large">Web de Precios
-    </h1>
-    <div class="w3-bar-item">
-        <h2 class="w3-center w3-padding-8">Precios {{ ttl }}</h2>
-    </div>
-  </div>
-</div>
-
-<!-- Sidebar -->
-<div class="w3-display-container">
-<div class="w3-sidebar w3-border-right w3-display-topleft" style="display:none" id="mySidebar">
-<div class="w3-bar-block">
-  <button onclick="w3_close('mySidebar')" class="w3-bar-item w3-large">Cerrar &times;</button>
+<!-- theSidebar -->
+<nav class="w3-sidebar w3-bar-block w3-card w3-animate-left w3-center" style="display:none" id="theSidebar">
+  <button class="w3-bar-item w3-button" onclick="closeTheSidebar()">Cerrar <i class="fa fa-remove"></i></button>
   <a href="/info/lacteos/{{this_city}}"             class="w3-bar-item w3-button w3-padding"> Lácteos</a>  
   <a href="/info/harinas/{{this_city}}"             class="w3-bar-item w3-button w3-padding"> Harinas</a>  
   <a href="/info/vegetales/{{this_city}}"           class="w3-bar-item w3-button w3-padding"> Vegetales</a>  
@@ -157,60 +143,82 @@ TABLE_HTML = """
   <a href="/info/limpieza/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de limpieza</a>    
   <a href="/info/acba/{{this_city}}"                class="w3-bar-item w3-button w3-padding"> Artículos de la canasta básica de alimentos</a>  
   <a href="/index"                                  class="w3-bar-item w3-button w3-padding">Volver al índice</a>
-</div>
-</div>
+</nav>
+
+<!-- theHeader -->
+<header class="w3-container w3-theme w3-padding" id="theHeader">
+  <i onclick="openTheSidebar()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i> 
+  <div class="w3-center">
+  <h4>BEAUTIFUL RESPONSIVE WEB SITE</h4>
+  <h1 class="w3-xxxlarge w3-animate-bottom">BUILT WITH W3.CSS</h1>
+    <div class="w3-padding-32">
+      <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('modal01').style.display='block'" style="font-weight:900;">LEARN W3.CSS</button>
+    </div>
+  </div>
+</header>
+
+<!-- Modal -->
+<div id="modal01" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-top">
+      <header class="w3-container w3-theme-l1"> 
+        <div onclick="document.getElementById('modal01').style.display='none'"
+             class="w3-button w3-display-topright">Cerrar</div>
+        <p>{{ ttl }}</p>
+      </header>
+      <div class="w3-padding">
+          <input class="w3-input" oninput="w3.filterHTML('#search', 'article', this.value)" 
+                 placeholder="Buscar artículos y precios..">
+      </div>
+      <footer class="w3-container w3-theme-l1">
+        <p><i class="fa fa-smile-o"></i></p>
+      </footer>
+    </div>
 </div>
 
-<div class="header w3-pale-green w3-text-black w3-mobile" id="myHeader">
-    <div class="w3-row w3-mobile">
-      <div class="w3-col w3-center w3-hide-large m12 s12">
-        <p class="w3-center w3-padding-8">Precios {{ ttl }}</p>
-      </div>
-      <div class="w3-col w3-left l2 m2 s2">
-        <button class="w3-button w3-hover-none" onclick="w3_open('mySidebar');"><i class="fa fa-bars"></i></button>
-      </div>
-      <div class="w3-col l10 m10 s10">
-         <input class="w3-input w3-border w3-padding" 
-                type="text" 
-                placeholder="Buscar..." 
-                id="searchInput" 
-                onkeyup="searchArticleTable()">
-      </div>
-    </div>
-    <div class="w3-row w3-mobile">
-      <div class="w3-col l10 m10 s10">
-        <p>Artículo</p>
-      </div>
-      <div class="w3-col l2 m2 s2">
-        <p class="w3-tooltip">Referencia 
-        <span class="w3-text">. El precio de referencia es el promedio geométrico de los precios observados.</span></p>
-      </div>  
-    </div>
-</div>
-
-<div class="content w3-light-gray w3-mobile" id="articleTable">
-  <div class="w3-container">
-  <table class="w3-table w3-bordered w3-hoverable">
-      {% for article in awpt.values() %}
-      <tr class="row">      
-          <td>
-            <p class="searchThis w3-tooltip">
+<div class="w3-card w3-container" style="min-height:460px">
+<br>
+<input class="w3-input" oninput="w3.filterHTML('#search', 'article', this.value)" placeholder="Buscar">
+<br>
+<div class="w3-container" id="search">
+    {% for article in awpt.values() %}
+    <article class="w3-row">
+        <div class="w3-twothird w3-pale-blue">            
+            <p class="w3-tooltip w3-left">
             {{article.label()}}.&nbsp;<span class="w3-text">{{article.prices_range()}}</span>
             </p>
-          </td>
-          <td>
-            <p>
-            <span class="w3-right">${{article.prices_geomean()}}</span>
-            </p>
-          </td>
-      </tr>
-      {% endfor %}
-  </table>
-  </div>
+        </div>
+        <div class="w3-third w3-pale-green">
+        <p class="w3-left">
+        ${{article.prices_geomean()}}
+        </p>
+        </div>
+        
+    </article>
+    {% endfor %}
 </div>
-<script src="/static/js/table.js"></script>
+</div>
+
+<footer class="w3-container w3-theme">
+  <p class="w3-opacity">Hecho por Gipis - DIE - FI - UNPSJB</p>
+</footer>
+
+<script>
+// Side navigation
+function openTheSidebar() {
+  var x = document.getElementById("theSidebar");
+  x.style.width = "100%";
+  // x.style.fontSize = "20px";
+  x.style.paddingTop = "10%";
+  x.style.display = "block";
+}
+function closeTheSidebar() {
+  document.getElementById("theSidebar").style.display = "none";
+}
+</script>
+
+<script src="https://www.w3schools.com/lib/w3.js"></script>
 </body>
-</html>
+</html> 
 """
 
 class ArticleWithPricesTableHTML:
