@@ -191,9 +191,10 @@ TABLE_HTML = """
         </div>
         <div class="w3-third w3-pale-green">
         <p class="w3-tooltip w3-right">
-        <span class="w3-text w3-theme-light w3-padding"><i class="fa fa-usd" aria-hidden="true"></i></span>    
-        <a class="w3-text-white" href="#theHeader"></a>
-        {{article.prices_geomean()}}
+        <span class="w3-text w3-theme-light w3-padding">   
+        <a class="w3-text-white" href="#theHeader"><i class="fa-solid fa-up-long" aria-hidden="true"></i></a>
+        </span>
+        <i class="fa fa-usd" aria-hidden="true"></i>{{article.prices_geomean()}}
         </p>
         </div>
         
