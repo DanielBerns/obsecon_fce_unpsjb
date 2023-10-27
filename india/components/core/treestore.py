@@ -113,7 +113,7 @@ class TreeStoreDriver:
 
     def create_sample(self) -> None:
         sample = self.store.create_sample()        
-        for sample_task in self.pipeline.execute():
+        for sample_task in self.pipeline.tasks():
             sample_task.execute(sample)
     
     def process_samples(self, reset_next_to_process: bool) -> None:
@@ -122,11 +122,11 @@ class TreeStoreDriver:
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index
         logging.info(f"{classname(self):s}.process_samples: start")        
-        for sample_task in self.pipeline.execute():
+        for sample_task in self.pipeline.tasks():
             sample_task.start(self.store.base)
         logging.info(f"{classname(self):s}.process_samples: execute")        
         for sample in self.store.samples(first=next_to_process):
-            for sample_task in self.pipeline.execute():
+            for sample_task in self.pipeline.tasks():
                 try:
                     sample_task.execute(sample)
                 except Exception as message:
@@ -134,7 +134,7 @@ class TreeStoreDriver:
                     logging.error(f"  {str(sample):s}")                    
                     logging.error(f"  {str(message):s}")
         logging.info(f"{classname(self):s}.process_samples: stop")                        
-        for sample_task in self.pipeline.execute():
+        for sample_task in self.pipeline.tasks():
             sample_task.stop(self.store.base)
 
 
