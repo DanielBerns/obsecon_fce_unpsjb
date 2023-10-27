@@ -169,7 +169,7 @@ TABLE_HTML = """
       </header>
       <div class="w3-padding">
           <input class="w3-input" oninput="w3.filterHTML('#search', 'article', this.value)" 
-                 placeholder="Buscar artículos y precios..">
+                 placeholder="Buscar artículos y códigos..">
       </div>
       <footer class="w3-container w3-theme-l1">
         <p><i class="fa fa-smile-o"></i></p>
@@ -190,8 +190,10 @@ TABLE_HTML = """
             </p>
         </div>
         <div class="w3-third w3-pale-green">
-        <p class="w3-right">
-        ${{article.prices_geomean()}}
+        <p class="w3-tooltip w3-right">
+        <span class="w3-text w3-theme-light w3-padding"><i class="fa fa-usd" aria-hidden="true"></i></span>    
+        <a class="w3-text-white" href="#theHeader"></a>
+        {{article.prices_geomean()}}
         </p>
         </div>
         
