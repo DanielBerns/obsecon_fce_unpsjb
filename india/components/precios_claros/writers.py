@@ -162,7 +162,7 @@ TABLE_HTML = """
 </div>
 
 <div class="header w3-pale-green w3-text-black w3-mobile" id="myHeader">
-    <div class="w3-row-padding">
+    <div class="w3-row w3-mobile">
       <div class="w3-col w3-center w3-hide-large m12 s12">
         <p class="w3-center w3-padding-8">Precios {{ ttl }}</p>
       </div>
@@ -177,7 +177,7 @@ TABLE_HTML = """
                 onkeyup="searchArticleTable()">
       </div>
     </div>
-    <div class="w3-row">
+    <div class="w3-row w3-mobile">
       <div class="w3-col l10 m10 s10">
         <p>Artículo</p>
       </div>
