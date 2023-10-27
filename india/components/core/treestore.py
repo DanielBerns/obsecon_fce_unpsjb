@@ -20,6 +20,7 @@ class TreeStoreError(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
+import pdb
 
 def base_256(number: int) -> Tuple[int, int, int]:
     assert 0 <= number < 16777216
@@ -43,6 +44,7 @@ class TreeStore(SampleStore):
         super().__init__(container, identifier)
 
     def create_sample(self) -> Path:
+        pdb.set_trace()
         first_digit, second_digit, third_digit = base_256(self.index.value)
         self.index.value += 1
         sample = Path(
