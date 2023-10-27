@@ -112,7 +112,7 @@ class TreeStoreDriver:
         return get_container(self.store.base, 'target')
 
     def create_sample(self) -> None:
-        sample = self.store.new_sample()        
+        sample = self.store.create_sample()        
         for sample_task in self.pipeline.execute():
             sample_task.execute(sample)
     
