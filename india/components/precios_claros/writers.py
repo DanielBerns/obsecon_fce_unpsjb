@@ -126,7 +126,7 @@ TABLE_HTML = """
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/font-awesome.min.css">
 </head>
 <body>
 
@@ -192,7 +192,7 @@ TABLE_HTML = """
         <div class="w3-third w3-pale-green">
         <p class="w3-tooltip w3-right">
           <span class="w3-text w3-theme-light w3-padding">
-            <a href="#theHeader"><i class="fa-solid fa-up-long" aria-hidden="true">&nbsp;</i></a>
+            <a href="#theHeader"><i class="fa-solid fa-up-long" aria-hidden="true"></i></a>
           </span>
           <i class="fa fa-usd" aria-hidden="true">&nbsp;</i>{{article.prices_geomean()}}
         </p>
