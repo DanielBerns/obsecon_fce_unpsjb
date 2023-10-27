@@ -190,7 +190,7 @@ TABLE_HTML = """
             </p>
         </div>
         <div class="w3-third w3-pale-green">
-        <p class="w3-left">
+        <p class="w3-right">
         ${{article.prices_geomean()}}
         </p>
         </div>
