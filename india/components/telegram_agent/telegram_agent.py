@@ -136,7 +136,7 @@ async def process_text(update: Update, context: CustomContext) -> None:
         if update.message.text:
             ts = CustomContext.store
             ts.start()
-            sample = ts.new_sample()
+            sample = ts.create_sample()
             ts.stop()
             logging.info(f"Created sample {str(sample):s}!")            
             TelegramSample.write_message(
@@ -160,7 +160,7 @@ async def process_photo(update: Update, context: CustomContext) -> None:
         if update.message.photo:
             ts = CustomContext.store
             ts.start()
-            sample = ts.new_sample()
+            sample = ts.create_sample()
             ts.stop()
             logging.info(f"Created sample {str(sample):s}!")
             file_id = update.message.photo[-1].file_id
