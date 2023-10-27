@@ -164,7 +164,7 @@ TABLE_HTML = """
 <div class="header w3-pale-green w3-text-black w3-mobile" id="myHeader">
     <div class="w3-row-padding">
       <div class="w3-col w3-center w3-hide-large m12 s12">
-        <h2 class="w3-center w3-padding-8">Precios {{ ttl }}</h2>
+        <p class="w3-center w3-padding-8">Precios {{ ttl }}</p>
       </div>
       <div class="w3-col w3-left l2 m2 s2">
         <button class="w3-button w3-hover-none" onclick="w3_open('mySidebar');"><i class="fa fa-bars"></i></button>
@@ -177,11 +177,11 @@ TABLE_HTML = """
                 onkeyup="searchArticleTable()">
       </div>
     </div>
-    <div class="w3-row-padding">
-      <div class="w3-col w3-left l10 m10 s10">
+    <div class="w3-row">
+      <div class="w3-col l10 m10 s10">
         <p>Artículo</p>
       </div>
-      <div class="w3-col w3-left l2 m2 s2">
+      <div class="w3-col l2 m2 s2">
         <p class="w3-tooltip">Referencia 
         <span class="w3-text">. El precio de referencia es el promedio geométrico de los precios observados.</span></p>
       </div>  
