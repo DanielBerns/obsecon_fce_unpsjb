@@ -37,7 +37,7 @@ class Metadata:
         return self._resource
 
     @property
-    def events(self) -> DefaultDict[str, DefaultDict[str, Dict]]:
+    def events(self) -> DefaultDict[str, DefaultDict[str, str]]:
         return self._events
 
     def initialize_events(self) -> None:

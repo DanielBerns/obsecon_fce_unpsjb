@@ -1,7 +1,8 @@
+import logging
 from typing import Dict
 
 class TextGenerator:
-    def __init__(self):
+    def __init__(self) -> None:
         self._lines_with_keys: Dict[str, str] = dict()
 
     @property

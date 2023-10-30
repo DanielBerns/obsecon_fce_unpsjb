@@ -7,8 +7,7 @@ from contextlib import contextmanager
 
 from components.core.metadata import Metadata
 from components.core.sample_store import (SampleStore, 
-                                          Pipeline, 
-                                          PipelineDriver, 
+                                          Pipeline,
                                           NextToProcessMetadata)
 from components.helpers import (get_container, 
                                 get_resource, 
@@ -69,11 +68,11 @@ class TreeStore(SampleStore):
                 f"{classname(self):s}.get_sample: {number:d} out of range [0,{self.index.value:d})"
                 )
                                                                          
-    def samples(self) -> Generator[Path, None, None]:
-        for k in range(0, self.index.value):
+    def samples(self, first: int = 0) -> Generator[Path, None, None]:
+        for k in range(first, self.index.value):
             first_digit, second_digit, third_digit = base_256(k)
             sample = Path(
-                self.tree,
+                self.base,
                 f"{first_digit:>03d}",
                 f"{second_digit:>03d}",
                 f"{third_digit:>03d}",
@@ -118,7 +117,7 @@ class TreeStoreDriver:
         if reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
-        self.metadata.next_to_process = self.store.index
+        self.metadata.next_to_process = self.store.index.value
         logging.info(f"{classname(self):s}.process_samples: start")        
         for sample_task in self.pipeline.tasks():
             sample_task.start(self.store.base)
@@ -137,7 +136,9 @@ class TreeStoreDriver:
 
 
 @contextmanager
-def create_treestore_driver(treestore_home: Path, identifier: str) -> None:
+def create_treestore_driver(
+    treestore_home: Path, 
+    identifier: str) -> Generator[TreeStoreDriver, None, None]:
     logging.info(f"start run: {str(treestore_home):s}")
     logging.info(f"  identifier: {identifier:s}")
     store = TreeStore(treestore_home, identifier)

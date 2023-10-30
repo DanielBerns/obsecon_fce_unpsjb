@@ -8,6 +8,10 @@ from components.core.sample_store import SampleStore
 from components.helpers import get_timestamp, get_container, classname
 
 
+class FlatStoreError(Exception):
+    pass
+
+
 class FlatStore(SampleStore):
     def __init__(self, container: Path, identifier: str) -> None:
         super().__init__(container, identifier)
@@ -21,7 +25,7 @@ class FlatStore(SampleStore):
     def stop(self) -> None:
         self.metadata.stop()
         
-    def walk_the_samples(self) -> Path:
+    def walk_the_samples(self) -> Generator[Path, None, None]:
         for root, dirs, files in os.walk(self.home):
             for dd in dirs:
                 yield Path(self.home, dd)
@@ -43,7 +47,7 @@ class FlatStore(SampleStore):
         ) -> Path:
         if key is None:
             error(f"{classname(self):s}.get_sample: 1")
-            raise SampleStoreError(
+            raise FlatStoreError(
                 f"{classname(self):s}.get_sample: key is None"
                 )
         sample = Path(self.base, key)
@@ -51,7 +55,7 @@ class FlatStore(SampleStore):
             pass
         else:
             error(f"{classname(self):s}.get_sample: 2")            
-            raise SampleStoreError(
+            raise FlatStoreError(
                 f"{classname(self):s}.get_sample: invalid key {key:s}"
                 )
         return sample

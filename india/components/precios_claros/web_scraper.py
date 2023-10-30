@@ -21,7 +21,7 @@ class QueryLimits:
     full_page_queries: int = field(init=False)
     last_page_queries: int = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.total_items > 0 and self.max_queries_per_page > 0:
             self.full_pages: int = self.total_items // self.max_queries_per_page
             self.full_page_queries: int = self.max_queries_per_page
@@ -152,6 +152,11 @@ class WebScraper:
             logging.info(f'{classname(self):s}.points_of_sale 2: zero query_limits')            
         logging.info(f'{classname(self):s}.points_of_sale 3: done')
 
+    def selected_points_of_sale(self) -> Generator[Dict[str, str], None, None]:
+        logging.info(f'{classname(self):s}.selected_points_of_sale 1: start')
+        yield from []
+        logging.info(f'{classname(self):s}.selected_points_of_sale 2: done')        
+
     def get_article_list(self,
                          articles_url: str,
                          offset: int,
@@ -166,10 +171,11 @@ class WebScraper:
         if error_message:
             logging.warning(f'{classname(self):s}.get_article_list 2: '\
                             f'{str(error_message):s}')
+            articles_list = []
         else:
-            articles_list = info.get('productos', None)
-            logging.info(f'{classname(self):s}.get_article_list 3: done')
-            return articles_list
+            logging.info(f'{classname(self):s}.get_article_list 3: done')            
+            articles_list = info.get('productos', [])
+        return articles_list
 
     def _articles_per_point_of_sale(self, 
                                     articles_url: str, 

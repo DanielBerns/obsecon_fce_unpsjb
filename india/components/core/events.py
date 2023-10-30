@@ -113,8 +113,9 @@ class CompositeEventsOrigin:
         self._events_origin = value
 
     def events(self) -> Generator[Dict[str, str], None, None]:
-        for event in self.events_origin.events():
-            yield event
+        if self.events_origin:
+            for event in self.events_origin.events():
+                yield event
 
 
 class CompositeEventsDriver:
@@ -139,10 +140,10 @@ class CompositeEventsDriver:
         self._events_processor = value
 
     def events(self) -> Generator[Dict[str, str], None, None]:
-        # pdb.set_trace()
-        for x in self.events_origin.events():
-            for event in self.events_processor.events(x):
-                yield event
+        if self.events_origin and self.events_processor:
+            for x in self.events_origin.events():
+                for event in self.events_processor.events(x):
+                    yield event
 
 
 class SelectedEventsOrigin(CompositeEventsOrigin):
@@ -154,8 +155,8 @@ class SelectedEventsOrigin(CompositeEventsOrigin):
         # Change this in the child class
         return True
 
-    def events(self) -> Dict[str, str]:
-        for event in self.events_origin.events():
+    def events(self) -> Generator[Dict[str, str], None, None]:
+        for event in super().events():
             if self.select_event(event):
                 yield event
 
@@ -169,6 +170,6 @@ class ProcessedEventsOrigin(CompositeEventsOrigin):
         # Change this in the child class
         return event
 
-    def events(self) -> Dict[str, str]:
-        for event in self.events_origin.events():
+    def events(self) -> Generator[Dict[str, str], None, None]:
+        for event in super().events():
             yield self.process_event(event)

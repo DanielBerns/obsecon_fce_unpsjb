@@ -14,14 +14,14 @@ from typing import (
 
 from components.helpers import get_container, get_resource
 
-from components.core.events import EventsOrigin
+from components.core.events import EventsDocument
 
 
 class RowsDocument:
-    function = lambda v: str(int(v * 100)) if isinstance(v, float) else str(v).lower()
+    adapter = lambda v: str(int(v * 100)) if isinstance(v, float) else str(v).lower()
 
     def __init__(self, container: Path) -> None:
-        self._container: Path = get_container(container)
+        self._container: Path = container
         self._store: Path = get_resource(self.container, "store", ".csv")
 
     @property
@@ -43,11 +43,11 @@ class RowsDocument:
             for line in origin:
                 yield line
 
-    def write(self, origin: EventsOrigin) -> None:
+    def write(self, origin: EventsDocument) -> None:
         keys = origin.events_stats.keys()
         header = "|".join(str(k) for k in keys)
         with open(self.store, "w", encoding="utf-8") as target:
             target.write(header + "\n")
             for event in origin.events():
-                row = "|".join(RowsDocument.function(event[k]) for k in keys)
+                row = "|".join(RowsDocument.adapter(event[k]) for k in keys)
                 target.write(row)

@@ -6,13 +6,38 @@ from typing import Dict, Generator, Optional, List, Tuple
 from components.helpers import classname, i, get_container, get_timestamp
 from components.core import EventsDocument
 
+class LocalScraperError(Exception):
+    pass
 
 class LocalScraper:
     def __init__(self, home: Path) -> None:
         self._home: Path = home
-        self._cache: Optional[List[Dict[str, str]]] = None
         self._cache_index: Dict[str, Tuple[int, int]] = dict()
-
+        container = get_container(self.home, 'articles_per_point_of_sale')
+        doc = EventsDocument(container, "info", ".json.csv")
+        self._cache: List[Dict[str, str]] = [
+            {str(key): str(value).lower() for key, value in event.items()} \
+            for event in doc.events()]
+        if self.cache:
+            first_event = self.cache[0]
+            current_key = first_event['point_of_sale']
+            cursor = begin = end = 0
+            for event in self.cache[1:]:
+                if event['point_of_sale'] != current_key:
+                    cursor += 1
+                    end = cursor
+                    self.cache_index[current_key] = (begin, end)
+                    print(current_key, begin, end)
+                    current_key = event['point_of_sale']
+                    begin = end = cursor
+                else:
+                    cursor += 1
+            end = cursor + 1
+            self.cache_index[current_key] = (begin, end)
+            print(current_key, begin, end)
+        else:
+            raise LocalScraperError(f"{classname(self):s}.__init__: no cache.")
+        
     @property    
     def home(self) -> Path:
         return self._home
@@ -22,7 +47,7 @@ class LocalScraper:
         return self.home.parts[-1]
 
     @property
-    def cache(self) -> Optional[List[Dict[str, str]]]:
+    def cache(self) -> List[Dict[str, str]]:
         return self._cache
 
     @cache.setter
@@ -35,26 +60,6 @@ class LocalScraper:
 
     def start(self) -> None:
         logging.info(f"{classname(self):s}.start")
-        container = get_container(self.home, 'articles_per_point_of_sale')
-        doc = EventsDocument(container, "info", ".json.csv")
-        self.cache = [{str(key): str(value).lower() for key, value in event.items()} \
-            for event in doc.events()]
-        first_event = self.cache[0]
-        current_key = first_event['point_of_sale']
-        cursor = begin = end = 0
-        for event in self.cache[1:]:
-            if event['point_of_sale'] != current_key:
-                cursor += 1
-                end = cursor
-                self.cache_index[current_key] = (begin, end)
-                print(current_key, begin, end)
-                current_key = event['point_of_sale']
-                begin = end = cursor
-            else:
-                cursor += 1
-        end = cursor + 1
-        self.cache_index[current_key] = (begin, end)
-        print(current_key, begin, end)        
     
     def stop(self) -> None:
         logging.info(f"{classname(self):s}.stop")

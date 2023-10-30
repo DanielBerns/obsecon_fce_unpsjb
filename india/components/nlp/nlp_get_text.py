@@ -7,34 +7,21 @@ class GetTextSampleTask(SampleTask):
     def __init__(self, key: str) -> None:
         super().__init__("GetTextSampleTask")
         self._key = key
-        self._sources: List[str] = list()
-        self._text: List[Any] = list()
+        self._text: List[str] = list()
 
     @property
     def key(self):
         return self._key
 
     @property
-    def sources(self) -> List[str]:
-        return self._sources
-
-    @property
-    def text(self) -> List[Any]:
+    def text(self) -> List[str]:
         return self._text
     
     @text.setter
-    def text(self, value: List[Any]) -> None:
+    def text(self, value: List[str]) -> None:
         self._text = value
 
        
-class GetTextFacadeSampleTaskFactory:
-    def __init__(self):
-        self._task = GetTextFacadeSampleTask()
-    
-    def execute(self) -> SampleTask:
-        return self._task
-
-
 class GetTextFacadeSampleTask(SampleTask):
     CATALOG: Optional[Dict[str, GetTextSampleTask]] = None
     
@@ -46,16 +33,19 @@ class GetTextFacadeSampleTask(SampleTask):
     def add(self, task: GetTextSampleTask) -> None:
         GetTextFacadeSampleTask.CATALOG[task.key] = task         
 
+    def get_key(self, sample: Path) -> str:
+        return sample.parts[-5]
+    
     def execute(self, sample: Path) -> None:
         super().execute(sample)
-        key = sample.parts[-5]
-        sample_task: Optional[SampleTask] = GetTextFacadeSampleTask.CATALOG.get(key, None)
+        key = self.get_key(sample) 
+        sample_task = GetTextFacadeSampleTask.CATALOG.get(key, None)
         if sample_task:
             sample_task.execute(sample)
         
-    def sources(self) -> Generator[Tuple[str, List[str]], None, None]:
+    def items(self) -> Generator[Tuple[str, GetTextSampleTask], None, None]:
         for key, sample_task in GetTextFacadeSampleTask.CATALOG.items():
-            yield key, sample_task.sources
+            yield key, sample_task
 
 
 

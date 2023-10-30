@@ -17,10 +17,14 @@ class PreciosClarosScraper(Protocol):
 
     def points_of_sale(self) -> Generator[Dict[str, str], None, None]:
         # logging.info(f"{classname(self):s}.points_of_sale")
-        pass
+        yield from []
 
+    def selected_points_of_sale(self) -> Generator[Dict[str, str], None, None]:
+        # logging.info(f"{classname(self):s}.selected_points_of_sale")
+        yield from []
+    
     def articles_per_point_of_sale(self, 
                                    point_of_sale: Dict[str, str]
                                    ) -> Generator[Dict[str, str], None, None]:
-        # logging.info(f"{classname(self):s}.points_of_sale")
-        pass
+        # logging.info(f"{classname(self):s}.articles_per_point_of_sale")
+        yield from []

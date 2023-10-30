@@ -1,4 +1,5 @@
 from typing import Dict
+from pathlib import Path
 from components.core.file_processor import FileProcessor
 
 from PIL import Image
@@ -82,23 +83,51 @@ class ImageFileProcessor(FileProcessor):
 
 
 class ImageFileProcessorWithTesseractAndPIL(ImageFileProcessor):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
+        self._image = None
+        
+    @property
+    def image(self):
+        return self._image
+    
+    @image.setter
+    def image(self, value):
+        self._image = value
 
-    def execute(self) -> None:
-        image = Image.open(str(self.file_identifier))
+    def read(self) -> None:
+        self.image = Image.open(str(self.origin_identifier))
+
+    def process(self) -> None:
         result = pytesseract.pytesseract.image_to_data(
-            image, output=pytesseract.Output.DICT)
+                   self.image, output=pytesseract.Output.DICT)
         self.result_to_content(result)
+    
+    def write(self) -> None:
+        pass
 
 
 class ImageFileProcessorWithTesseractAndCV2(ImageFileProcessor):
     def __init__(self):
         super().__init__()
+        self._image = None
+        
+    @property
+    def image(self):
+        return self._image
+    
+    @image.setter
+    def image(self, value):
+        self._image = value
 
-    def execute(self) -> None:
-        image = read_image(str(self.file_identifier))
-        gray = get_grayscale(image)
+    def read(self) -> None:
+        self.image = read_image(str(self.origin_identifier))
+
+    def process(self) -> None:
+        gray = get_grayscale(self.image)
         result = pytesseract.pytesseract.image_to_data(
-            image, output=pytesseract.Output.DICT)
+            self.image, output=pytesseract.Output.DICT)
         self.result_to_content(result)
+
+    def write(self) -> None:
+        pass

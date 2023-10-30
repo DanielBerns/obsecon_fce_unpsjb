@@ -14,11 +14,12 @@ from components.precios_claros.models import (Article,
                     PointsOfSaleTable, 
                     PreciosClarosTask)
 
-from components.precios_claros.writers import (ArticleWithPricesTableHTML,
+from components.precios_claros.writers import (WriterWithTargetFormat,
+                                               ArticleWithPricesTableHTML,
                                                ArticleWithPricesTableMD)
 
 
-class ReportSamplerException(Exception):
+class ReportSampleError(Exception):
     pass
 
 
@@ -51,10 +52,17 @@ class PointsOfSaleCollector:
 
 
 class ArticlesCollector:
-    def __init__(self) -> None:
-        self._articles_counter = Counter()
+    def __init__(self,
+                 points_of_sale_table: PointsOfSaleTable
+                 ) -> None:
+        self._points_of_sale_table: PointsOfSaleTable = points_of_sale_table
+        self._articles_counter: Counter = Counter()
         self._articles: Dict[str, Article] = dict()
-        self._prices: DefaultDict[str, List[Tuple[str, str, int]]] = defaultdict(list)
+        self._prices: DefaultDict[str, List[Tuple[PointOfSale, int]]] = defaultdict(list)
+
+    @property
+    def points_of_sale_table(self) -> PointsOfSaleTable:
+        return self._points_of_sale_table
 
     @property
     def articles_counter(self) -> Counter:
@@ -65,7 +73,7 @@ class ArticlesCollector:
         return self._articles
 
     @property
-    def prices(self) -> DefaultDict[str, List[Tuple[str, str, int]]]:
+    def prices(self) -> DefaultDict[str, List[Tuple[PointOfSale, int]]]:
         return self._prices
     
     def update(self, event: Dict[str, str]) -> None:
@@ -74,18 +82,16 @@ class ArticlesCollector:
         name = (event['nombre']).lower()
         package = (event['presentacion']).lower()
         _price = event['precio']
-        point_of_sale = event['point_of_sale']
+        point_of_sale_identifier = event['point_of_sale']
         
         if article_code.startswith('['):
             if article_code.endswith(']'):
                 article_code = article_code[1:-1]
             else:
-                self.errors.append(event)
-                raise ReportSamplerException(
+                raise ReportSampleError(
                    f"{classname(self):s}.update 1")                
         elif article_code.endswith(']'):
-            self.errors.append(event)
-            raise ReportSamplerException(
+            raise ReportSampleError(
                 f"{classname(self):s}.update 2")
         else:
             pass
@@ -93,36 +99,40 @@ class ArticlesCollector:
         try:
             price = int(float(_price) * 100)
         except ValueError:
-            price = 0
-            self.errors.append(event)
-            raise ReportSamplerException(
+            raise ReportSampleError(
                 f"{classname(self):s}.update 3")
+
+        try:
+            point_of_sale = self.points_of_sale_table.per_identifier[point_of_sale_identifier]
+        except KeyError:
+            raise ReportSampleError(
+                f"{classname(self):s}.update 4")
+
+        self.articles_counter[article_code] += 1
+        self.prices[article_code].append((point_of_sale, price))
+
+        if self.articles_counter[article_code] == 1:
+            an_article = Article(article_code, brand, name, package)
+            self.articles[article_code] = an_article
         else:
-            self.articles_counter[article_code] += 1
-            self.prices[article_code].append((point_of_sale, price))
-            if self.articles_counter[article_code] == 1:
-                an_article = Article(article_code, brand, name, package)
-                self.articles[article_code] = an_article
-            else:
-                an_article = self.articles[article_code]
-                different_events = True
-                if brand == an_article.brand:
-                    if name == an_article.name:
-                        if package == an_article.package:
-                            different_events = False
-                if different_events:
-                    raise ReportSamplerException(
-                        f"{classname(self):s}.update 4")
-                
+            an_article = self.articles[article_code]
+            different_events = True
+            if brand == an_article.brand:
+                if name == an_article.name:
+                    if package == an_article.package:
+                        different_events = False
+            if different_events:
+                raise ReportSampleError(
+                    f"{classname(self):s}.update 5")
 
 
-SampleTables = Tuple[str, ArticleWithPricesTable, PointsOfSaleTable]
+SampleItems = Tuple[str, ArticleWithPricesTable, List[PointOfSale]]
 
 
 class SampleCollector:
     def __init__(self) -> None:
-        self._articles_collector = ArticlesCollector()
-        self._points_of_sale_collector = PointsOfSaleCollector()
+        self._points_of_sale_collector = PointsOfSaleCollector()        
+        self._articles_collector = ArticlesCollector(self.get_points_of_sale_table())
         
     @property
     def articles_collector(self) -> ArticlesCollector:
@@ -133,36 +143,40 @@ class SampleCollector:
         return self._points_of_sale_collector 
 
     def update(self, sample: PreciosClarosSample):
-        # pdb.set_trace()
+        for event in sample.selected_points_of_sale.events():
+            self.points_of_sale_collector.update(event)        
         for event in sample.articles_per_point_of_sale.events():
             self.articles_collector.update(event)
-
-        # pdb.set_trace()
-        for event in sample.selected_points_of_sale.events():
-            self.points_of_sale_collector.update(event)
 
     def get_points_of_sale_table(self) -> PointsOfSaleTable:
         return self.points_of_sale_collector.table
         
-    def get_article_with_prices_table(self, 
-                                      home: Path, 
-                                      sample_key: str, 
-                                      place: str) -> ArticleWithPricesTable:
-        # pdb.set_trace()
-        article_with_prices = ArticleWithPricesTable(home, sample_key, place)
+    def get_article_with_prices_table(
+        self, 
+        home: Path, 
+        sample_key: str, 
+        place: str
+        ) -> ArticleWithPricesTable:
+        article_with_prices_table = ArticleWithPricesTable(home, sample_key, place)
         for article_code, prices in self.articles_collector.prices.items():
-            article = self.articles_collector.articles[article_code]
-            article_with_prices.add(article, prices)
-        return article_with_prices
+            try:
+                article = self.articles_collector.articles[article_code]
+                article_with_prices_table.add(article, prices)
+            except KeyError:
+                raise ReportSampleError(
+                    f"{classname(self):s}.get_article_with_prices_table: "
+                    f"bad article_code {article_code:s}"
+                    )
+        return article_with_prices_table
 
-    def execute(self, home: Path, sample_key: str) -> Generator[SampleTables, None, None]:
+    def sample_items(self, home: Path, sample_key: str) -> Generator[SampleItems, None, None]:
         logging.debug(f"{classname(self):s}.execute: {sample_key:s} started!")    
         target_container = get_container(home, sample_key)
-        points_of_sale = self.get_points_of_sale_table()
-        for place, points_of_sale in points_of_sale.per_place.items():
-            article_with_prices = self.get_article_with_prices_table(home, sample_key, place)
+        points_of_sale_table = self.get_points_of_sale_table()
+        for place, points_of_sale in points_of_sale_table.per_place.items():
+            article_with_prices_table = self.get_article_with_prices_table(home, sample_key, place)
             logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} started!")                
-            yield place, article_with_prices, points_of_sale
+            yield place, article_with_prices_table, points_of_sale
             logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} done!")
         logging.debug(f"{classname(self):s}.execute: {sample_key:s} done!")        
 
@@ -187,14 +201,13 @@ class FullReportSample:
                 
     def execute(self,
                 home: Path, 
-                sample_key: str,
-                create_target: Generator[PreciosClarosTask, None, None]) -> None:
+                sample_key: str
+                ) -> None:
         target_container = get_container(home, sample_key)
-        for place, article_with_prices, points_of_sale in self.sample_collector.execute(home, sample_key):
-            with create_target(target_container) as target:
-                target.target_format = ArticleWithPricesTableMD()
-                target.execute(place, "todos", article_with_prices, points_of_sale)
+        writer = WriterWithTargetFormat(target_container)        
+        for place, article_with_prices_table, points_of_sale in self.sample_collector.sample_items(home, sample_key):
+            writer.target_format = ArticleWithPricesTableMD()
+            writer.execute(place, "todos", article_with_prices_table, points_of_sale)
             for category in self.get_categories(home, "article_with_prices_selectors"):
-                with create_target(target_container) as target:            
-                    target.target_format = ArticleWithPricesTableHTML()
-                    target.execute(place, category, article_with_prices, points_of_sale)
+                writer.target_format = ArticleWithPricesTableHTML()
+                writer.execute(place, category, article_with_prices_table, points_of_sale)

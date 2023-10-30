@@ -29,7 +29,7 @@ class GrabURLSample:
             logging.info(f"    error grabbing url: {response.url}")
             logging.info(f"    -----> {str(message):s}")
             html, http_code = "", -1
-            attributes = {'error': str(message), 'http_code': http_code}
+            attributes = {'error': str(message), 'http_code': str(http_code)}
         else:
             logging.info(f"    {url:s} with http_code {http_code:d}")
         logging.info(f"done grab({url:s})")
@@ -66,7 +66,7 @@ class GrabURLSampleTask(SampleTask):
         self._url = url
     
     @property
-    def url(self) -> None:
+    def url(self) -> str:
         return self._url
     
     def execute(self, sample: Path) -> None:

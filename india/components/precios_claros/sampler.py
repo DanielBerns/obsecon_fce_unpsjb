@@ -200,7 +200,7 @@ class PreciosClarosSampleBuilder:
         sample.stop()
 
 @contextmanager
-def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSampleBuilder:
+def create_sample_with_web_content(selectors: List[Dict[str, str]]) -> Generator[PreciosClarosSampleBuilder, None, None]:
     scraper = WebScraper()  
     pos = PointsOfSale(scraper)   
     ppos = ProcessedPointsOfSaleOrigin()
@@ -221,15 +221,15 @@ def create_sample_with_web_content(selectors: Dict[str, str]) -> PreciosClarosSa
         resource.stop()
     
 @contextmanager
-def create_sample_with_local_content(home: Path) -> PreciosClarosSampleBuilder:
+def create_sample_with_local_content(home: Path) -> Generator[PreciosClarosSampleBuilder, None, None]:
     scraper = LocalScraper(home.expanduser())
     pos = PointsOfSale(scraper)   
     ppos = ProcessedPointsOfSaleOrigin()
-    ppos.events_source = pos        
+    ppos.events_origin = pos        
     spos = SelectedPointsOfSaleReader(scraper)
     appos = ArticlesPerPointOfSale(scraper)
     apposd = ArticlesPerPointOfSaleDriver()
-    apposd.events_source = spos
+    apposd.events_origin = spos
     apposd.events_processor = appos
     resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
     try:

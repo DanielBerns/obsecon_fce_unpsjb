@@ -1,7 +1,7 @@
 from typing import Dict, List, Any
 
 class Processor:
-    def __init__(self):
+    def __init__(self) -> None:
         self._content: List[Any] = list()
         self._attributes: Dict[str, str] = dict()
         

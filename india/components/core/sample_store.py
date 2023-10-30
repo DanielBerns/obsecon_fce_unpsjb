@@ -6,6 +6,8 @@ import json
 from components.core.metadata import Metadata
 from components.helpers import get_container, get_resource, classname
 
+class SampleStoreError(Exception):
+    pass
 
 class Index:
     def __init__(self, resource: Path) -> None:
@@ -69,6 +71,9 @@ class SampleStore:
         self.index.write()
         info(f"{classname(self):s}.stop() with index {self.index.value:d}")        
 
+    def get_key(self) -> str:
+        raise SampleStoreError(f"{classname(self):s}.get_key() not implemented")
+    
     def create_sample(self) -> Path:
         key = self.get_key()
         sample = Path(self.home, key)
@@ -79,10 +84,6 @@ class SampleStore:
         sample = Path(self.home, key)
         return sample
     
-    def samples(self) -> Generator[Path, None, None]:
-        raise NotImplemented
-        return None
-
 
 
 class SampleTask:
@@ -91,7 +92,7 @@ class SampleTask:
         self._iteration = 0
 
     @property
-    def identifier(self) -> int:
+    def identifier(self) -> str:
         return self._identifier
         
     @property
@@ -165,18 +166,18 @@ class Pipeline:
             pass
 
 
-class PipelineDriver:
-       
-    @staticmethod
-    def sample_per_task(pipeline: Pipeline, store: SampleStore) -> None:
-        for sample in store.samples():
-            for task in pipeline.tasks():
-                task.execute(sample)
-
-    @staticmethod                
-    def task_per_sample(store: SampleStore, pipeline: Pipeline) -> None:
-        for task in pipeline.tasks():        
-            for sample in store.samples():
-                task.execute(sample)
+# class PipelineDriver:
+#        
+#     @staticmethod
+#     def sample_per_task(pipeline: Pipeline, store: TreeStore) -> None:
+#         for sample in store.samples():
+#             for task in pipeline.tasks():
+#                 task.execute(sample)
+# 
+#     @staticmethod                
+#     def task_per_sample(store: TreeStore, pipeline: Pipeline) -> None:
+#         for task in pipeline.tasks():        
+#             for sample in store.samples():
+#                 task.execute(sample)
                 
             

@@ -14,10 +14,15 @@ from components.helpers import get_container, get_resource, i, classname
 def filename() -> str:
     return __file__[:-3]
 
-class WriterException(Exception):
+class WriterError(Exception):
     pass
 
 class TargetFormat(Protocol):
+    
+    @property
+    def selectors(self) -> bool:
+        return False
+    
     @property    
     def template(self) -> Template:
         return Template("")
@@ -76,15 +81,16 @@ class WriterWithTargetFormat:
                 place: str,
                 category: str,
                 article_with_prices: ArticleWithPricesTable,
-                points_of_sale: PointsOfSaleTable
+                points_of_sale: List[PointOfSale]
                 ) -> None:
-        
+        if self.target_format is None:
+            raise WriterError(f"classname(self).execute: target_format is None")
         container = get_container(Path(self.home, 'article_with_prices'), category)
         if article_with_prices.place != place:
             logging.debug("article_with_prices.place != place")
             logging.debug(f"  article_with_prices.place {article_with_prices.place:s}")
             logging.debug(f"  place {place:s}")    
-            raise WriterException(f"{classname(self):s} bad place 1")
+            raise WriterError(f"{classname(self):s} bad place 1")
         if self.target_format.selectors:
             article_with_prices.load_selectors(category)
         parts = (place).split(':')
@@ -105,16 +111,6 @@ class WriterWithTargetFormat:
             target.write(page)
 
 
-@contextmanager    
-def writer_with_target_format(container: Path) -> Generator[PreciosClarosTask, None, None]:
-    writer = WriterWithTargetFormat(container)
-    writer.start()        
-    try:
-        yield writer
-    except Exception as message:
-        logging.warning(f"{filename():s}.{classname(writer):s}: {str(message):s}")
-    finally:
-        writer.stop()
 
 
 TABLE_HTML = """
@@ -245,16 +241,6 @@ class ArticleWithPricesTableHTML:
         return ".html"
 
 
-# TABLE_MD = """
-# # {{ ttl }} 
-# 
-# ## Artículo: mínimo - indicativo - mínimo - máximo
-# {% for aa in awpt.all_of_them() %} 
-#     {{aa.label()}}: {{aa.prices_geomean()}} - {{aa.prices_min()}} - {{aa.prices_max()}}
-#     {% for pos, pp, fpp in aa.formatted_prices %}{{pos}}: ${{fpp}}
-#     {% endfor %}
-# {% endfor %}
-# """
 
 TABLE_MD = """
 # Código - artículo - indicativo - mínimo - máximo

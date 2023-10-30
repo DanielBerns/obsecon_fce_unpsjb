@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Optional, Dict
 
 from components.helpers import (
     remove_directory,
@@ -84,4 +84,4 @@ class FileSystem:
 
     def clear(self) -> None:
         if self.home.exists():
-            remove_directory(home)
+            remove_directory(self.home)

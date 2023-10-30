@@ -44,10 +44,10 @@ class PointsOfSaleTable:
         return self._per_identifier
     
     def add(self, place: str, point_of_sale: PointOfSale) -> None:
-        self.per_place[place] = point_of_sale
+        self.per_place[place].append(point_of_sale)
         self.per_identifier[point_of_sale.identifier] = point_of_sale
 
-    def values(self) -> PointOfSale:
+    def values(self) -> Generator[PointOfSale, None, None]:
         for identifier, point_of_sale in self.per_identifier.items():
             yield point_of_sale
 
@@ -55,7 +55,7 @@ class PointsOfSaleTable:
 class ArticleWithPrices:
     def __init__(self, 
                  article: Article,
-                 prices: List[Tuple[str, int]]) -> None:
+                 prices: List[Tuple[PointOfSale, int]]) -> None:
         self._article = article
         if len(prices) == 0:
             logging.debug(f"{classname(self):s}.__init__ 1")
@@ -65,16 +65,16 @@ class ArticleWithPrices:
         try:
             float_prices = [float(price) / 100 for point_of_sale, price in ordered_prices]
         except ValueError:
-            logging.error(f"ERROR: bad prices {self.place:s}:{self.article.code:s}")
+            logging.error(f"ERROR: bad prices {self.article.code:s}")
             raise ModelsException(f"{classname(self):s}.__init__ 2")            
         else:
             prices_min, prices_max = float_prices[0], float_prices[-1]
             log_float_prices = [log(pp, 10) for pp in float_prices]                        
             log_prices_geomean = sum(log_float_prices) / len(log_float_prices)
             prices_geomean = 10**log_prices_geomean        
-            self._prices_stats = tuple(
-                (f"{pp:>.2f}" for pp in (prices_min, prices_geomean, prices_max))
-                )
+            self._prices_stats = (f"{prices_min:>.2f}", 
+                                  f"{prices_geomean:>.2f}", 
+                                  f"{prices_max:>.2f}")
             self._formatted_prices = [(a, b, c) for a, b, c in zip(
                                               (pos for pos, pp in ordered_prices),
                                               (pp for pos, pp in ordered_prices),
@@ -87,7 +87,7 @@ class ArticleWithPrices:
         return self._article
     
     @property
-    def formatted_prices(self) -> List[Tuple[str, int]]:
+    def formatted_prices(self) -> List[Tuple[PointOfSale, int, str]]:
         return self._formatted_prices
     
     @property
@@ -122,10 +122,10 @@ class ArticleWithPricesTable:
                  home: Path,
                  timestamp: str, 
                  place: str) -> None:
-        self._home = home
-        self._timestamp = timestamp        
-        self._place = place
-        self._selectors = None
+        self._home: Path = home
+        self._timestamp: str = timestamp        
+        self._place: str = place
+        self._selectors: Optional[List[str]] = None
         self._article_with_prices: Dict[str, ArticleWithPrices] = dict()
         
     @property
@@ -202,13 +202,14 @@ class PricesPerPointOfSaleTable:
 
     def add(self, 
             article_code: str, 
-            point_of_sale: PointOfSale, price: int
+            point_of_sale: PointOfSale, 
+            price: int
             ) -> None:
-        self._point_of_sale_and_price[article_code] = (point_of_sale, price)
+        self.point_of_sale_and_price[article_code].append((point_of_sale, price))
 
-    def values(self) -> Tuple[PointOfSale, int]:
-        for article_code, (point_of_sale, price) in self.point_of_sale_and_price.items():
-            yield (point_of_sale, price)
+    def values(self) -> Generator[List[Tuple[PointOfSale, int]], None, None]:
+        for article_code, point_of_sale_with_price in self.point_of_sale_and_price.items():
+            yield point_of_sale_with_price
 
     
 SampleTables = Tuple[str, ArticleWithPricesTable, PointsOfSaleTable]

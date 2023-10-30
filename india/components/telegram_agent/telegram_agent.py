@@ -16,7 +16,7 @@ import os
 import subprocess
 import shlex
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 import logging
 
 from components.helpers import get_timestamp
@@ -59,8 +59,11 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     update_repo_sh: Optional[Path] = None
     
     def __init__(
-        self, application: Application, chat_id: int = None, user_id: int = None
-    ):
+        self, 
+        application: Application, 
+        chat_id: int = None, 
+        user_id: int = None
+        ) -> None:
         super().__init__(application=application, chat_id=chat_id, user_id=user_id)
 
 

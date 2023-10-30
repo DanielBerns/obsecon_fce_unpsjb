@@ -10,7 +10,6 @@ from components.nlp import TextTXT, GetTextSampleTask
 class ADNSURGetTextSampleTask(GetTextSampleTask):
     def __init__(self) -> None:
         super().__init__("adnsur")
-        self.sources.append("https://adnsur.com.ar")
 
     def start(self, target: Path) -> None:
         super().start(target)

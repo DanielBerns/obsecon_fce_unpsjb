@@ -10,18 +10,18 @@ def filename():
     return __file__[:-3]
 
 def run_websites_bot() -> None:
-    def websites_items() -> Generator[Tuple[str, List[str]], None, None]:
+    def websites_items() -> Generator[Tuple[str, Tuple[str, ...]], None, None]:
         websites = get_websites()
         for identifier, urls in websites.items():        
             print(f"  {identifier:s}")
             logging.info(f"start {identifier:s}")
             yield identifier, urls
 
-    def process_item(identifier: str, urls: List[str]) -> None:
+    def process_item(identifier: str, urls: Tuple[str, ...]) -> None:
         with create_treestore_driver(app.fs.nlp_news_websites, identifier) as driver:
             for an_url in urls:
-                print(f"    {an_url:s}")     
-                logging.info(f"    {an_url:s}")                    
+                print(f"> {an_url:s}")     
+                logging.info(f">  {an_url:s}")                    
                 driver.pipeline.add(GrabURLSampleTask(identifier, an_url))
                 driver.create_sample()
                 driver.pipeline.remove(identifier)                

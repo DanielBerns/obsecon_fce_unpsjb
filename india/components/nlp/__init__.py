@@ -7,8 +7,7 @@ from components.nlp.eda import (text_characters,
 from components.nlp.tokenizer import Tokenizer
 from components.nlp.nodes import TokensNode, IDFNode, TFNode
 from components.nlp.nlp_get_text import (GetTextSampleTask, 
-                                         GetTextFacadeSampleTask, 
-                                         GetTextFacadeSampleTaskFactory)
+                                         GetTextFacadeSampleTask)
 from components.nlp.nlp_get_tokens import (GetTokensSampleTask, 
                                            GetTokensSampleTaskFactory)
 from components.nlp.nlp_encode_text import EncodedText, TextCode

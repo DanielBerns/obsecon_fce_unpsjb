@@ -31,8 +31,6 @@ class FSNLPNews(FileSystem):
         self._nlp_news_telegram = get_container(self.storage, "nlp_news_telegram")
         self._nlp_news_websites = get_container(self.storage, "nlp_news_websites")
         self._nlp_news = get_container(self.results, "nlp_news")
-
-
         
     @property
     def crontab(self) -> Path:
@@ -69,14 +67,6 @@ class FSNLPNews(FileSystem):
     @property
     def run_nlp_news_websites_bot_sh(self) -> Path:
         return self._run_nlp_news_websites_bot_sh
-
-    @property
-    def telegram(self) -> Path:
-        return self._telegram
-
-    @property
-    def nlp_news(self) -> Path:
-        return self._nlp_news
 
     @property
     def nlp_news_telegram(self) -> Path:

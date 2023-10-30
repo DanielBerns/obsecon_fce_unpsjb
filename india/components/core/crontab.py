@@ -32,7 +32,7 @@ class Crontab:
                 if 0 <= int(minute) < 60:
                     return minute
                 else:
-                    UpdateCrontabException(f"invalid minute range: {minute:s}")
+                    raise UpdateCrontabException(f"invalid minute range: {minute:s}")
             except ValueError:
                 raise UpdateCrontabException(f"invalid minute value: {minute:s}")
         else:
@@ -46,7 +46,7 @@ class Crontab:
                 if 0 <= int(hour) <= 23:
                     return hour
                 else:
-                    UpdateCrontabException(f"invalid hour range: {hour:s}")
+                    raise UpdateCrontabException(f"invalid hour range: {hour:s}")
             except ValueError:
                 raise UpdateCrontabException(f"invalid hour value: {hour:s}")
         else:
@@ -60,7 +60,7 @@ class Crontab:
                 if 1 <= int(day_of_month) <= 31:
                     return day_of_month
                 else:
-                    UpdateCrontabException(
+                    raise UpdateCrontabException(
                         f"invalid day_of_month range: {day_of_month:s}")
             except ValueError:
                 raise UpdateCrontabException(
@@ -76,7 +76,7 @@ class Crontab:
                 if 1 <= int(month) <= 12:
                     return month
                 else:
-                    UpdateCrontabException(
+                    raise UpdateCrontabException(
                         f"invalid month range: {month:s}")
             except ValueError:
                 raise UpdateCrontabException(
@@ -90,9 +90,9 @@ class Crontab:
                 return day_of_week
             try:
                 if 0 <= int(day_of_week) <= 6:
-                    return day_of_month
+                    return day_of_week
                 else:
-                    UpdateCrontabException(
+                    raise UpdateCrontabException(
                         f"invalid day_of_week range: {day_of_week:s}")
             except ValueError:
                 raise UpdateCrontabException(
