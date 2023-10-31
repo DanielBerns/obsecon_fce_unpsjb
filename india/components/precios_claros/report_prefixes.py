@@ -6,7 +6,7 @@ from jinja2 import Template
 
 from components.helpers import get_container, get_resource
 
-from components.precios_claros.precios_claros_app import create_app
+from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sampler import SampleCollector, ArticleWithPricesTable, PointsOfSaleTable
 from components.precios_claros.writers import TargetFormat
