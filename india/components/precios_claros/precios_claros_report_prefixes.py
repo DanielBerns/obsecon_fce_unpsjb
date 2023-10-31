@@ -1,10 +1,9 @@
 import logging
 from pathlib import Path
 
-from context import components
-from components.core import SampledDataset
+from components.core import FlatStore
 
-from precios_claros_app import create_app
+from app import create_app
 from sampler import PreciosClarosSample
 from report_sampler import SampleCollector
 from report_prefixes import PrefixesReportSample
