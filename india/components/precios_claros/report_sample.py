@@ -210,7 +210,7 @@ class FullReportSample:
                 sample_key: str
                 ) -> None:
         target_container = get_container(home, sample_key)
-        print(f"{target_container:s}")
+        print(f"{str(target_container):s}")
         writer = WriterWithTargetFormat(target_container)        
         for place, article_with_prices_table, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             writer.target_format = ArticleWithPricesTableMD()
