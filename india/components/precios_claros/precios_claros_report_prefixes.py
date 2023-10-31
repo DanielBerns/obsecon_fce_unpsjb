@@ -3,10 +3,10 @@ from pathlib import Path
 
 from components.core import FlatStore
 
-from app import create_app
-from sampler import PreciosClarosSample
-from report_sampler import SampleCollector
-from report_prefixes import PrefixesReportSample
+from components.precios_claros.app import create_app
+from components.precios_claros.sampler import PreciosClarosSample
+from components.precios_claros.report_sampler import SampleCollector
+from components.precios_claros.report_prefixes import PrefixesReportSample
 
 
 def filename() -> str:
