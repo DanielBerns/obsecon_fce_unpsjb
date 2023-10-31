@@ -97,7 +97,7 @@ class ArticleWithPrices:
     def label(self) -> str:
         v0 = f"{self.article.code:s} - {self.article.brand:s}: {self.article.name:s}"
         return v0 
-    
+
     def prices_min(self) -> str:
         return f"{self.prices_stats[0]:s}"
 

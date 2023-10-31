@@ -242,24 +242,36 @@ class ArticleWithPricesTableHTML:
 
 
 
-TABLE_MD = """
+FULL_INFO_MD = """
 # Código - artículo - indicativo - mínimo - máximo
 {% for aa in awpt.all_of_them() %} {{aa.label()}} - {{aa.prices_geomean()}} - {{aa.prices_min()}} - {{aa.prices_max()}} 
 {% endfor %}
 """
 
+PREFIXES_MD = """
+{% for aa in awpt.all_of_them() %} {{aa.article.name}}
+{% endfor %}
+"""
+
 class ArticleWithPricesTableMD:
-    def __init__(self, selectors: bool = False) -> None:
+    def __init__(self, 
+                 selectors: bool = False,
+                 text: str) -> None:
         self._selectors: bool = selectors
+        self._text: str = text
         
     @property
     def selectors(self) -> bool:
         return self._selectors
+
+    @property
+    def text(self) -> str:
+        return self._text
     
     @property
     def template(self) -> Template:
-        return Template(TABLE_MD)
+        return Template(self._text)
                
     @property
     def suffix(self) -> str:
-        return ".csv"
+        return ".md"

@@ -26,7 +26,7 @@ def execute(
         full_report_sample.execute(report_path, sample_key)
     except Exception as message:
         print(str(message))
-    storage.metadata.add(sample_key, f"{filename():s}.run", "done")
+    storage.metadata.add(sample_key, f"{filename():s}.execute", "done")
     storage.stop()        
 
 
