@@ -255,8 +255,9 @@ PREFIXES_MD = """
 
 class ArticleWithPricesTableMD:
     def __init__(self, 
+                 text: str,
                  selectors: bool = False,
-                 text: str) -> None:
+                 ) -> None:
         self._selectors: bool = selectors
         self._text: str = text
         
