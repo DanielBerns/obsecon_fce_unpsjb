@@ -5,7 +5,7 @@ from components.core import FlatStore
 
 from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
-from components.precios_claros.report_sampler import SampleCollector
+from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_prefixes import PrefixesReportSample
 
 
