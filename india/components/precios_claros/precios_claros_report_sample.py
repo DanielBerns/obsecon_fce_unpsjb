@@ -7,7 +7,6 @@ from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import FullReportSample, SampleCollector
 
-import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -32,8 +31,6 @@ def execute(
 
 
 def run_report_sample() -> None:
-    print("hello")
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
         sample_key = "20231030184751"
-        pdb.set_trace()
         execute(sample_key, app.fs.precios_claros, app.fs.reports) 
