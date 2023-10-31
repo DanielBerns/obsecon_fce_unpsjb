@@ -158,7 +158,10 @@ class SampleCollector:
         place: str
         ) -> ArticleWithPricesTable:
         article_with_prices_table = ArticleWithPricesTable(home, sample_key, place)
+        count = 0
         for article_code, prices in self.articles_collector.prices.items():
+            count += 1
+            print(f"{article_code:s}: {count:d}")
             try:
                 article = self.articles_collector.articles[article_code]
                 article_with_prices_table.add(article, prices)
@@ -173,7 +176,10 @@ class SampleCollector:
         logging.debug(f"{classname(self):s}.execute: {sample_key:s} started!")    
         target_container = get_container(home, sample_key)
         points_of_sale_table = self.get_points_of_sale_table()
+        count = 0
         for place, points_of_sale in points_of_sale_table.per_place.items():
+            count += 1
+            print(f"{place:s}: {count:d}")
             article_with_prices_table = self.get_article_with_prices_table(home, sample_key, place)
             logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} started!")                
             yield place, article_with_prices_table, points_of_sale
@@ -204,6 +210,7 @@ class FullReportSample:
                 sample_key: str
                 ) -> None:
         target_container = get_container(home, sample_key)
+        print(f"{target_container:s}")
         writer = WriterWithTargetFormat(target_container)        
         for place, article_with_prices_table, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             writer.target_format = ArticleWithPricesTableMD()
