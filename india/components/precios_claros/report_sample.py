@@ -174,7 +174,7 @@ class SampleCollector:
 
     def sample_items(self, home: Path, sample_key: str) -> Generator[SampleItems, None, None]:
         logging.debug(f"{classname(self):s}.execute: {sample_key:s} started!")    
-        target_container = get_container(home, sample_key)
+        # target_container = get_container(home, sample_key)
         points_of_sale_table = self.get_points_of_sale_table()
         count = 0
         for place, points_of_sale in points_of_sale_table.per_place.items():
