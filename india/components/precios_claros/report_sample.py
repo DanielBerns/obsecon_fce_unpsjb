@@ -1,6 +1,6 @@
 from collections import defaultdict, Counter
 from pathlib import Path
-from typing import DefaultDict, List, Generator, Dict, Tuple
+from typing import DefaultDict, List, Generator, Dict, Tuple, Optional
 import math
 from os import walk
 import logging
