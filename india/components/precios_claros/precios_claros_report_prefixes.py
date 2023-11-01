@@ -26,7 +26,7 @@ def execute(
     sample = PreciosClarosSample(sample_path)
     sample_collector = SampleCollector()
     report_sample = PrefixesReportSample(sample_collector, sample)
-    report_sample_container = get_container(Path(report_path, sample_key, 'prefixes'))
+    report_sample_container = get_container(Path(report_path, sample_key), 'prefixes')
     pdb.set_trace()
     try:
         report_sample.execute(report_sample_container)
