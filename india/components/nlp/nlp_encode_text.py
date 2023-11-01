@@ -7,7 +7,7 @@ from components.core import SampleTask, TreeStore
 from components.helpers import get_container
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.formats import TextTXT, TokensMD, NLPContainer
+from components.nlp.io import TextTXT, TokensMD, NLPContainer
 
 
 class TextCode:

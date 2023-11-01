@@ -5,7 +5,10 @@ from typing import List, Dict
 from components.core import SampleTask
 from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.formats import TextTXT, CharactersMD, TokensMD, NLPContainer
+from components.nlp.io import (TextTXT, 
+                               CharactersMD, 
+                               TokensMD, 
+                               NLPContainer)
 
                 
 class GetTokensSampleTask(SampleTask):

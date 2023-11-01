@@ -2,7 +2,7 @@ from typing import List, Tuple, Generator
 from pathlib import Path
 from collections import Counter
 from components.nlp.nlp_encode_text import EncodedText, TextCode
-from components.nlp.formats import NLPContainer
+from components.nlp.io import NLPContainer
 
 class Bigrams:
     first: int = -1
