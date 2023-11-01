@@ -17,7 +17,7 @@ def filename() -> str:
 def execute(
     sample_key: str,
     storage_home: Path, 
-    report_container: Path
+    reports_home: Path
     ) -> None:
     storage = FlatStore(storage_home, "samples")
     reports = FlatStore(reports_home, "samples")
