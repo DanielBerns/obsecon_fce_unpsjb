@@ -27,7 +27,7 @@ def execute(
     sample_collector.update(sample)
     report_sample = PrefixesReportSample(sample_collector)
     try:
-        report_sample.execute(report_path)
+        report_sample.execute(report_path, sample_key)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.execute", "done")
