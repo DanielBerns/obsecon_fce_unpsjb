@@ -5,6 +5,7 @@ from typing import List
 
 from components.helpers import get_container, get_resource, classname
 
+from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import (SampleCollector, 
                                                      ArticleWithPricesTable, 
                                                      PointOfSale)
@@ -71,7 +72,8 @@ class PrefixesTarget:
 
 class PrefixesReportSample:
     def __init__(self, 
-                 sample_collector: SampleCollector
+                 sample_collector: SampleCollector,
+                 sample: PreciosClarosSample
                  ) -> None:
         pdb.set_trace()        
         self._sample_collector = sample_collector
