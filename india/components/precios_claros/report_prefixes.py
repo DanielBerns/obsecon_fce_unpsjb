@@ -84,7 +84,8 @@ class PrefixesReportSample:
         return self._sample_collector
 
     def execute(self,
-                home: Path) -> None:
+                home: Path,
+                sample_key: str) -> None:
         pdb.set_trace()
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget(home)
