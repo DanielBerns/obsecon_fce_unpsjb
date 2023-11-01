@@ -20,6 +20,7 @@ def execute(
     ) -> None:
     storage = FlatStore(home, "samples")    
     storage.start()    
+    pdb.set_trace()
     sample_path = storage.get_sample(sample_key)
     sample = PreciosClarosSample(sample_path)
     sample_collector = SampleCollector()
