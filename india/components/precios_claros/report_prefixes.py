@@ -75,7 +75,6 @@ class PrefixesReportSample:
                  sample_collector: SampleCollector,
                  sample: PreciosClarosSample
                  ) -> None:
-        pdb.set_trace()        
         self._sample_collector = sample_collector
         self.sample_collector.update(sample)
         
@@ -86,9 +85,6 @@ class PrefixesReportSample:
     def execute(self,
                 home: Path,
                 sample_key: str) -> None:
-        pdb.set_trace()
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget(home)
-            prefixes.start()
             prefixes.execute(place, article_with_prices, points_of_sale)
-            prefixes.stop()
