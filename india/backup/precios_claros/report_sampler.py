@@ -142,7 +142,7 @@ class SampleCollector:
             self.points_of_sale_collector.update(event)
 
     def get_points_of_sale_table(self) -> PointsOfSaleTable:
-        return self.points_of_sale_collector.table
+        #return self.points_of_sale_collector.table
         
     def get_article_with_prices_table(self, 
                                       home: Path, 
