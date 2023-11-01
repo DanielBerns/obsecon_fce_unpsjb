@@ -12,6 +12,7 @@ from components.precios_claros.report_sample import (SampleCollector,
                                                      PointOfSale)
 from components.core.target_template import TargetTemplate, FromStringTargetTemplate
 
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
