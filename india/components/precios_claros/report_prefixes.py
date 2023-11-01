@@ -13,7 +13,7 @@ from components.core.target_template import (TargetTemplate,
                                              FromStringTargetTemplate)
 from components.nlp.prefixes_chip import PrefixesChip
 
-import pdb
+
 
 def filename() -> str:
     return __file__[:-3]
@@ -65,7 +65,6 @@ class PrefixesTarget:
         for article in article_with_prices.values():
             line = article.article.name.strip()
             chip.lines.append(line)
-        pdb.set_trace()
         parts = place.split(':')
         name = parts[1].replace(' ', '_')
         self.save_prefixes(name, chip.prefixes)
@@ -87,6 +86,5 @@ class PrefixesReportSample:
                 home: Path,
                 sample_key: str) -> None:
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
-            pdb.set_trace()
             prefixes = PrefixesTarget(home)
             prefixes.execute(place, article_with_prices, points_of_sale)
