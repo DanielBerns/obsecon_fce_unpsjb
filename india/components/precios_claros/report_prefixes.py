@@ -12,7 +12,7 @@ from components.precios_claros.report_sample import (SampleCollector,
                                                      PointOfSale)
 from components.core.target_template import TargetTemplate, FromStringTargetTemplate
 
-import pdb
+# import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -45,7 +45,6 @@ class PrefixesTarget:
             if prefix:
                 if len(prefix) > 2:
                     prefixes.append(prefix.strip())
-        pdb.set_trace()
         return prefixes
 
     PREFIXES_TARGET = """{% for pp in prefixes %} {{pp}}
