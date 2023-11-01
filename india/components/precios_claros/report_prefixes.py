@@ -43,7 +43,9 @@ class PrefixesTarget:
             prefix = PrefixesTarget.common_prefix(current_value, last_value)
             last_value = current_value
             if prefix:
-                prefixes.append(prefix.strip())
+                if len(prefix) > 2:
+                    prefixes.append(prefix.strip())
+        pdb.set_trace()
         return prefixes
 
     PREFIXES_TARGET = """{% for pp in prefixes %} {{pp}}
