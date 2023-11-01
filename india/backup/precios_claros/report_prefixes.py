@@ -123,10 +123,8 @@ class PrefixesTarget:
 
 class PrefixesReportSample:
     def __init__(self, 
-                 sample_collector: SampleCollector,
-                 sample: PreciosClarosSample) -> None:
+                 sample_collector: SampleCollector) -> None:
         self._sample_collector = sample_collector
-        self.sample_collector.update(sample)
            
     @property
     def sample_collector(self) -> SampleCollector:

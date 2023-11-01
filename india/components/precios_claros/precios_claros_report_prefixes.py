@@ -8,6 +8,7 @@ from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_prefixes import PrefixesReportSample
 
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -17,6 +18,7 @@ def execute(
     home: Path, 
     report_path: Path
     ) -> None:
+    pdb.set_trace()
     storage = FlatStore(home, "samples")    
     storage.start()    
     sample_path = storage.get_sample(sample_key)
@@ -25,7 +27,7 @@ def execute(
     sample_collector.update(sample)
     report_sample = PrefixesReportSample(sample_collector)
     try:
-        report_sample.execute(report_path, sample_key)
+        report_sample.execute(report_path)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.execute", "done")
