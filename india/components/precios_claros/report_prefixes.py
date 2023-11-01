@@ -65,6 +65,7 @@ class PrefixesTarget:
         for article in article_with_prices.values():
             line = article.article.name.strip()
             chip.lines.append(line)
+        pdb.set_trace()
         parts = place.split(':')
         name = parts[1].replace(' ', '_')
         self.save_prefixes(name, chip.prefixes)
