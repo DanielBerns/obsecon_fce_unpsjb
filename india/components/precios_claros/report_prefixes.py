@@ -53,7 +53,7 @@ class PrefixesTarget:
             target.write(content)
 
     def execute(self, 
-                home: Path
+                home: Path,
                 place: str,
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: List[PointOfSale]
@@ -64,7 +64,7 @@ class PrefixesTarget:
             chip.lines.append(line)
         parts = place.split(':')
         name = parts[1].replace(' ', '_')
-        self.save_prefixes(name, chip.prefixes)
+        self.save_prefixes(home, name, chip.prefixes)
         
 
 class PrefixesReportSample:
@@ -79,7 +79,8 @@ class PrefixesReportSample:
     def sample_collector(self) -> SampleCollector:
         return self._sample_collector
 
-    def execute(self, home: Path, sample_key: str) -> None:
+    def execute(self, home: Path) -> None:
+        sample_key = self.sample_collector.sample.sample_key
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
-            prefixes = PrefixesTarget(home, sample_key)
-            prefixes.execute(place, article_with_prices, points_of_sale)
+            prefixes = PrefixesTarget()
+            prefixes.execute(home, place, article_with_prices, points_of_sale)
