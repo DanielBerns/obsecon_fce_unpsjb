@@ -29,7 +29,7 @@ def execute(
     sample_collector = SampleCollector()
     prefixes_report = PrefixesReportSample(sample_collector, sample)
     pdb.set_trace()    
-    report_container = reports.get_sample(sample_key)
+    report_container = reports.create_sample(key=sample_key)
     # get_container(Path(report_container, sample_key), 'prefixes')
     try:
         prefixes_report.execute(report_container)
