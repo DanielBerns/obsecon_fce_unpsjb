@@ -12,7 +12,7 @@ from components.precios_claros.report_sample import (SampleCollector,
                                                      PointOfSale)
 from components.core.target_template import (TargetTemplate, 
                                              FromStringTargetTemplate)
-from components.nlp.prefixes_engine import PrefixesEngine
+from components.nlp.prefixes_chip import PrefixesChip
 
 # import pdb
 
