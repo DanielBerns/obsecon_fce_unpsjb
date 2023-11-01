@@ -171,12 +171,10 @@ class SampleCollector:
         sample_key: str, 
         place: str
         ) -> ArticleWithPricesTable:
-        pdb.set_trace()
         article_with_prices_table = ArticleWithPricesTable(home, sample_key, place)
         count = 0
         for article_code, prices in self.articles_collector.prices.items():
             count += 1
-            # print(f"{article_code:s}: {count:d}")
             try:
                 article = self.articles_collector.articles[article_code]
                 article_with_prices_table.add(article, prices)
