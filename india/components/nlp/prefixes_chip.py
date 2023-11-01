@@ -19,7 +19,7 @@ class PrefixesChip:
         last_value = (sorted_uniq[0]).strip()
         for value in sorted_uniq[1:]:
             current_value = value.strip()
-            prefix = PrefixesTarget.common_prefix(current_value, last_value)
+            prefix = PrefixesChip.common_prefix(current_value, last_value)
             last_value = current_value
             if prefix:
                 if len(prefix) > 2:
