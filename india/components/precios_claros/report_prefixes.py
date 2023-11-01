@@ -5,8 +5,6 @@ from typing import List
 
 from components.helpers import get_container, get_resource, classname
 
-from components.precios_claros.app import create_app
-from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import (SampleCollector, 
                                                      ArticleWithPricesTable, 
                                                      PointOfSale)
@@ -73,8 +71,7 @@ class PrefixesTarget:
 
 class PrefixesReportSample:
     def __init__(self, 
-                 sample_collector: SampleCollector,
-                 sample: PreciosClarosSample
+                 sample_collector: SampleCollector
                  ) -> None:
         pdb.set_trace()        
         self._sample_collector = sample_collector
@@ -85,8 +82,7 @@ class PrefixesReportSample:
         return self._sample_collector
 
     def execute(self,
-                home: Path, 
-                sample_key: str) -> None:
+                home: Path) -> None:
         pdb.set_trace()
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget(home)
