@@ -214,7 +214,7 @@ class FullReportSample:
         target_container = get_container(home, sample_key)
         writer = WriterWithTargetFormat(target_container)        
         for place, article_with_prices_table, points_of_sale in self.sample_collector.sample_items(home, sample_key):
-            writer.target_format = ArticleWithPricesTableMD()
+            writer.target_format = ArticleWithPricesTableMD(FULL_INFO_MD)
             writer.execute(place, "todos", article_with_prices_table, points_of_sale)
             for category in self.get_categories(home, "article_with_prices_selectors"):
                 writer.target_format = ArticleWithPricesTableHTML()

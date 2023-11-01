@@ -28,3 +28,4 @@ from components.core.image_file_processor import (
     ImageFileProcessorWithTesseractAndPIL,
     ImageFileProcessorWithTesseractAndCV2,
 )
+

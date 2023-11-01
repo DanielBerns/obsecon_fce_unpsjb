@@ -2,6 +2,7 @@ from jinja2 import Template
 from pathlib import Path
 from typing import Protocol
 
+
 class TargetTemplate(Protocol):
     def __init__(self) -> None:
         pass
@@ -34,17 +35,15 @@ class FromFileTargetTemplate:
  
 
 class FromStringTargetTemplate:    
-    def __init__(self, string: str = "", suffix: str = ".txt") -> None:
-        self._string = string
+    def __init__(self, 
+                 string: str, 
+                 suffix: str = ".txt") -> None:
+        self._template = Template(string)
         self._suffix = suffix
 
     @property
-    def string(self) -> str:
-        return self._string
-
-    @property
     def template(self) -> Template:
-        return Template(self.string)        
+        return self._template        
 
     @property
     def suffix(self) -> str:
