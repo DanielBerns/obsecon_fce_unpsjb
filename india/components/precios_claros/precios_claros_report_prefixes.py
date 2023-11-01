@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from components.core import FlatStore
+from components.helpers import get_container
 
 from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
