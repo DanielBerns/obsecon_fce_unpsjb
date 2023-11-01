@@ -22,7 +22,8 @@ def execute(
     sample_path = storage.get_sample(sample_key)
     sample = PreciosClarosSample(sample_path)
     sample_collector = SampleCollector()
-    report_sample = PrefixesReportSample(sample_collector, sample)
+    sample_collector.update(sample)
+    report_sample = PrefixesReportSample(sample_collector)
     try:
         report_sample.execute(report_path, sample_key)
     except Exception as message:

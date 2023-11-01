@@ -10,7 +10,9 @@ from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import (SampleCollector, 
                                                      ArticleWithPricesTable, 
                                                      PointOfSale)
-from components.core.target_template import TargetTemplate, FromStringTargetTemplate
+from components.core.target_template import (TargetTemplate, 
+                                             FromStringTargetTemplate)
+from components.nlp.prefixes_engine import PrefixesEngine
 
 # import pdb
 
@@ -23,29 +25,6 @@ class ReportPrefixesError(Exception):
 
 class PrefixesTarget:
     
-    @staticmethod
-    def common_prefix(one: str, two: str) -> str:
-        prefix = list()
-        for a, b in zip(one, two):
-            if a == b:
-                prefix.append(a)
-            else:
-                break
-        return ''.join(prefix)
-
-    @staticmethod
-    def get_prefixes(array: List[str]) -> List[str]:
-        prefixes = list()                
-        sorted_uniq = sorted(set(array))
-        last_value = (sorted_uniq[0]).strip()
-        for value in sorted_uniq[1:]:
-            current_value = value.strip()
-            prefix = PrefixesTarget.common_prefix(current_value, last_value)
-            last_value = current_value
-            if prefix:
-                if len(prefix) > 2:
-                    prefixes.append(prefix.strip())
-        return prefixes
 
     PREFIXES_TARGET = """{% for pp in prefixes %} {{pp}}
     {% endfor %}
@@ -59,7 +38,6 @@ class PrefixesTarget:
             PrefixesTarget.PREFIXES_TARGET,
             suffix=PrefixesTarget.PREFIXES_TARGET_SUFFIX
             )
-        self._partial_results: List[str] = list()
         
     @property
     def home(self) -> Path:
@@ -69,51 +47,35 @@ class PrefixesTarget:
     def target_template(self) -> TargetTemplate:
         return self._target_template
     
-    @property
-    def partial_results(self) -> List[str]:
-        return self._partial_results
-    
-    def start(self) -> None:
-        pass
-    
-    def stop(self) -> None:
-        info = list()
-        for result_file in self.partial_results:
-            with open(result_file, 'r') as result:
-                for line in result:
-                    info.append(line.strip())
-        prefixes = PrefixesTarget.get_prefixes(info)
+    def save_prefixes(self, 
+                      name: str, 
+                      prefixes: List[str]
+                      ) -> None:
         content = self.target_template.template.render(prefixes=prefixes)
         target_container = get_container(self.home, 'prefixes')
-        prefixes_file = get_resource(target_container, 'all', self.target_template.suffix)         
+        prefixes_file = get_resource(target_container, name, self.target_template.suffix)         
         with open(prefixes_file, 'w') as target:
-            target.write(content)            
+            target.write(content)
 
     def execute(self, 
                 place: str,
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: List[PointOfSale]
                 ) -> None:
-        name = place.replace(' ', '_')
-        target_container = get_container(self.home, 'prefixes')
-        prefixes_file = get_resource(target_container, name, self.target_template.suffix)
-        article_names = list()
+        chip = PrefixesChip()
         for article in article_with_prices.values():
-            line = article.article.name
-            article_names.append(line.strip())
-        prefixes = PrefixesTarget.get_prefixes(article_names)
-        content = self.target_template.template.render(prefixes=prefixes)
-        with open(prefixes_file, 'w') as target:
-            target.write(content)
-        self.partial_results.append(str(prefixes_file))
+            line = article.article.name.strip()
+            chip.lines.append(line)
+        parts = place.split(':')
+        name = parts[1].replace(' ', '_')
+        self.save_prefixes(name, chip.prefixes)
         
 
 class PrefixesReportSample:
     def __init__(self, 
-                 sample_collector: SampleCollector,
-                 sample: PreciosClarosSample) -> None:
+                 sample_collector: SampleCollector
+                 ) -> None:
         self._sample_collector = sample_collector
-        self.sample_collector.update(sample)
            
     @property
     def sample_collector(self) -> SampleCollector:
@@ -121,11 +83,10 @@ class PrefixesReportSample:
 
     def execute(self,
                 home: Path, 
-                sample_key: str) -> None:
-        target_container = get_container(home, sample_key)
+                identifier: str) -> None:
+        target_container = get_container(home, identifier)
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget(target_container)
             prefixes.start()
             prefixes.execute(place, article_with_prices, points_of_sale)
             prefixes.stop()
-            
