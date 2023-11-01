@@ -80,6 +80,7 @@ class PrefixesReportSample:
 
     def execute(self, home: Path) -> None:
         sample_key = self.sample_collector.sample.sample_key
+        container = get_container(home, 'prefixes')
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget()
             prefixes.execute(home, place, article_with_prices, points_of_sale)
