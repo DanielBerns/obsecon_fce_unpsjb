@@ -51,6 +51,7 @@ class PrefixesTarget:
                       prefixes: List[str]
                       ) -> None:
         content = self.target_template.template.render(prefixes=prefixes)
+        pdb.set_trace()
         target_container = get_container(self.home, 'prefixes')
         prefixes_file = get_resource(target_container, name, self.target_template.suffix)         
         with open(prefixes_file, 'w') as target:
