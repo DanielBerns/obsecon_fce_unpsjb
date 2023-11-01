@@ -42,14 +42,13 @@ class PrefixesTarget:
         return self._target_template
     
     def save_prefixes(self, 
-                      home: Path
+                      container: Path,
                       name: str, 
                       prefixes: List[str]
                       ) -> None:
-        target_container = get_container(Path(home, name))
         content = self.target_template.template.render(prefixes=prefixes)
         pdb.set_trace()
-        prefixes_file = get_resource(target_container, name, self.target_template.suffix)         
+        prefixes_file = get_resource(container, name, self.target_template.suffix)         
         with open(prefixes_file, 'w') as target:
             target.write(content)
 
