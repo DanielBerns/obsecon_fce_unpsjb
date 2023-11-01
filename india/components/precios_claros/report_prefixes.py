@@ -14,7 +14,7 @@ from components.core.target_template import (TargetTemplate,
                                              FromStringTargetTemplate)
 from components.nlp.prefixes_chip import PrefixesChip
 
-# import pdb
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -83,9 +83,9 @@ class PrefixesReportSample:
 
     def execute(self,
                 home: Path, 
-                identifier: str,
                 sample_key: str) -> None:
-        target_container = get_container(home, identifier)
+        pdb.set_trace()
+        target_container = get_container(home, sample_key, 'prefixes')
         for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
             prefixes = PrefixesTarget(target_container)
             prefixes.start()
