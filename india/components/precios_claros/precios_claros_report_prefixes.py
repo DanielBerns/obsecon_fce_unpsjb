@@ -23,12 +23,10 @@ def execute(
     reports = FlatStore(reports_home, "samples")
     storage.start()
     reports.start()
-    pdb.set_trace()
     storage_container = storage.get_sample(sample_key)
     sample = PreciosClarosSample(storage_container)
     sample_collector = SampleCollector()
     prefixes_report = PrefixesReportSample(sample_collector, sample)
-    pdb.set_trace()    
     report_container = reports.create_sample(key=sample_key)
     # get_container(Path(report_container, sample_key), 'prefixes')
     try:
