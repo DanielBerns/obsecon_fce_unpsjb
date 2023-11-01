@@ -92,6 +92,7 @@ class PrefixesTarget:
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: List[PointOfSale]
                 ) -> None:
+        pdb.set_trace()
         name = place.replace(' ', '_')
         target_container = get_container(self.home, 'prefixes')
         prefixes_file = get_resource(target_container, name, self.target_template.suffix)
