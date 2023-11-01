@@ -84,9 +84,9 @@ class PrefixesTarget:
                 for line in result:
                     info.append(line.strip())
         prefixes = PrefixesTarget.get_prefixes(info)
+        content = self.target_template.template.render(prefixes=prefixes)
         target_container = get_container(self.home, 'prefixes')
-        prefixes_file = get_resource(target_container, 'all', self.target_template.suffix) 
-        content = self.target_template.template.render(info=prefixes)
+        prefixes_file = get_resource(target_container, 'all', self.target_template.suffix)         
         with open(prefixes_file, 'w') as target:
             target.write(content)            
 
