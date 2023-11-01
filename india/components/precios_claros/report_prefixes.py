@@ -102,9 +102,8 @@ class PrefixesTarget:
         for article in article_with_prices.values():
             line = article.article.name
             article_names.append(line.strip())
-        pdb.set_trace()
         prefixes = PrefixesTarget.get_prefixes(article_names)
-        content = self.target_template.template.render(info=prefixes)
+        content = self.target_template.template.render(prefixes=prefixes)
         with open(prefixes_file, 'w') as target:
             target.write(content)
         self.partial_results.append(str(prefixes_file))
