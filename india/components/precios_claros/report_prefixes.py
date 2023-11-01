@@ -49,7 +49,7 @@ class PrefixesTarget:
         return prefixes
 
     PREFIXES_TARGET = """{% for pp in prefixes %} {{pp}}
-        {% endfor %}
+    {% endfor %}
     """
     
     PREFIXES_TARGET_SUFFIX = ".md"
