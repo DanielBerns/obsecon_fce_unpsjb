@@ -6,7 +6,7 @@ from components.helpers import get_container
 
 from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
-from components.precios_claros.report_sample import SampleCollector
+from components.precios_claros.prefixes_report import SampleCollector
 from components.precios_claros.report_prefixes import PrefixesReportSample
 
 import pdb
@@ -16,20 +16,23 @@ def filename() -> str:
 
 def execute(
     sample_key: str,
-    home: Path, 
-    report_path: Path
+    storage_home: Path, 
+    report_container: Path
     ) -> None:
-    storage = FlatStore(home, "samples")    
-    storage.start()    
+    storage = FlatStore(storage_home, "samples")
+    reports = FlatStore(reports_home, "samples")
+    storage.start()
+    reports.start()
     pdb.set_trace()
-    sample_path = storage.get_sample(sample_key)
-    sample = PreciosClarosSample(sample_path)
+    storage_container = storage.get_sample(sample_key)
+    sample = PreciosClarosSample(storage_container)
     sample_collector = SampleCollector()
-    report_sample = PrefixesReportSample(sample_collector, sample)
-    report_sample_container = get_container(Path(report_path, sample_key), 'prefixes')
-    pdb.set_trace()
+    prefixes_report = PrefixesReportSample(sample_collector, sample)
+    pdb.set_trace()    
+    report_container = reports.get_sample(sample_key)
+    # get_container(Path(report_container, sample_key), 'prefixes')
     try:
-        report_sample.execute(report_sample_container)
+        prefixes_report.execute(report_container)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.execute", "done")
