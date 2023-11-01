@@ -52,7 +52,7 @@ class PointsOfSaleTable:
             yield point_of_sale
 
 
-class ArticleWithPrices:
+class ArticleWithPricesTable:
     def __init__(self, 
                  article: Article,
                  prices: List[Tuple[PointOfSale, int]]) -> None:

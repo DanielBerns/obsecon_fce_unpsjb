@@ -8,9 +8,8 @@ from context import components
 from components.core import SampledDataset
 from components.helpers import get_container, get_resource
 
-from precios_claros_app import create_app
 from sampler import PreciosClarosSample
-from report_sampler import SampleCollector, ArticleWithPricesTable, PointsOfSaleTable
+from report_sampler import SampleCollector, ArticleWithPricesTable, PointOfSale
 from writers import writer_with_target_format, TargetFormat
 
 import pdb
@@ -100,7 +99,7 @@ class PrefixesTarget:
     def execute(self, 
                 place: str,
                 article_with_prices: ArticleWithPricesTable,
-                points_of_sale: PointsOfSaleTable
+                points_of_sale: List[PointOfSale]
                 ) -> None:
 
         name = place.replace(' ', '_')

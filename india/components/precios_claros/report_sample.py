@@ -21,6 +21,8 @@ from components.precios_claros.writers import (WriterWithTargetFormat,
                                                PREFIXES_MD)
 
 
+import pdb
+
 class ReportSampleError(Exception):
     pass
 
@@ -133,18 +135,28 @@ SampleItems = Tuple[str, ArticleWithPricesTable, List[PointOfSale]]
 
 class SampleCollector:
     def __init__(self) -> None:
+        self._sample: Optional[PreciosClarosSample] = None
         self._points_of_sale_collector = PointsOfSaleCollector()        
         self._articles_collector = ArticlesCollector(self.get_points_of_sale_table())
         
     @property
-    def articles_collector(self) -> ArticlesCollector:
-        return self._articles_collector
+    def sample(self) -> Optional[PreciosClarosSample]:
+        return self._sample
+    
+    @sample.setter
+    def sample(self, value: PreciosClarosSample) -> None:
+        self._sample = value
 
     @property
     def points_of_sale_collector(self) -> PointsOfSaleCollector:
         return self._points_of_sale_collector 
 
+    @property
+    def articles_collector(self) -> ArticlesCollector:
+        return self._articles_collector
+
     def update(self, sample: PreciosClarosSample):
+        self.sample = sample
         for event in sample.selected_points_of_sale.events():
             self.points_of_sale_collector.update(event)        
         for event in sample.articles_per_point_of_sale.events():
@@ -159,6 +171,7 @@ class SampleCollector:
         sample_key: str, 
         place: str
         ) -> ArticleWithPricesTable:
+        pdb.set_trace()
         article_with_prices_table = ArticleWithPricesTable(home, sample_key, place)
         count = 0
         for article_code, prices in self.articles_collector.prices.items():
