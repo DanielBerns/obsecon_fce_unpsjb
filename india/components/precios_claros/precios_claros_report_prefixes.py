@@ -8,6 +8,7 @@ from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_prefixes import PrefixesReportSample
 
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -24,6 +25,7 @@ def execute(
     sample_collector = SampleCollector()
     report_sample = PrefixesReportSample(sample_collector, sample)
     report_sample_container = get_container(Path(report_path, sample_key, 'prefixes'))
+    pdb.set_trace()
     try:
         report_sample.execute(report_sample_container)
     except Exception as message:

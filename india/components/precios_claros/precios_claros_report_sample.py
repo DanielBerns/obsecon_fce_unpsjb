@@ -11,6 +11,7 @@ from components.precios_claros.report_sample import FullReportSample, SampleColl
 def filename() -> str:
     return __file__[:-3]
 
+
 def execute(
     sample_key: str,
     home: Path, 
