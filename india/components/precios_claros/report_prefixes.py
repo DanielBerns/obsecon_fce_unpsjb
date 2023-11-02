@@ -57,13 +57,15 @@ class PrefixesTarget:
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: List[PointOfSale]
                 ) -> None:
-        chip = PrefixesChip()
+        alpha = PrefixesChip()
         for article in article_with_prices.values():
             line = article.article.name.strip()
-            chip.lines.append(line)
+            alpha.lines.append(line)
         parts = place.split(':')
         name = parts[1].replace(' ', '_')
-        self.save_prefixes(home, name, chip.prefixes)
+        prefixes = alpha.prefixes
+        bravo = PrefixesChip(lines=prefixes)
+        self.save_prefixes(home, name, bravo.prefixes)        
         
 
 class PrefixesReportSample:

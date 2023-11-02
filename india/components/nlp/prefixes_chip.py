@@ -26,8 +26,8 @@ class PrefixesChip:
                     prefixes.append(prefix.strip())
         return prefixes
 
-    def __init__(self) -> None:
-        self._lines: List[str] = list()
+    def __init__(self, lines: Optional[List[str]] = None) -> None:
+        self._lines: List[str] = lines if lines else list()
         
     @property
     def lines(self) -> List[str]:
