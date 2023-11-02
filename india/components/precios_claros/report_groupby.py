@@ -65,7 +65,7 @@ class GroupbyTarget:
                         print(f"#articles: {count_matched_articles:d}")
         
 
-class GroubyReportSample:
+class GroupbyReportSample:
     def __init__(self, 
                  sample_collector: SampleCollector,
                  sample: PreciosClarosSample
