@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 
-from components.helpers import get_container, get_resource, classname
+from components.helpers import get_container, get_resource, classname, read_text_lines
 
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import (SampleCollector, 
@@ -11,8 +11,7 @@ from components.precios_claros.report_sample import (SampleCollector,
                                                      PointOfSale)
 from components.core.target_template import (TargetTemplate, 
                                              FromStringTargetTemplate)
-from components.nlp.prefixes_chip import PrefixesChip
-
+import pdb
 
 def filename() -> str:
     return __file__[:-3]
@@ -23,7 +22,7 @@ class ReportGroupbyError(Exception):
 
 class GroupbyTarget:
     
-    GROUPBY_TARGET = """{{aa.article_code}} / {{aa.brand}} / {{aa.name}}"""
+    GROUPBY_TARGET = """{{aa.article.code}} / {{aa.article.brand}} / {{aa.article.name}} / {{aa.prices_min()}} / {{aa.prices_geomean()}} // {{aa.prices_max()}}"""
     
     GROUPBY_TARGET_SUFFIX = ".csv"
     
@@ -48,11 +47,13 @@ class GroupbyTarget:
                 article_with_prices: ArticleWithPricesTable,
                 points_of_sale: List[PointOfSale]
                 ) -> None:
-        print(f"place: {place:s}")        
-        for count_pattern, pattern in self.patterns:
+        parts = place.split(':')
+        city = parts[1].replace(' ', '_')
+        print(f"place: {city:s}")        
+        for count_pattern, pattern in enumerate(self.patterns):
             print(f"#pattern: {count_pattern:d}")    
             safe_pattern = pattern.replace(' ', '_')
-            container = get_container(home, place)
+            container = get_container(home, city)
             pattern_file = get_resource(container, safe_pattern, self.target_template.suffix)
             with open(pattern_file, 'w') as target:
                 count_matched_articles = 0
