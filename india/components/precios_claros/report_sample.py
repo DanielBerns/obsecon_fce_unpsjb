@@ -186,7 +186,7 @@ class SampleCollector:
         return article_with_prices_table
 
     def sample_items(self, home: Path, sample_key: str) -> Generator[SampleItems, None, None]:
-        logging.debug(f"{classname(self):s}.execute: {sample_key:s} started!")    
+        logging.debug(f"{classname(self):s}.sample_items: {sample_key:s} started!")    
         # target_container = get_container(home, sample_key)
         points_of_sale_table = self.get_points_of_sale_table()
         count = 0
@@ -194,10 +194,10 @@ class SampleCollector:
             count += 1
             # print(f"{place:s}: {count:d}")
             article_with_prices_table = self.get_article_with_prices_table(home, sample_key, place)
-            logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} started!")                
+            logging.debug(f"{classname(self):s}.sample_items: {sample_key:s} at {place:s} started!")                
             yield place, article_with_prices_table, points_of_sale
-            logging.debug(f"{classname(self):s}.execute: {sample_key:s} at {place:s} done!")
-        logging.debug(f"{classname(self):s}.execute: {sample_key:s} done!")        
+            logging.debug(f"{classname(self):s}.sample_items: {sample_key:s} at {place:s} done!")
+        logging.debug(f"{classname(self):s}.sample_items: {sample_key:s} done!")        
 
 
 

@@ -12,6 +12,7 @@ from typing import (
     Generator,
 )
 
+# https://jsonlines.org/
 from components.helpers import get_container, get_resource
 
 from components.core.events import EventsDocument

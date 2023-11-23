@@ -13,6 +13,7 @@ class Events:
         return {str(key): str(value).lower() for key, value in event.items()}
 
 
+
 class EventsOrigin(Protocol):
     def events(self) -> Generator[Dict[str, str], None, None]:
         yield from ()

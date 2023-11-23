@@ -97,7 +97,10 @@ class WriterWithTargetFormat:
         city = self.get_city(parts[1])
         timestamp = (article_with_prices.timestamp)[:8]
         year, month, day = timestamp[:4], timestamp[4:6], timestamp[6:]
-        title = f"{category.replace('_',' '):s} en {city:s} - {year:s}/{month:s}/{day:s}"        
+        if category == "acba":
+            title = f"Artículos de la canasta básica de alimentos en {city:s} {year:s}/{month:s}/{day:s}"
+        else:
+            title = f"{category.replace('_',' '):s} en {city:s} - {year:s}/{month:s}/{day:s}"        
         city_in_filename = parts[1].replace(' ', '_')
         template = self.target_format.template
         page = template.render(
@@ -122,7 +125,7 @@ TABLE_HTML = """
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 
@@ -165,10 +168,6 @@ TABLE_HTML = """
              class="w3-button w3-display-topright">Cerrar</div>
         <p>{{ ttl }}</p>
       </header>
-      <div class="w3-padding">
-          <input class="w3-input" oninput="w3.filterHTML('#search', 'article', this.value)" 
-                 placeholder="Buscar artículos y códigos..">
-      </div>
       <footer class="w3-container w3-theme-l1">
         <p><i class="fa fa-smile-o"></i></p>
       </footer>
@@ -177,25 +176,27 @@ TABLE_HTML = """
 
 <div class="w3-card w3-container" style="min-height:460px">
 <br>
-<input class="w3-input" oninput="w3.filterHTML('#search', 'article', this.value)" placeholder="Buscar">
+<div>
+<input id="searchinput" class="w3-input" oninput="filterHTML('#search', 'article', this.value)" placeholder="Buscar">
+</div>
 <br>
 <div class="w3-container" id="search">
     {% for article in awpt.values() %}
     <article class="w3-row">
         <div class="w3-twothird w3-pale-blue">            
             <p class="w3-tooltip w3-left">
-            {{article.label()}}.&nbsp;<span class="w3-text">{{article.prices_range()}}</span>
+            {{article.label()}}.&nbsp;
+            <span class="w3-text w3-theme-light w3-padding">
+               <a href="#theHeader"><i class="fa fa-chevron-up">&nbsp;</i></a>
+            </span>
             </p>
         </div>
         <div class="w3-third w3-pale-green">
-        <p class="w3-tooltip w3-right">
-          <span class="w3-text w3-theme-light w3-padding">
-            <a href="#theHeader"><i class="fa fa-chevron-up">&nbsp;</i></a>
-          </span>
-          <i class="fa fa-usd">&nbsp;</i>{{article.prices_geomean()}}
-        </p>
+            <p class="w3-tooltip w3-right">
+            <i class="fa fa-usd"></i>{{article.prices_geomean()}}            
+            <span class="w3-text">{{article.prices_range()}}&nbsp;</span>
+            </p>
         </div>
-        
     </article>
     {% endfor %}
 </div>
@@ -204,6 +205,7 @@ TABLE_HTML = """
 <footer class="w3-container w3-theme">
   <p class="w3-opacity">Hecho por Gipis - DIE - FI - UNPSJB</p>
 </footer>
+
 
 <script>
 // Side navigation
@@ -217,9 +219,40 @@ function openTheSidebar() {
 function closeTheSidebar() {
   document.getElementById("theSidebar").style.display = "none";
 }
+function getElements(id) {
+  if (typeof id == "object") {
+    return [id];
+  } else {
+    return document.querySelectorAll(id);
+  }
+}
+function filterHTML(id, sel, filter) {
+  var a, b, c, i, ii, iii, hit;
+  a = getElements(id);
+  for (i = 0; i < a.length; i++) {
+    b = a[i].querySelectorAll(sel);
+    for (ii = 0; ii < b.length; ii++) {
+      hit = 0;
+      if (b[ii].innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1) {
+        hit = 1;
+      }
+      c = b[ii].getElementsByTagName("*");
+      for (iii = 0; iii < c.length; iii++) {
+        if (c[iii].innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1) {
+          hit = 1;
+        }
+      }
+      if (hit == 1) {
+        b[ii].style.display = "";
+      } else {
+        b[ii].style.display = "none";
+      }
+    }
+  }
+}
 </script>
 
-<script src="https://www.w3schools.com/lib/w3.js"></script>
+
 </body>
 </html> 
 """

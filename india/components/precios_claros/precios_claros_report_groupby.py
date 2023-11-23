@@ -36,7 +36,7 @@ def execute(
     storage.stop()        
 
 
-def run_report_groupby() -> None:
+def run_report_groupby(sample_key: str) -> None:
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
-        sample_key = "20231030184751"
         execute(sample_key, app.fs.precios_claros, app.fs.reports) 
+        
