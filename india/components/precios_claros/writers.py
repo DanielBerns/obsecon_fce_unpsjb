@@ -276,8 +276,8 @@ class ArticleWithPricesTableHTML:
 
 
 FULL_INFO_MD = """
-# Código - artículo - indicativo - mínimo - máximo
-{% for aa in awpt.all_of_them() %} {{aa.label()}} - {{aa.prices_geomean()}} - {{aa.prices_min()}} - {{aa.prices_max()}} 
+# Código ~ artículo ~ indicativo ~ mínimo ~ máximo
+{% for aa in awpt.all_of_them() %} {{aa.label()}} | {{aa.prices_geomean()}} | {{aa.prices_min()}} | {{aa.prices_max()}} 
 {% endfor %}
 """
 
@@ -308,4 +308,4 @@ class ArticleWithPricesTableMD:
                
     @property
     def suffix(self) -> str:
-        return ".md"
+        return ".csv"

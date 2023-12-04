@@ -3,6 +3,8 @@ import json
 import logging
 from pathlib import Path
 
+# import pdb
+
 from typing import Dict, Optional, Generator, List, Tuple
 
 from components.precios_claros.pc_scraper import PreciosClarosScraper
@@ -16,7 +18,7 @@ from components.core import (EventsOrigin,
                              Events)
 from components.helpers import get_container, i, classname
 
-# import pdb
+import pdb
 
 class PointsOfSale:
     def __init__(self, scraper: PreciosClarosScraper):
@@ -84,7 +86,7 @@ class ProcessedPointsOfSaleOrigin(ProcessedEventsOrigin):
         super().__init__()
 
     def process_event(self, x: Dict[str, str]) -> Dict[str, str]:
-        # # pdb.set_trace()
+        # # # pdb.set_trace()
         event = Events.lower_values(x)
         processed_event = {
                     'identifier': event['id'],
@@ -105,14 +107,16 @@ class ArticlesPerPointOfSaleDriver(CompositeEventsDriver):
     def events(self):
         for article_0 in super().events():
             article_1 = Events.lower_values(article_0)
+            iv_0 = article_1.get('id', article_1.get('identifier', '0'))
+            iv_1 = iv_0[1:-1] if iv_0.startswith('[') else iv_0
             article_2 = {
-              'identifier': article_1['id'],
+              'identifier': iv_1,
               'marca': article_1['marca'],
               'nombre': article_1['nombre'],
               'presentacion': article_1['presentacion'],          
               'precio': article_1['precio'],
-              'precio_max': article_1['precioMax'],
-              'precio_min': article_1['precioMin'],
+              'precio_max': article_1.get('precioMax', article_1.get('precio_max', '0')),
+              'precio_min': article_1.get('precioMin', article_1.get('precio_min', '0')),
               'point_of_sale': article_1['point_of_sale']        
             }
             yield article_2
@@ -163,12 +167,11 @@ class PreciosClarosSample:
 class PreciosClarosSampleBuilder:
 
     def __init__(self, 
-                 run_identifier: str,
                  points_of_sale_source: EventsOrigin,
                  selected_points_of_sale_source: EventsOrigin,
                  articles_per_point_of_sale_source: EventsOrigin
                  ) -> None:
-        self._run_identifier = run_identifier
+        self._run_identifier = points_of_sale_source.scraper.run_identifier
         self._points_of_sale_source = points_of_sale_source
         self._selected_points_of_sale_source = selected_points_of_sale_source
         self._articles_per_point_of_sale_source = articles_per_point_of_sale_source
@@ -201,45 +204,46 @@ class PreciosClarosSampleBuilder:
         sample.points_of_sale.update(self.points_of_sale_source)
         sample.selected_points_of_sale.update(self.selected_points_of_sale_source)
         sample.articles_per_point_of_sale.update(self.articles_per_point_of_sale_source)
+        # pdb.set_trace()        
         sample.stop()
 
 @contextmanager
 def create_sample_with_web_content(selectors: List[Dict[str, str]]) -> Generator[PreciosClarosSampleBuilder, None, None]:
-    scraper = WebScraper()  
-    pos = PointsOfSale(scraper)   
-    ppos = ProcessedPointsOfSaleOrigin()
-    ppos.events_origin = pos
-    spos = SelectedPointsOfSaleOrigin(selectors)
-    spos.events_origin = ppos
-    appos = ArticlesPerPointOfSale(scraper)
-    apposd = ArticlesPerPointOfSaleDriver()
-    apposd.events_origin = spos
-    apposd.events_processor = appos
-    resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
     try:
+        scraper = WebScraper()  
+        pos = PointsOfSale(scraper)   
+        ppos = ProcessedPointsOfSaleOrigin()
+        ppos.events_origin = pos
+        spos = SelectedPointsOfSaleOrigin(selectors)
+        spos.events_origin = ppos
+        appos = ArticlesPerPointOfSale(scraper)
+        apposd = ArticlesPerPointOfSaleDriver()
+        apposd.events_origin = spos
+        apposd.events_processor = appos
+        resource = PreciosClarosSampleBuilder(pos, spos, apposd)        
         resource.start()
         yield resource
-    except RuntimeError as message:
-        print(message)
+    except Exception as message:
+        logging.error(f"create_sample_with_web_content: {str(message):s}")
     finally:
         resource.stop()
     
 @contextmanager
 def create_sample_with_local_content(home: Path) -> Generator[PreciosClarosSampleBuilder, None, None]:
-    scraper = LocalScraper(home.expanduser())
-    pos = PointsOfSale(scraper)   
-    ppos = ProcessedPointsOfSaleOrigin()
-    ppos.events_origin = pos        
-    spos = SelectedPointsOfSaleReader(scraper)
-    appos = ArticlesPerPointOfSale(scraper)
-    apposd = ArticlesPerPointOfSaleDriver()
-    apposd.events_origin = spos
-    apposd.events_processor = appos
-    resource = PreciosClarosSampleBuilder(scraper.run_identifier, pos, spos, apposd)
     try:
+        scraper = LocalScraper(home.expanduser())
+        pos = PointsOfSale(scraper)   
+        ppos = ProcessedPointsOfSaleOrigin()
+        ppos.events_origin = pos        
+        spos = SelectedPointsOfSaleReader(scraper)
+        appos = ArticlesPerPointOfSale(scraper)
+        apposd = ArticlesPerPointOfSaleDriver()
+        apposd.events_origin = spos
+        apposd.events_processor = appos
+        resource = PreciosClarosSampleBuilder(pos, spos, apposd)        
         resource.start()
         yield resource
-    except RuntimeError as message:
-        print(message)
+    except Exception as message:
+        logging.error(f"create_sample_with_local_content: {str(message):s}")
     finally:
         resource.stop()

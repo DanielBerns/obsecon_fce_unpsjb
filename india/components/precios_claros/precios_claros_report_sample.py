@@ -22,9 +22,9 @@ def execute(
     sample_path = storage.get_sample(sample_key)
     sample = PreciosClarosSample(sample_path)
     sample_collector = SampleCollector()
-    full_report_sample = FullReportSample(sample_collector, sample)
+    full_report_sample = FullReportSample(sample_collector)
     try:
-        full_report_sample.execute(report_path, sample_key)
+        full_report_sample.execute(report_path, sample)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.execute", "done")

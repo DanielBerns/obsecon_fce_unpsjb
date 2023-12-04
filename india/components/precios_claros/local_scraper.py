@@ -9,6 +9,8 @@ from components.core import EventsDocument
 class LocalScraperError(Exception):
     pass
 
+import pdb
+
 class LocalScraper:
     def __init__(self, home: Path) -> None:
         self._home: Path = home
@@ -86,10 +88,15 @@ class LocalScraper:
         ) -> Generator[Dict[str, str], None, None]:
         logging.info(f"{classname(self):s}.articles_per_point_of_sale")
         identifier = point_of_sale['identifier']
-        begin, end = self.cache_index[identifier]
-        for event in self.cache[begin: end]:
-            appos = {str(key): str(value).lower() for key, value in event.items()}
-            yield appos 
+        begin, end = self.cache_index.get(identifier, (-1, -1))
+        if begin > -1:
+            for event in self.cache[begin: end]:
+                appos = {str(key): str(value).lower() 
+                         for key, value in event.items()}
+                yield appos 
+        else:
+            logging.error(
+                f"{classname(self):s}.articles_per_point_of_sale error: {identifier:s}")
             
             
 @contextmanager
@@ -98,7 +105,7 @@ def create_local_scraper():
     try:
         resource.start()
         yield resource
-    except RuntimeError as message:
-        print(message)
+    except Exception as message:
+        logging.error(f"{str(message):s}")
     finally:
         resource.stop()

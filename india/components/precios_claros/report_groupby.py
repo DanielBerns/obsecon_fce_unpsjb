@@ -113,7 +113,7 @@ class GroupbyReportSample:
         groups = read_text_lines(groups_resource)
         groupby_container = get_container(home, 'groupby')        
         groupby = GroupbyTarget(categories, groups)        
-        for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home, sample_key):
+        for place, article_with_prices, points_of_sale in self.sample_collector.sample_items(home):
             groupby.execute(groupby_container, 
                             place, 
                             article_with_prices, 

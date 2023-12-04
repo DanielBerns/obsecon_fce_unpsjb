@@ -87,7 +87,7 @@ def create_app(
 
     logging.basicConfig(
         filename=fs.logs_txt, 
-        level=cfg.log_level
+        level=logging.DEBUG
     )
 
     logging.info(f"start")
