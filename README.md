@@ -14,21 +14,20 @@ $ mkdir ~/.venvs
 $ python -m venv ~/.venvs/fce 
 $ . ~/.venvs/fce/bin/activate
 $ pip install --upgrade pip
+$ cd india
 $ pip install -r requirements.txt
 
-After installing all the packages succesfully
-$ python start.py
-$ export COMMAND=~/Apps/observatorio_fce_unpsjb/india/run_news_grabber.sh
-$ export COMMAND_TIME=40
-$ python edit_crontab.py
+# How to start sshd (Fedora 39)
 
+$ systemctl enable sshd
+$ systemctl start sshd
+$ systemctl status sshd
+$ netstat -ant | grep 22
+$ ss -lt
 
-
-# How to start
-
-$ cd ~/Apps/observatorio_fce_unpsjb/india
-$ . ~/.venvs/pc/bin/activate
-$ python start.py
+# How to install at
+$ dnf -y install at
+$ systemctl enable --now atd
 
 # How to git
 

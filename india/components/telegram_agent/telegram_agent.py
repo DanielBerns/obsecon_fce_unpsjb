@@ -85,7 +85,9 @@ async def help_command(update: Update, context: CustomContext) -> None:
 
 async def get_telegram(update: Update, context: CustomContext) -> None:
     """Send a message when the command /telegram is issued."""
+    logging.debug("get_telegram 1")    
     ts = CustomContext.store
+    logging.debug(f"get_telegram 2: {ts.index:d}")
     await update.message.reply_text(f"telegram {ts.index:d}")
 
 
