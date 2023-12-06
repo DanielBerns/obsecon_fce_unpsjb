@@ -25,7 +25,7 @@ def run_start() -> None:
         template_builder = FromFileTargetTemplate(app.fs.template_run_nlp_news_websites_bot_sh)
         text = template_builder.template.render(mode=app.cli_args["mode"])
         write_text(app.fs.run_nlp_news_websites_bot_sh, text)        
-        chmod(app.fs.run_nlp_news_websites_bot_sh, 0x700)
+        chmod(app.fs.run_nlp_news_websites_bot_sh, 0o700)
         
         crontab = Crontab()
         crontab.add("update_repo",
