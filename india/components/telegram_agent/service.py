@@ -117,9 +117,10 @@ def interact_with_telegram_api(
             sample = store.create_sample()
             store.stop()
             logging.info(f"Created sample {str(sample):s}!")            
+            user = update.effective_user
             TelegramSample.write_message(
                 sample, 
-                update.effective_user.full_name, 
+                f"{user.full_name:s} - {str(update.effective_chat.id):s}", 
                 update.message.text)
             response = f"Gracias por tu mensaje {update.effective_user.full_name:s}!"
         await update.message.reply_text(response)  
@@ -151,14 +152,14 @@ def interact_with_telegram_api(
                 "Found photo: ",
                 f"PhotoSize == {len(update.message.photo):d} ",
                 f"image_id = {str(image_id):s} ",
-                f"from {user.full_name:s}!",
+                f"from {user.full_name:s} - {str(update.effective_chat.id):s}!",
             ]
             logging.info("".join(remark))
             if update.message.caption:
                 logging.info(f"Found caption {update.message.caption:s}!")
                 TelegramSample.write_message_caption(
                     sample, 
-                    user.full_name, 
+                    f"{user.full_name:s} - {str(update.effective_chat.id):s}", 
                     update.message.caption)
             else:
                 logging.info("Not found update.message.caption!")
