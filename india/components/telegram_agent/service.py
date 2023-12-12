@@ -102,7 +102,7 @@ def interact_with_telegram_api(
     store = TreeStore(bot_home, "messages")
     shutdown_sh = get_resource(bot_home, "shutdown", ".sh")
     update_repo_sh = get_resource(bot_home, "update_repo", ".sh")
-    update_repo_sh = get_resource(bot_home, "reboot", ".sh")        
+    reboot_sh = get_resource(bot_home, "reboot", ".sh")        
 
     # set higher logging level for httpx to avoid all GET and POST 
     # requests being logged
