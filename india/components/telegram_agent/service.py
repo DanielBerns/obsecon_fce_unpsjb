@@ -101,11 +101,12 @@ def interact_with_telegram_api(
     bot_home = get_container(telegram_home, bot_identifier)
     store = TreeStore(bot_home, "messages")
     shutdown_sh = get_resource(bot_home, "shutdown", ".sh")
-    update_repo_sh = get_resource(bot_home, "update_repo", ".sh")    
+    update_repo_sh = get_resource(bot_home, "update_repo", ".sh")
+    update_repo_sh = get_resource(bot_home, "reboot", ".sh")        
 
     # set higher logging level for httpx to avoid all GET and POST 
     # requests being logged
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.INFO)
     
     # logger = logging.getLogger(__name__)
 
@@ -278,12 +279,14 @@ def interact_with_telegram_api(
 
 
     application.add_handler(CommandHandler("inicio", start))
+    application.add_handler(CommandHandler("start", start))    
     application.add_handler(CommandHandler("ayuda", help_command))
     application.add_handler(CommandHandler("telegram", get_telegram))
     application.add_handler(CommandHandler("noticias", get_news))
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("ur", update_repo))
-
+    application.add_handler(CommandHandler("rb", reboot))
+    
     application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, process_text)
     )
