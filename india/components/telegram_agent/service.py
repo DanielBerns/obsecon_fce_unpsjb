@@ -56,6 +56,42 @@ from components.core import TreeStore
 from components.helpers import get_resource
 
 
+def start_shutdown(command_path: str) -> None:
+    command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
+    logging.info(command)
+    logging.info(str(command_path))
+    with open(command_path, "w") as target:
+        target.write(command)
+    os.chmod(command_path, 0o700)
+    cp = subprocess.run(
+        [
+            "at",
+            "now",
+            "+1",
+            "minutes",
+            "-f",
+            str(command_path),
+        ]
+    )
+    if cp.returncode:
+        logging.info(f"at returncode {cp.returncode:d}")
+
+def start_reboot(command_path: str) -> None:
+    os.chmod(command_path, 0o700)
+    cp = subprocess.run(
+        [
+            "at",
+            "now",
+            "+2",
+            "minutes",
+            "-f",
+            str(command_path),
+        ]
+    )
+    if cp.returncode:
+        logging.info(f"at returncode {cp.returncode:d}")
+        
+
 def interact_with_telegram_api(
     telegram_home: Path, 
     bot_identifier: str,
@@ -82,7 +118,6 @@ def interact_with_telegram_api(
             rf"Hi {user.mention_html()}!",
             reply_markup=ForceReply(selective=True),
         )
-    
     
     async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Send a message when the command /help is issued."""
@@ -125,7 +160,6 @@ def interact_with_telegram_api(
             response = f"Gracias por tu mensaje {update.effective_user.full_name:s}!"
         await update.message.reply_text(response)  
     
-    
     async def process_photo(
         update: Update, 
         context: ContextTypes.DEFAULT_TYPE
@@ -165,7 +199,6 @@ def interact_with_telegram_api(
                 logging.info("Not found update.message.caption!")
             await update.message.reply_text(f"Gracias por la foto {user.full_name:s}!")
     
-    
     async def shutdown(
         update: Update, 
         context: ContextTypes.DEFAULT_TYPE
@@ -180,28 +213,29 @@ def interact_with_telegram_api(
             await update.message.reply_text("start shutdown")
             context.bot_data["shutdown"] = True
             # https://phoenixnap.com/kb/linux-at-command
-            command = f"#!/usr/bin/env bash\nkill {os.getpid():d}\n"
-            logging.info(command)
-            command_path = shutdown_sh
-            logging.info(str(command_path))
-            with open(command_path, "w") as target:
-                target.write(command)
-            os.chmod(command_path, 0o700)
-            cp = subprocess.run(
-                [
-                    "at",
-                    "now",
-                    "+1",
-                    "minutes",
-                    "-f",
-                    str(command_path),
-                ]
-            )
-            if cp.returncode:
-                logging.info(f"at returncode {cp.returncode:d}")
+            start_shutdown(shutdown_sh)
             logging.info("executing shutdown")
             await update.message.reply_text("executing shutdown")
-    
+
+
+    async def reboot(
+        update: Update, 
+        context: ContextTypes.DEFAULT_TYPE
+        ) -> None:
+        logging.info(f"PID {os.getpid():d}")
+        flag = context.bot_data.get("reboot", False)
+        if flag:
+            logging.info("pending reboot")
+            await update.message.reply_text("pending reboot")
+        else:
+            logging.info("start reboot")
+            await update.message.reply_text("start reboot")
+            context.bot_data["reboot"] = True
+            # https://phoenixnap.com/kb/linux-at-command
+            start_reboot(reboot_sh)
+            start_shutdown(shutdown_sh)
+            logging.info("executing reboot")
+            await update.message.reply_text("executing reboot")
     
     async def _update_repo() -> None:
         cp = subprocess.run([update_repo_sh])
