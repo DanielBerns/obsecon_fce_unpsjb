@@ -1,6 +1,7 @@
 from collections import defaultdict, Counter
 from contextlib import contextmanager
 import datetime
+import logging
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,10 @@ def classname(thing: Any) -> str:
 
 def i(n: int) -> str:
     return indentation * n
+
+def show(message: str) -> None:
+    print(message)
+    logging.info(message)
 
 def get_timestamp() -> str:
     now = datetime.datetime.now()

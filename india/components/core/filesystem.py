@@ -32,11 +32,12 @@ class FileSystem:
         self._version: str = version
         self._mode: str = mode
         self._catalog: Dict[str, Path] = {}   
-        apps = Path('~', 'Apps', 'observatorio_fce_unpsjb', 'india').expanduser()
+        apps = Path('~', 'Apps', context, version).expanduser()
         self._templates = get_container(apps, "templates")
         self._home = FileSystem.get_home(context, version, mode)
         self._commands = get_container(self.home, "Commands")
         self._storage = get_container(self.home, "Storage")
+        self._secrets = get_container(self.home, "Secrets")        
         self._results = get_container(self.home, "Results")
         self._reports = get_container(self.home, "Reports")
         self._logs = get_container(self.home, "Logs")
@@ -67,6 +68,10 @@ class FileSystem:
         return self._storage
 
     @property
+    def secrets(self) -> Path:
+        return self._secrets
+
+    @property
     def results(self) -> Path:
         return self._results
 
@@ -82,6 +87,10 @@ class FileSystem:
     def metadata(self) -> Metadata:
         return self._metadata
 
+    @property
+    def catalog(self) -> Dict[str, Path]:
+        return self._catalog
+    
     def clear(self) -> None:
         if self.home.exists():
             remove_directory(self.home)
