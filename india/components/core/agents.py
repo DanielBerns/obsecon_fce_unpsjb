@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-def _execute_command(minutes: int, command_path: Path) -> None:
+def _execute_command(minutes: int, command: Path) -> None:
     cp = subprocess.run(
         [
             "at",
@@ -10,7 +10,7 @@ def _execute_command(minutes: int, command_path: Path) -> None:
             f"+{minutes:d}",
             "minutes",
             "-f",
-            str(command_path),
+            str(command),
         ]
     )
     if cp.returncode:
@@ -25,6 +25,7 @@ def execute_commands(
     a = 1 if a < 0 else a
     b = 10 if b < a else b
     for a_command in commands:
-        if a_command.exists() and a_command.is_file():
+        this_command = a_command.expanduser()
+        if this_command.exists() and this_command.is_file():
             minutes = random.randint(a, b)
             _execute_command(minutes, a_command)
