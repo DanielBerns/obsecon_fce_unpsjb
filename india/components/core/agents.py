@@ -5,7 +5,7 @@ from typing import List
 from random import randint
 
 def _execute_command(minutes: int, command: Path) -> None:
-    cp = run(
+    cp = subprocess.run(
         [
             "at",
             "now",
