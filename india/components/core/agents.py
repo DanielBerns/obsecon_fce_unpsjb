@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 from typing import List
+from random import randint
 
 def _execute_command(minutes: int, command: Path) -> None:
     cp = subprocess.run(
@@ -27,5 +28,5 @@ def execute_commands(
     for a_command in commands:
         this_command = a_command.expanduser()
         if this_command.exists() and this_command.is_file():
-            minutes = random.randint(a, b)
+            minutes = randint(a, b)
             _execute_command(minutes, a_command)
