@@ -1,5 +1,5 @@
 # from components.core.bot import Bot
-from components.core.agents import execute_list_of_commands
+from components.core.agents import execute_commands
 from components.core.config import CLIConfig, build_cli_config, Config
 from components.core.collector import Collector
 from components.core.commands import Commands
