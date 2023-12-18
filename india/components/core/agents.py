@@ -30,4 +30,4 @@ def execute_commands(
         this_command = a_command.expanduser()
         if this_command.exists() and this_command.is_file():
             minutes = randint(a, b)
-            _execute_command(minutes, a_command)
+            _execute_command(minutes, this_command)
