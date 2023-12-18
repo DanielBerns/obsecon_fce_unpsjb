@@ -37,7 +37,7 @@ class Settings:
                 target.write(f"{key:s}={value:s}\n")
 
     @staticmethod
-    def load_dotenv(
+    def read_dotenv(
         home: str, 
         dotenv: str,
         default_dotenv: Callable[[], Dict[str, str]]
@@ -54,31 +54,30 @@ class Settings:
     
     @staticmethod    
     def build(
-        project: str,
-        version: str,
         mode: str, 
-        application: str, 
+        identifier: str, 
         dotenv: str
-        ) -> None:
-        log_level_key: str = f"{application.upper():s}_LOG_LEVEL"        
-        telegram_token_key: str = f"{application.upper():s}_TELEGRAM_TOKEN"
-        get_default_dotenv = lambda : {log_level_key: "DEBUG", telegram_token_key: "112358132134"}
+        ) -> Dict[str, str]:
+        log_level_key: str = f"{identifier.upper():s}_LOG_LEVEL"
+        get_default_dotenv = lambda : {log_level_key: "DEBUG"}
        
         info_home = get_home(
             Settings.info_root, 
-            project, version,
-            mode, application)
+            Constants.PROJECT, Constants.VERSION,
+            mode, identifier)
+        
         software_home = get_home(
             Settings.software_root, 
-            project, version,
-            mode, application)
+            Constants.PROJECT, Constants.VERSION,
+            mode, identifier)
         
-        Settings.load_dotenv(info_home, dotenv, get_default_dotenv)
+        Settings.read_dotenv(info_home, dotenv, get_default_dotenv)
         
         log_level: str = os.environ.get(log_level_key) or "DEBUG"
-        telegram_token: str = os.environ.get(telegram_token_key) or "112358132134"
             
-        return {"info_home": str(info_home),
+        return {"mode": mode,
+                "identifier": identifier,
+                "info_home": str(info_home),
                 "software_home": str(software_home),
-                "log_level": log_level,
-                "telegram_token": telegram_token}
+                "log_level": log_level
+                }

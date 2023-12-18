@@ -1,5 +1,5 @@
 import argparse
-from typing import Dict
+from typing import List, Dict, Any
 
 class CLI:
     def __init__(self) -> None:
@@ -12,12 +12,10 @@ class CLI:
     def arguments(self) -> Dict[str, str]:
         return vars(self.parser.parse_args())
  
-    def add_arguments(self) -> None:
-        self.parser.add_argument(
-            "-m",
-            "--mode",
-            choices=["dev", "test", "live"],
-            type=str,
-            default="live", required=False,
-            help="how to run? dev, test or live",
-        )
+    def add_arguments(self, 
+                      *args: List[Any], 
+                      **kwargs: Dict[str, Any]) -> None:
+        self.parser.add_argument(*args, **kwargs)
+
+
+

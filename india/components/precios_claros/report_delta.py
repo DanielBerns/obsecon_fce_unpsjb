@@ -1,6 +1,12 @@
 from collections import defaultdict, Counter
 from pathlib import Path
-from typing import DefaultDict, List, Generator, Dict, Tuple, Optional
+from typing import (DefaultDict, 
+                    List, 
+                    Generator, 
+                    Dict, 
+                    Tuple, 
+                    Optional,
+                    Callable)
 import math
 from os import walk
 import logging
@@ -17,6 +23,9 @@ from components.precios_claros.writers import (WriterWithTargetFormat,
                                                FULL_INFO_MD,
                                                PREFIXES_MD)
 
+from components.precios_claros.delta_writer import DeltaWriter
+
+
 import pdb
 
 Comparison = Tuple[PointOfSale, ArticleWithPrices, ArticleWithPrices]
@@ -24,7 +33,7 @@ Comparison = Tuple[PointOfSale, ArticleWithPrices, ArticleWithPrices]
 class ReportDeltaError(Exception):
     pass
 
-
+    
 class DeltaReportSample:
     def __init__(self) -> None:
         pass
@@ -47,21 +56,28 @@ class DeltaReportSample:
         for ref_place, ref_awp_table, ref_pos in reference_collector.sample_items(home):
             cur_awp_table = current_collector.get_article_with_prices_table(
                 home, ref_place)
+            yield ref_place, ref_awp_table, cur_awp_table
+            
+
+                
+    def execute(self,
+                target_home: Path,
+                build_writer: Callable[[Path, str], DeltaWriter],
+                reference_sample: PreciosClarosSample,
+                current_sample: PreciosClarosSample,
+                ) -> None:
+        # pdb.set_trace()
+        for ref_place, ref_awp_table, cur_awp_table in self.next_comparison(target_home, reference_sample, current_sample):
+            writer = build_writer(target_home, ref_place)
+            writer.start()
+            writer.header(reference_sample, current_sample)
             for ref_awp in ref_awp_table.all_of_them():
                 cur_awp = cur_awp_table.article_with_prices.get(
                     ref_awp.article.code, None)
                 if cur_awp:
-                    yield ref_place, ref_awp, cur_awp
-                
-    def execute(self,
-                home: Path, 
-                reference_sample: PreciosClarosSample,
-                current_sample: PreciosClarosSample,
-                ) -> None:
-        for ref_place, ref_awp, cur_awp in self.next_comparison(
-            home, reference_sample, current_sample):
-            ref_ps = ref_awp.prices_stats
-            cur_ps = cur_awp.prices_stats
-            print(f"{ref_awp.article.code:s} - {ref_awp.article.name:s} {ref_awp.article.brand:s}")
-            print(f"   {str(ref_ps[0]):s} - {str(ref_ps[1]):s} - {str(ref_ps[2]):s}")
-            print(f"   {str(cur_ps[0]):s} - {str(cur_ps[1]):s} - {str(cur_ps[2]):s}")
+                    writer.line(ref_awp, cur_awp)
+            # print(f"{ref_awp.article.code:s} - {ref_awp.article.name:s} {ref_awp.article.brand:s}")
+            # print(f"   {str(ref_ps[0]):s} - {str(ref_ps[1]):s} - {str(ref_ps[2]):s}")
+            # print(f"   {str(cur_ps[0]):s} - {str(cur_ps[1]):s} - {str(cur_ps[2]):s}")
+            writer.footer()
+            writer.stop()

@@ -4,7 +4,11 @@ from contextlib import contextmanager
 from typing import Dict, List, Tuple, Generator
 
 
-from components.core import CLIConfig, Config, FileSystem, Metadata
+from components.core import (CLIConfig, 
+                             Config, 
+                             build_cli_config, 
+                             FileSystem, 
+                             Metadata)
 from components.helpers import (get_container, 
                                 get_timestamp,
                                 get_resource, 
@@ -77,16 +81,16 @@ def create_app(
     version: str,
     name: str) -> Generator[AppPreciosClaros, None, None]:
 
-    cli_cfg = CLIConfig()   
-    cli_cfg.add_arguments()
+    cli_cfg = build_cli_config()
     args = cli_cfg.args
     
     fs = FSPreciosClaros(context, version, args["mode"])
     fs.metadata.start()
-    cfg = Config(fs.home, args)
+    cfg = Config(fs.home, args["mode"], args["dotenv"])
 
     logging.basicConfig(
         filename=fs.logs_txt, 
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",        
         level=logging.DEBUG
     )
 

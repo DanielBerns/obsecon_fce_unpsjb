@@ -1,37 +1,42 @@
 import logging
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, Dict
 from components.core.filesystem import FileSystem
-from components.core.config import Config
+from components.configuration import Settings, CLI, Constants
 from components.helpers import get_resource_with_timestamp
 
 
 class Application:
-    def __init__(self, fs: FileSystem, cfg: Config):
-        self._fs = fs        
-        self._config = cfg
+    def __init__(self, 
+                 file_system: FileSystem, 
+                 settings: Dict[str, str]):
+        self._file_system: FileSystem = file_system        
+        self._settings: Dict[str, str] = settings
         
     @property
-    def fs(self) -> FileSystem:
-        return self._fs
+    def file_system(self) -> FileSystem:
+        return self._file_system
     
     @property
-    def config(self) -> Config:
-        return self._config
+    def settings(self) -> Settings:
+        return self._settings
 
 
 @contextmanager    
 def create_application(
-    context: str,
-    version: str,
-    identifier: str,
-    mode: str = "live",
-    dotenv: str = ".env"
+    identifier: str,    
+    arguments: Dict[str, str]
     ) -> Generator[Application, None, None]:
 
-    fs = FileSystem(context, version, mode)
-    fs.metadata.start()
-    cfg = Config(fs.home, mode, dotenv)
+    file_system = FileSystem(
+        Constants.PROJECT, 
+        Constants.VERSION, 
+        arguments["mode"])
+    file_system.metadata.start()
+    settings = Settings.build(
+        identifier,
+        arguments["dotenv"]
+        )
 
     logs_txt = get_resource_with_timestamp(fs.logs, identifier, '.txt')
     logging.basicConfig(
@@ -41,13 +46,13 @@ def create_application(
     )
 
     logging.info(f"start")
-    app = Application(fs, cfg)    
-    print("app started!")    
+    application = Application(file_system, settings)    
+    print("application started!")    
     try:
-        yield app
+        yield application
     except Exception as message:
         logging.warning(f"exception: {str(message):s}\n")
     finally:
-        fs.metadata.stop()
+        file_system.metadata.stop()
         logging.info(f"stop")
         print("app stopped!")    

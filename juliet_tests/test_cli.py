@@ -4,7 +4,7 @@ from typing import Dict
 from pathlib import Path
 
 from context import components, TEST_ROOT
-from components.configuration import CLI
+from components.configuration import CLI, Constants
 from components.helpers import (get_home, 
                                 get_resource_with_timestamp)
 
@@ -34,7 +34,17 @@ class CLITestCase(unittest.TestCase):
     def test_cli(self):
         logging.info(f"{APPLICATION:s} start")        
         cli = CLI()
-        cli.add_arguments()
+        cli.add_arguments(
+             "-m",
+             "--mode",
+             choices=["dev", "test", "live"],
+             type=str,
+             default="live", required=False,
+             help="how to run? dev, test or live",
+        )
+        arguments = cli.arguments
+        for key, value in arguments.items():
+            print(f"{key:s} = {str(value):s}")
         logging.info(f"{APPLICATION:s} stop")    
    
 

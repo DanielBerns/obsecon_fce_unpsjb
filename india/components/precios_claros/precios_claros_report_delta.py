@@ -7,7 +7,7 @@ from components.precios_claros.app import create_app
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_delta import DeltaReportSample
-
+from components.precios_claros.delta_writer_xlsx import build_delta_writer_xlsx
 
 def filename() -> str:
     return __file__[:-3]
@@ -27,7 +27,11 @@ def execute(
     current_sample = PreciosClarosSample(current_path)    
     try:
         delta_report_sample = DeltaReportSample()
-        delta_report_sample.execute(report_path, reference_sample, current_sample)
+        delta_report_sample.execute(
+            report_path, 
+            build_delta_writer_xlsx, 
+            reference_sample, 
+            current_sample)
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.execute", "done")

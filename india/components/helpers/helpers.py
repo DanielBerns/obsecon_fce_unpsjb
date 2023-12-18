@@ -95,3 +95,12 @@ def get_command(name: str) -> bool:
     COMMAND = os.environ.get(name) or "NO"
     return COMMAND == "YES"
     
+def get_home(root: str,
+             project: str,
+             version: str,
+             mode: str,
+             application: str,
+             ) -> Path:
+    return get_directory(
+        Path(root, project, version, mode, application)
+        )

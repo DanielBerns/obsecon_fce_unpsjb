@@ -23,7 +23,8 @@ class ConfigurationTestCase(unittest.TestCase):
         logs_txt = get_resource_with_timestamp(logs, "test", ".txt")
         logging.basicConfig(
             filename=logs_txt, 
-            level=logging.INFO
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",            
+            level=logging.ERROR
         )
         print(f"{APPLICATION:s} setUp")
         print(f"Logging at {str(logs_txt):s}")
