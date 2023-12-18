@@ -1,5 +1,5 @@
 from pathlib import Path
-from components.core import execute_list_of_commands
+from components.core import execute_commands
 
 def main() -> None:
     commands = [
