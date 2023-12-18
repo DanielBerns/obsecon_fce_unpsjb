@@ -1,10 +1,11 @@
 import subprocess
+import logging
 from pathlib import Path
 from typing import List
 from random import randint
 
 def _execute_command(minutes: int, command: Path) -> None:
-    cp = subprocess.run(
+    cp = run(
         [
             "at",
             "now",
