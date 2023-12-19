@@ -21,8 +21,6 @@ class Application:
     def settings(self) -> Dict[str, str]:
         return self._settings
 
-import pdb
-
 @contextmanager    
 def create_application(
     identifier: str,    
