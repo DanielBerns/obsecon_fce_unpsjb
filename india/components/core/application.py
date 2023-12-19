@@ -38,6 +38,8 @@ def create_application(
         settings["software_home"]
         )
     file_system.metadata.start()
+
+    logs_txt = get_resource_with_timestamp(file_system.logs, identifier, '.txt')
     logging.basicConfig(
         filename=logs_txt, 
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
