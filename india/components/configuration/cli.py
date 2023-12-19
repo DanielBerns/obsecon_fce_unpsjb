@@ -9,6 +9,7 @@ class CLI:
     def parser(self) -> argparse.ArgumentParser:
         return self._parser
     
+    @property
     def arguments(self) -> Dict[str, str]:
         return vars(self.parser.parse_args())
  
