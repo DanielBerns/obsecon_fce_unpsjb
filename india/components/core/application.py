@@ -2,6 +2,7 @@ import logging
 from contextlib import contextmanager
 from typing import Generator, Dict
 from components.core.filesystem import FileSystem
+from components.configuration import Settings, CLI, Constants
 from components.helpers import get_resource_with_timestamp
 
 
@@ -17,7 +18,7 @@ class Application:
         return self._file_system
     
     @property
-    def settings(self) -> Settings:
+    def settings(self) -> Dict[str, str]:
         return self._settings
 
 
