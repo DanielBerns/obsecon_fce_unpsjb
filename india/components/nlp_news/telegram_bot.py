@@ -3,7 +3,7 @@ from pathlib import Path
 
 from typing import Generator, Tuple, List
 from components.core.application import create_application
-from components.core.config import CLIConfig, build_cli_config
+from components.configuration import CLI
 from components.telegram_agent import run_bot
 from components.helpers import show, get_container
 
@@ -18,15 +18,23 @@ def get_application_name(suffix: str) -> str:
 def run_telegram_bot(
     bot_identifier: str
     ) -> None:
-    cli_config = build_cli_config()
-    args = cli_config.args
-    mode = args["mode"]
-    dotenv = args["dotenv"]
     application_name = get_application_name(bot_identifier)
-    with create_application("observatorio_fce_unpsjb", "india", application_name, mode, dotenv) as app:
+    cli = CLI()
+    cli.add_arguments(
+         "-m",
+         "--mode",
+         choices=["dev", "test", "live"],
+         type=str,
+         default="live", required=False,
+         help="how to run? dev, test or live",
+    )
+    arguments = cli.arguments
+    with create_application(application_name, arguments) as application:
         show(f"{application_name:s} 1")     
-        secrets_home = get_container(app.fs.secrets, "telegram")
-        info_home = get_container(app.fs.storage, "telegram")
+        secrets_home = get_container(
+            application.file_system.secrets, "telegram")
+        info_home = get_container(
+            application.file_system.storage, "telegram")
         run_bot(secrets_home, info_home, bot_identifier)
         show(f"{application_name:s} 2")
     show(f"{application_name:s} 3")
