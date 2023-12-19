@@ -27,11 +27,11 @@ class FileSystem:
         return home
     
     def __init__(self, info: str, software: str) -> None:    
-        info_home = get_directory(Path(info_home))
+        info_home = get_directory(Path(info))
         software_home = get_directory(Path(software))
         self._catalog: Dict[str, Path] = {}   
         self._templates = get_container(software_home, "templates")
-        self._home = FileSystem.get_home(context, version, mode)
+        self._home = info_home
         self._commands = get_container(self.home, "Commands")
         self._storage = get_container(self.home, "Storage")
         self._secrets = get_container(self.home, "Secrets")        
