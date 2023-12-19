@@ -21,6 +21,13 @@ def run_telegram_bot(
     application_name = get_application_name(bot_identifier)
     cli = CLI()
     cli.add_arguments(
+        "-d",
+        "--dotenv",
+        type=str,
+        default=".env",
+        help="name of dotenv file",
+    )    
+    cli.add_arguments(
          "-m",
          "--mode",
          choices=["dev", "test", "live"],

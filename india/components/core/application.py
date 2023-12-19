@@ -31,11 +31,11 @@ def create_application(
     file_system = FileSystem(
         Constants.PROJECT, 
         Constants.VERSION, 
-        arguments["mode"])
+        arguments.get("mode", "live"))
     file_system.metadata.start()
     settings = Settings.build(
         identifier,
-        arguments["dotenv"]
+        arguments.get("dotenv", ".env"))
         )
 
     logs_txt = get_resource_with_timestamp(fs.logs, identifier, '.txt')
