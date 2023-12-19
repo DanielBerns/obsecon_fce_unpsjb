@@ -3,6 +3,7 @@ import sys
 from typing import Optional, Dict
 
 from components.helpers import (
+    get_directory,
     remove_directory,
     get_container,
     get_resource,
