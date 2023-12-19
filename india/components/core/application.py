@@ -21,6 +21,7 @@ class Application:
     def settings(self) -> Dict[str, str]:
         return self._settings
 
+import pdb
 
 @contextmanager    
 def create_application(
@@ -39,7 +40,7 @@ def create_application(
         settings["software_home"]
         )
     file_system.metadata.start()
-
+    pdb.set_trace()
     logs_txt = get_resource_with_timestamp(file_system.logs, identifier, '.txt')
     logging.basicConfig(
         filename=logs_txt, 
