@@ -25,15 +25,11 @@ class FileSystem:
         home.mkdir(mode=0o700, parents=True, exist_ok=True)
         return home
     
-    def __init__(self, context: str, 
-                       version: str, 
-                       mode: str) -> None:    
-        self._context: str = context
-        self._version: str = version
-        self._mode: str = mode
+    def __init__(self, info: str, software: str) -> None:    
+        info_home = get_directory(Path(info_home))
+        software_home = get_directory(Path(software))
         self._catalog: Dict[str, Path] = {}   
-        apps = Path('~', 'Apps', context, version).expanduser()
-        self._templates = get_container(apps, "templates")
+        self._templates = get_container(software_home, "templates")
         self._home = FileSystem.get_home(context, version, mode)
         self._commands = get_container(self.home, "Commands")
         self._storage = get_container(self.home, "Storage")

@@ -54,10 +54,11 @@ class Settings:
     
     @staticmethod    
     def build(
-        mode: str, 
         identifier: str, 
+        mode: str, 
         dotenv: str
         ) -> Dict[str, str]:
+        
         log_level_key: str = f"{identifier.upper():s}_LOG_LEVEL"
         get_default_dotenv = lambda : {log_level_key: "DEBUG"}
        

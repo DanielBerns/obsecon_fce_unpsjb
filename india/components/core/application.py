@@ -28,15 +28,17 @@ def create_application(
     arguments: Dict[str, str]
     ) -> Generator[Application, None, None]:
 
-    file_system = FileSystem(
-        Constants.PROJECT, 
-        Constants.VERSION, 
-        arguments.get("mode", "live"))
-    file_system.metadata.start()
+    mode, dotenv = arguments.get("mode", "live"), arguments.get("dotenv", ".env")
     settings = Settings.build(
         identifier,
-        arguments.get("dotenv", ".env")
+        mode,
+        dotenv
         )
+    file_system = FileSystem(
+        settings["info_home"],  
+        settings["software_home"]
+        )
+    file_system.metadata.start()
 
     logs_txt = get_resource_with_timestamp(fs.logs, identifier, '.txt')
     logging.basicConfig(
