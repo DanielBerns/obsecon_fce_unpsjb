@@ -40,13 +40,12 @@ def create_application(
         )
     file_system.metadata.start()
 
-    logs_txt = get_resource_with_timestamp(fs.logs, identifier, '.txt')
+    logs_txt = get_resource_with_timestamp(file_system.logs, identifier, '.txt')
     logging.basicConfig(
         filename=logs_txt, 
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=cfg.log_level
+        level=settings["log_level"]
     )
-
     logging.info(f"start")
     application = Application(file_system, settings)    
     print("application started!")    
