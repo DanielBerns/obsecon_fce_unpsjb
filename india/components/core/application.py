@@ -35,7 +35,7 @@ def create_application(
     file_system.metadata.start()
     settings = Settings.build(
         identifier,
-        arguments.get("dotenv", ".env"))
+        arguments.get("dotenv", ".env")
         )
 
     logs_txt = get_resource_with_timestamp(fs.logs, identifier, '.txt')
