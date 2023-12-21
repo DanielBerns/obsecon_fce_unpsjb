@@ -340,4 +340,4 @@ def run_bot(secrets_home: Path,
         f"{filename():s}.run_bot({bot_identifier:s}): ",
         "after interact_with_telegram_api"
         )
-
+    logging.info(message)
