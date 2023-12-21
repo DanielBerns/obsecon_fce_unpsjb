@@ -4,7 +4,7 @@ from os import walk
 
 from components.helpers import get_container, get_resource, load_json, save_json
 
-import pdb
+# import pdb
 
 class Secrets:
 
@@ -12,8 +12,8 @@ class Secrets:
     def read(container: Path, 
              filename: str = "secrets"
              ) -> Dict[str, str]:
-        pdb.set_trace()
-        resource: Path = get_resource(container, filename, '.json')
+        # pdb.set_trace()
+        resource: Path = get_resource(container, filename, ".json")
         try:
             value: Dict = load_json(resource)
         except Exception:
@@ -26,5 +26,5 @@ class Secrets:
               content: Dict[str, str],
               filename: str = "secrets"
               ) -> None:
-        resource = get_resource(container, filename, '.json')
+        resource = get_resource(container, filename, ".json")
         save_json(resource, content)
