@@ -1,17 +1,19 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, TypeVar, Generic
 
 class CatalogException(Exception):
     pass
 
-class Catalog:
+T = TypeVar("T")
+
+class Catalog<Generic[T]>:
     def __init__(self):
-        self._table: Dict[str, Any] = {}
+        self._table: Dict[str, T] = {}
         
     @property
-    def table(self) -> Dict[str, Any]:
+    def table(self) -> Dict[str, T]:
         return self._table
         
-    def create(self, key: str, value: Any) -> None:
+    def create(self, key: str, value: T) -> None:
         try:
             _ = self.table[key]
             raise CatalogException(
@@ -19,7 +21,7 @@ class Catalog:
         except KeyError:
             self.table[key] = value            
     
-    def update(self, key: str, value: Any) -> None:
+    def update(self, key: str, value: T) -> None:
         try:
             _ = self._table[key]
             self.table[key] = value        
@@ -33,5 +35,5 @@ class Catalog:
         except KeyError:
             raise CatalogException("delete")
             
-    def get(self, key: str, on_key_error: Optional[Any] = None) -> Any:
+    def get(self, key: str, on_key_error: Optional[T] = None) -> T:
         return self.table.get(key, on_key_error)
