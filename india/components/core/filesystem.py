@@ -11,12 +11,9 @@ from components.helpers import (
 )
 from components.core import Metadata, Catalog
 
-import pdb
-
 class FileSystem:
    
     def __init__(self, settings: Dict[str, str]) -> None:    
-        pdb.set_trace()
         info_home = get_directory(Path(settings["info_home"]))
         software_home = get_directory(Path(settings["software_home"]))
         self._templates = get_container(software_home, "templates")
@@ -75,7 +72,13 @@ class FileSystem:
     @property
     def catalog(self) -> Catalog[Path]:
         return self._catalog
+
+    def start(self) -> None:
+        self.metadata.start()
     
+    def stop(self) -> None:
+        self.metadata.stop()
+
     def clear(self) -> None:
         if self.info_home.exists():
             remove_directory(self.info_home)

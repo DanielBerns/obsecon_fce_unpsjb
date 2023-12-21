@@ -36,7 +36,7 @@ def create_application(
         dotenv
         )
     file_system = FileSystem(settings)
-    file_system.metadata.start()
+    file_system.start()
 
     logs_txt = get_resource_with_timestamp(file_system.logs, identifier, '.txt')
     logging.basicConfig(
@@ -45,6 +45,7 @@ def create_application(
         level=settings["log_level"]
     )
     logging.info(f"start")
+    
     application = Application(file_system, settings)    
     print("application started!")    
     try:
@@ -52,6 +53,6 @@ def create_application(
     except Exception as message:
         logging.warning(f"exception: {str(message):s}\n")
     finally:
-        file_system.metadata.stop()
+        file_system.stop()
         logging.info(f"stop")
         print("app stopped!")    
