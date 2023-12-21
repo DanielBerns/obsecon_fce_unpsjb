@@ -5,7 +5,7 @@ class CatalogException(Exception):
 
 T = TypeVar("T")
 
-class Catalog<Generic[T]>:
+class Catalog(Generic[T]):
     def __init__(self):
         self._table: Dict[str, T] = {}
         
