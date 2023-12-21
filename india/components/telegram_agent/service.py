@@ -313,7 +313,7 @@ def run_bot(secrets_home: Path,
             telegram_home: Path,
             bot_identifier: str
             ) -> None:
-    secrets = Secrets.read(secrets_home)
+    secrets = Secrets.read(Path(secrets_home, bot_identifier))
     record = secrets.get(bot_identifier, None)
     if record is None:
         message = "".join([f"{filename():s}.run_bot({bot_identifier:s}):",
