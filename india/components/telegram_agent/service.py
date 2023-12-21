@@ -310,35 +310,32 @@ class ServiceException(Exception):
 
 
 def run_bot(secrets_home: Path,
-            info_home: Path,
+            telegram_home: Path,
             bot_identifier: str
             ) -> None:
-    secrets = Secrets(bot_identifier, "secrets")
-    secrets.read(secrets_home)
-    record = secrets.content.get(bot_identifier, None)
+    secrets = Secrets.read(secrets_home)
+    record = secrets.get(bot_identifier, None)
     if record is None:
-        logging.error(
-            f"{filename():s}.run_bot({bot_identifier:s}):"
-            "no authorization record"
-            )
-        raise ServiceException("no record")
+        message = f"{filename():s}.run_bot({bot_identifier:s}):"
+                  f"no authorization record at {str(secrets_home):s}"
+        logging.error(message)
+        raise ServiceException(message)
     authorization_token = record.get("TELEGRAM_TOKEN", None)
     if authorization_token is None:
-        logging.error(
-            f"{filename():s}.run_bot({bot_identifier:s}):"
-            "no authorization_token"
-            )
-        raise ServiceException("no record")        
+        message = f"{filename():s}.run_bot({bot_identifier:s}):"
+                  f"no authorization_token at {str(secrets_home):s}"
+        logging.error(message)
+        raise ServiceException(message)        
     logging.info(
-        f"{filename():s}.run_bot({bot_identifier:s}):"
+        f"{filename():s}.run_bot({bot_identifier:s}): "
         "before interact_with_telegram_api"
         )
     interact_with_telegram_api(
-        info_home,
+        telegram_home,
         bot_identifier,
         authorization_token
         )
     logging.info(
-        f"{filename():s}.run_bot({bot_identifier:s}):"
+        f"{filename():s}.run_bot({bot_identifier:s}): "
         "after interact_with_telegram_api"
         )        

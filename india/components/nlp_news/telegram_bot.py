@@ -42,9 +42,9 @@ def run_telegram_bot(
         pdb.set_trace()
         secrets_home = get_container(
             application.file_system.secrets, "telegram")
-        info_home = get_container(
+        telegram_home = get_container(
             application.file_system.storage, "telegram")
-        run_bot(secrets_home, info_home, bot_identifier)
+        run_bot(secrets_home, telegram_home, bot_identifier)
         show(f"{application_name:s} 2")
     show(f"{application_name:s} 3")
     

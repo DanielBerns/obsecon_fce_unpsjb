@@ -7,37 +7,28 @@ from components.helpers import get_container, get_resource, load_json, save_json
 import pdb
 
 class Secrets:
-    def __init__(self, 
-                 identifier: str,
-                 filename: str) -> None:
-        pdb.set_trace()
-        self._content: Dict[str, str] = {}
-        self._filename: str = filename
 
-    @property
-    def content(self) -> Dict[str, str]:
-        return self._content
-
-    @property
-    def filename(self) -> str:
-        return self._filename
-
-    def read(self, home: Path) -> None:
-        for root, dirs, files in walk(home):
+    @staticmethod
+    def read(base: Path, 
+             filename: str = "secrets"
+             ) -> Dict[str, Dict[str, str]]:
+        content: Dict[str, Dict[str, str]] = {}
+        for _base, dirs, files in walk(base):
             for key in dirs:
-                container = get_container(Path(root), key)
-                resource = get_resource(container, self.filename, ".json")
+                container = get_container(Path(_base), key)
+                resource = get_resource(container, filename, ".json")
                 try:
                     value = load_json(resource)
                 except Exception:
                     value = {}
-                self.content[key] = value
+                content[key] = {str(k):str(v) for k, v in value.items()}
 
-    def write(self, home: Path) -> None:
-        for key, value in self.content.items():
-            container = get_container(home, key)
-            resource = get_resource(
-                container, 
-                self.identifier, '.json')
+    @staticmethod
+    def write(base: Path, 
+              content: Dict[str, Dict[str, str]],
+              filename: str = "secrets"
+              ) -> None:
+        for key, value in content.items():
+            container = get_container(base, key)
+            resource = get_resource(container, filename, '.json')
             save_json(resource, value)
-            
