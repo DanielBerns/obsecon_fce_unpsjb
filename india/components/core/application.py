@@ -5,7 +5,7 @@ from components.core.filesystem import FileSystem
 from components.configuration import Settings, CLI, Constants
 from components.helpers import get_resource_with_timestamp
 
-import pdb
+# import pdb
 
 class Application:
     def __init__(self, 
@@ -28,7 +28,7 @@ def create_application(
     arguments: Dict[str, str]
     ) -> Generator[Application, None, None]:
 
-    pdb.set_trace()
+    # pdb.set_trace()
     mode, dotenv = arguments.get("mode", "live"), arguments.get("dotenv", ".env")
     settings = Settings.build(
         identifier,
