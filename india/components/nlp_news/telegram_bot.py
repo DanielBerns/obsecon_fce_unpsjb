@@ -38,7 +38,8 @@ def run_telegram_bot(
     )
     arguments = cli.arguments
     with create_application(application_name, arguments) as application:
-        show(f"{application_name:s} 1")     
+        show(f"{application_name:s} 1")   
+        pdb.set_trace()
         secrets_home = get_container(
             application.file_system.secrets, "telegram")
         info_home = get_container(

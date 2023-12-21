@@ -4,11 +4,13 @@ from os import walk
 
 from components.helpers import get_container, get_resource, load_json, save_json
 
+import pdb
 
 class Secrets:
     def __init__(self, 
                  identifier: str,
                  filename: str) -> None:
+        pdb.set_trace()
         self._content: Dict[str, str] = {}
         self._filename: str = filename
 
