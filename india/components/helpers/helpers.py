@@ -98,9 +98,8 @@ def get_command(name: str) -> bool:
 def get_home(root: str,
              project: str,
              version: str,
-             mode: str,
-             application: str,
+             mode: str
              ) -> Path:
     return get_directory(
-        Path(root, project, version, mode, application)
+        Path(root, project, version, mode)
         )
