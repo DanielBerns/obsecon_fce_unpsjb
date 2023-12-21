@@ -26,9 +26,10 @@ class FileSystem:
         home.mkdir(mode=0o700, parents=True, exist_ok=True)
         return home
     
-    def __init__(self, info: str, software: str) -> None:    
-        info_home = get_directory(Path(info))
-        software_home = get_directory(Path(software))
+    def __init__(self, settings: Dict[str, str]) -> None:    
+        pdb.set_trace()
+        info_home = get_directory(Path(settings["info_home"]))
+        software_home = get_directory(Path(settings["software_home"]))
         self._catalog: Dict[str, Path] = {}   
         self._templates = get_container(software_home, "templates")
         self._home = info_home
