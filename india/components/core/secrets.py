@@ -9,27 +9,23 @@ import pdb
 class Secrets:
 
     @staticmethod
-    def read(base: Path, 
+    def read(container: Path, 
              filename: str = "secrets"
-             ) -> Dict[str, Dict[str, str]]:
+             ) -> Dict[str, str]:
         pdb.set_trace()
         content: Dict[str, Dict[str, str]] = {}
-        for _base, dirs, files in walk(base):
-            for key in dirs:
-                container = get_container(Path(_base), key)
-                resource = get_resource(container, filename, ".json")
-                try:
-                    value = load_json(resource)
-                except Exception:
-                    value = {}
-                content[key] = {str(k):str(v) for k, v in value.items()}
+        resource: Path = get_resource(container, filename, '.json')
+        try:
+            value = load_json(resource)
+        except Exception:
+            value = {}
+        content: Dict[str, str] = {str(k):str(v) for k, v in value.items()}
+        return content
 
     @staticmethod
-    def write(base: Path, 
-              content: Dict[str, Dict[str, str]],
+    def write(container: Path, 
+              content: Dict[str, str],
               filename: str = "secrets"
               ) -> None:
-        for key, value in content.items():
-            container = get_container(base, key)
-            resource = get_resource(container, filename, '.json')
-            save_json(resource, value)
+        resource = get_resource(container, filename, '.json')
+        save_json(resource, content)

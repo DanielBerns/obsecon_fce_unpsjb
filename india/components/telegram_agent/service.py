@@ -314,13 +314,12 @@ def run_bot(secrets_home: Path,
             bot_identifier: str
             ) -> None:
     secrets = Secrets.read(Path(secrets_home, bot_identifier))
-    record = secrets.get(bot_identifier, None)
-    if record is None:
+    if len(secrets) == 0:
         message = "".join([f"{filename():s}.run_bot({bot_identifier:s}):",
-                           f"no authorization record at {str(secrets_home):s}"])
+                           f"no secrets at {str(secrets_home):s}"])
         logging.error(message)
         raise ServiceException(message)
-    authorization_token = record.get("TELEGRAM_TOKEN", None)
+    authorization_token = secrets.get("TELEGRAM_TOKEN", None)
     if authorization_token is None:
         message = "".join([f"{filename():s}.run_bot({bot_identifier:s}):",
                            f"no authorization_token at {str(secrets_home):s}"])
