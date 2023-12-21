@@ -316,14 +316,16 @@ def run_bot(secrets_home: Path,
     secrets = Secrets.read(secrets_home)
     record = secrets.get(bot_identifier, None)
     if record is None:
-        message = f"{filename():s}.run_bot({bot_identifier:s}):"
-                  f"no authorization record at {str(secrets_home):s}"
+        message = \
+           f"{filename():s}.run_bot({bot_identifier:s}):"
+           f"no authorization record at {str(secrets_home):s}"
         logging.error(message)
         raise ServiceException(message)
     authorization_token = record.get("TELEGRAM_TOKEN", None)
     if authorization_token is None:
-        message = f"{filename():s}.run_bot({bot_identifier:s}):"
-                  f"no authorization_token at {str(secrets_home):s}"
+        message = \
+            f"{filename():s}.run_bot({bot_identifier:s}):"
+            f"no authorization_token at {str(secrets_home):s}"
         logging.error(message)
         raise ServiceException(message)        
     logging.info(
