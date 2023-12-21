@@ -12,17 +12,14 @@ from components.helpers import get_home
 
 
 class Constants:
-    INFO: str = "Info"
-    SOFTWARE: str = "Apps"
+    INFO: str = str(Path('~', "Info").expanduser())
+    SOFTWARE: str = str(Path('~', "Apps").expanduser())
     PROJECT: str = "observatorio_fce_unpsjb"
     VERSION: str = "india"
 
         
 class Settings:
 
-    info_root: str = str(Path('~', Constants.INFO).expanduser())
-    software_root: str = str(Path('~', Constants.SOFTWARE).expanduser())
-    
     @staticmethod
     def write_dotenv(
         resource: Path,
@@ -64,15 +61,16 @@ class Settings:
         log_level_key: str = f"{identifier.upper():s}_LOG_LEVEL"
         get_default_dotenv_content = lambda : {log_level_key: "DEBUG"}
        
-        info_home = get_home(
-            Settings.info_root, 
+        info_home = get_directory(Path(
+            Constants.INFO, 
             Constants.PROJECT, Constants.VERSION,
             mode)
+        )
         
-        software_home = get_home(
-            Settings.software_root, 
-            Constants.PROJECT, Constants.VERSION,
-            mode)
+        software_home = get_home(Path(
+            Constants.SOFTWARE, 
+            Constants.PROJECT, Constants.VERSION)
+        )
         
         Settings.read_dotenv(
             info_home, 
