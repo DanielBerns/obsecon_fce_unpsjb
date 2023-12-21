@@ -67,7 +67,7 @@ class Settings:
             mode)
         )
         
-        software_home = get_home(Path(
+        software_home = get_directory(Path(
             Constants.SOFTWARE, 
             Constants.PROJECT, Constants.VERSION)
         )
