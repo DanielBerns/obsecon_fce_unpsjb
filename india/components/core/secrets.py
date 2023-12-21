@@ -12,6 +12,7 @@ class Secrets:
     def read(base: Path, 
              filename: str = "secrets"
              ) -> Dict[str, Dict[str, str]]:
+        pdb.set_trace()
         content: Dict[str, Dict[str, str]] = {}
         for _base, dirs, files in walk(base):
             for key in dirs:
