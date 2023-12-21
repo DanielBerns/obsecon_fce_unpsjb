@@ -9,54 +9,40 @@ from components.helpers import (
     get_resource,
     get_timestamp,
 )
-from components.core import Metadata
+from components.core import Metadata, Catalog
 
 import pdb
 
 class FileSystem:
-    
-    root = str(Path("~", "Info").expanduser())
-
-    @staticmethod
-    def get_home(
-        context: str,
-        version: str,
-        mode: str,
-        ) -> Path:
-        home = Path(FileSystem.root, context, version, mode).expanduser()
-        home.mkdir(mode=0o700, parents=True, exist_ok=True)
-        return home
-    
+   
     def __init__(self, settings: Dict[str, str]) -> None:    
         pdb.set_trace()
         info_home = get_directory(Path(settings["info_home"]))
         software_home = get_directory(Path(settings["software_home"]))
-        self._catalog: Dict[str, Path] = {}   
         self._templates = get_container(software_home, "templates")
-        self._home = info_home
-        self._commands = get_container(self.home, "Commands")
-        self._storage = get_container(self.home, "Storage")
-        self._secrets = get_container(self.home, "Secrets")        
-        self._results = get_container(self.home, "Results")
-        self._reports = get_container(self.home, "Reports")
-        self._logs = get_container(self.home, "Logs")
-        self._metadata = Metadata(get_container(self.home, "metadata"))        
+        self._commands = get_container(info_home, "Commands")
+        self._storage  = get_container(info_home, "Storage")
+        self._secrets  = get_container(info_home, "Secrets")        
+        self._results  = get_container(info_home, "Results")
+        self._reports  = get_container(info_home, "Reports")
+        self._logs     = get_container(info_home, "Logs")
+        self._metadata = Metadata(get_container(info_home, "metadata"))        
+        self._catalog: Catalog[Path] = Catalog()
+        
+        self._info_home: Path = info_home
+        self._software_home: Path = software_home
+        
+    @property
+    def info_home(self) -> Path:
+        return self._info_home
 
     @property
-    def context(self) -> str:
-        return self._context
+    def software_home(self) -> Path:
+        return self._software_home
 
     @property
-    def version(self) -> str:
-        return self._version
-
-    @property
-    def mode(self) -> str:
-        return self._mode
-
-    @property
-    def home(self) -> Path:
-        return self._home
+    def templates(self) -> Path:
+        return self._templates
 
     @property
     def commands(self) -> Path:
@@ -87,9 +73,9 @@ class FileSystem:
         return self._metadata
 
     @property
-    def catalog(self) -> Dict[str, Path]:
+    def catalog(self) -> Catalog[Path]:
         return self._catalog
     
     def clear(self) -> None:
-        if self.home.exists():
-            remove_directory(self.home)
+        if self.info_home.exists():
+            remove_directory(self.info_home)
