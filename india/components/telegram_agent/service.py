@@ -325,9 +325,9 @@ def run_bot(secrets_home: Path,
                            f"no authorization_token at {str(secrets_home):s}"])
         logging.error(message)
         raise ServiceException(message)    
-    message = "".join(
+    message = "".join([
         f"{filename():s}.run_bot({bot_identifier:s}): ",
-        "before interact_with_telegram_api"
+        "before interact_with_telegram_api"]
         )
     logging.info(message)
     interact_with_telegram_api(
@@ -335,8 +335,8 @@ def run_bot(secrets_home: Path,
         bot_identifier,
         authorization_token
         )
-    message = "".join(
+    message = "".join([
         f"{filename():s}.run_bot({bot_identifier:s}): ",
-        "after interact_with_telegram_api"
+        "after interact_with_telegram_api"]
         )
     logging.info(message)
