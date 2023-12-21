@@ -13,12 +13,11 @@ class Secrets:
              filename: str = "secrets"
              ) -> Dict[str, str]:
         pdb.set_trace()
-        content: Dict[str, Dict[str, str]] = {}
         resource: Path = get_resource(container, filename, '.json')
         try:
-            value = load_json(resource)
+            value: Dict = load_json(resource)
         except Exception:
-            value = {}
+            value: Dict = {}
         content: Dict[str, str] = {str(k):str(v) for k, v in value.items()}
         return content
 
