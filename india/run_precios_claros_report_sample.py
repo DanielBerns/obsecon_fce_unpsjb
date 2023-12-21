@@ -16,6 +16,8 @@ from components.precios_claros import run_report_sample
 # run_report_sample(sample_key)
 # sample_key = "20231211121751"
 # run_report_sample(sample_key)
+# sample_key = "20231215145031"
+# run_report_sample(sample_key)
 
-sample_key = "20231215145031"
+sample_key = "20231218150359"
 run_report_sample(sample_key)

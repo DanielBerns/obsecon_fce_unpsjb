@@ -33,10 +33,7 @@ def create_application(
         mode,
         dotenv
         )
-    file_system = FileSystem(
-        settings["info_home"],  
-        settings["software_home"]
-        )
+    file_system = FileSystem(settings)
     file_system.metadata.start()
 
     logs_txt = get_resource_with_timestamp(file_system.logs, identifier, '.txt')
