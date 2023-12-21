@@ -7,7 +7,7 @@ from components.configuration import CLI
 from components.telegram_agent import run_bot
 from components.helpers import show, get_container
 
-import pdb
+# import pdb
 
 def prefix() -> str:
     return Path(__file__[:-3]).parts[-1]
@@ -39,7 +39,7 @@ def run_telegram_bot(
     arguments = cli.arguments
     with create_application(application_name, arguments) as application:
         show(f"{application_name:s} 1")   
-        pdb.set_trace()
+        # pdb.set_trace()
         secrets_home = get_container(
             application.file_system.secrets, "telegram")
         telegram_home = get_container(
