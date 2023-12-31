@@ -1,42 +1,67 @@
 import logging
 from pathlib import Path
+from typing import Dict
 
-from components.core import FlatStore
-from components.helpers import get_container
+from components.configuration import CLI
+from components.core import FlatStore, create_application
+from components.helpers import show, get_container, get_timestamp, classname
 
-from components.precios_claros.app import create_app
+from components.precios_claros.precios_claros_task import PreciosClarosTask
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_prefixes import PrefixesReportSample
 
 import pdb
 
-def filename() -> str:
-    return __file__[:-3]
+def prefix() -> str:
+    return Path(__file__[:-3]).parts[-1]
 
-def execute(
-    sample_key: str,
-    storage_home: Path, 
-    reports_home: Path
+
+def get_application_name(suffix: str) -> str:
+    return f"{prefix():s}_{suffix:s}"
+
+
+class PreciosClarosReportPrefixes(PreciosClarosTask):
+    def __init__(self, identifier: str) -> None:
+        application_name = get_application_name(identifier)
+        cli = CLI()
+        cli.add_arguments(
+            "-d",
+            "--dotenv",
+            type=str,
+            default=".env",
+            help="name of dotenv file",
+        )
+        cli.add_arguments(
+            "-s",
+            "--sample_key",
+            type=str,
+            default="20231221191057",
+            help="current sample key",
+        )        
+        cli.add_arguments(
+            "-m",
+            "--mode",
+            choices=["dev", "test", "live"],
+            type=str,
+            default="live",
+            required=False,
+            help="how to run? dev, test or live",
+        )
+        arguments: Dict[str, str] = cli.arguments
+        super().__init__(application_name, arguments)
+
+    def execute(
+        self, sample_collector: SampleCollector, target_container: Path
     ) -> None:
-    storage = FlatStore(storage_home, "samples")
-    reports = FlatStore(reports_home, "samples")
-    storage.start()
-    reports.start()
-    storage_container = storage.get_sample(sample_key)
-    sample = PreciosClarosSample(storage_container)
-    sample_collector = SampleCollector()
-    prefixes_report = PrefixesReportSample(sample_collector, sample)
-    report_container = reports.create_sample(key=sample_key)
-    # get_container(Path(report_container, sample_key), 'prefixes')
-    try:
-        prefixes_report.execute(report_container)
-    except Exception as message:
-        print(str(message))
-    storage.metadata.add(sample_key, f"{filename():s}.execute", "done")
-    storage.stop()        
+        try:
+            prefixes_report = PrefixesReportSample(sample_collector)
+            prefixes_report.execute(target_container)
+        except Exception as message:
+            show(str(message))
 
 
-def run_report_prefixes(sample_key: str) -> None:
-    with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
-        execute(sample_key, app.fs.precios_claros, app.fs.reports) 
+def run_report_prefixes() -> None:
+    timestamp = get_timestamp()
+    report = PreciosClarosReportPrefixes(timestamp)
+    print(classname(report))

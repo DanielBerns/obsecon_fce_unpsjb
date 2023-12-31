@@ -1,7 +1,7 @@
 from getpass import getpass
 from webclient import create_user
 
-identifier 
+identifier
 user = input("User: ")
 password = getpass(prompt="Your password: ")
 response = create_user(user, password)

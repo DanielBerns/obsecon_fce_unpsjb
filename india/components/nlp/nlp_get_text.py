@@ -3,6 +3,7 @@ from typing import Dict, Optional, Generator, Tuple, List, Any
 
 from components.core import SampleTask
 
+
 class GetTextSampleTask(SampleTask):
     def __init__(self, key: str) -> None:
         super().__init__("GetTextSampleTask")
@@ -16,36 +17,33 @@ class GetTextSampleTask(SampleTask):
     @property
     def text(self) -> List[str]:
         return self._text
-    
+
     @text.setter
     def text(self, value: List[str]) -> None:
         self._text = value
 
-       
+
 class GetTextFacadeSampleTask(SampleTask):
     CATALOG: Optional[Dict[str, GetTextSampleTask]] = None
-    
+
     def __init__(self, identifier: str) -> None:
         super().__init__(identifier)
         if GetTextFacadeSampleTask.CATALOG is None:
             GetTextFacadeSampleTask.CATALOG = {}
-        
+
     def add(self, task: GetTextSampleTask) -> None:
-        GetTextFacadeSampleTask.CATALOG[task.key] = task         
+        GetTextFacadeSampleTask.CATALOG[task.key] = task
 
     def get_key(self, sample: Path) -> str:
         return sample.parts[-5]
-    
+
     def execute(self, sample: Path) -> None:
         super().execute(sample)
-        key = self.get_key(sample) 
+        key = self.get_key(sample)
         sample_task = GetTextFacadeSampleTask.CATALOG.get(key, None)
         if sample_task:
             sample_task.execute(sample)
-        
+
     def items(self) -> Generator[Tuple[str, GetTextSampleTask], None, None]:
         for key, sample_task in GetTextFacadeSampleTask.CATALOG.items():
             yield key, sample_task
-
-
-

@@ -19,7 +19,9 @@ class ConfigurationTestCase(unittest.TestCase):
 
     def setUp(self):
         logs = get_home(TEST_ROOT, 
-                        PROJECT, VERSION, MODE, APPLICATION)
+                        PROJECT, VERSION, MODE, 
+                        APPLICATION
+                       )
         logs_txt = get_resource_with_timestamp(logs, "test", ".txt")
         logging.basicConfig(
             filename=logs_txt, 
@@ -34,8 +36,7 @@ class ConfigurationTestCase(unittest.TestCase):
         
     def test_configuration(self):
         logging.info(f"{APPLICATION:s} start")        
-        settings: Dict[str, str] = Settings.build(
-            PROJECT, VERSION, MODE, APPLICATION, ".env")
+        settings: Dict[str, str] = Settings.build(APPLICATION, MODE, ".env")
         print("# settings")
         for key, value in settings.items():
             print(f"   {key:s}: {value:s}")

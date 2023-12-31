@@ -1,7 +1,9 @@
-from components.core import (TreeStore, 
-                             TreeStoreProcessor, 
-                             FileProcessor, 
-                             ImageFileProcessorWithTesseractAndPIL)
+from components.core import (
+    TreeStore,
+    TreeStoreProcessor,
+    FileProcessor,
+    ImageFileProcessorWithTesseractAndPIL,
+)
 
 
 from pathlib import Path
@@ -9,9 +11,7 @@ import os
 
 
 class TelegramSampleProcessor:
-    def __init__(self, 
-                 results_home: Path, 
-                 text_reader: FileProcessor):
+    def __init__(self, results_home: Path, text_reader: FileProcessor):
         self._results_home = results_home
         self._text_reader = text_reader
         # FileProcessorImageWithTesseractAndPIL()

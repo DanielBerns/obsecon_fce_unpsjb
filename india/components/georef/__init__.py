@@ -1,1 +1,1 @@
-from components.georef import georef_directory 
+from components.georef import georef_directory

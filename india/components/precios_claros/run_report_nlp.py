@@ -10,14 +10,15 @@ from report_sampler import SampleCollector
 from report_nlp import NLPReportSample
 from writers import writer_with_target_format
 
+
 def filename() -> str:
     return __file__[:-3]
 
+
 import pdb
 
-def run(dataset_home: Path, 
-        identifier: str,
-        report_path: Path) -> None:
+
+def run(dataset_home: Path, identifier: str, report_path: Path) -> None:
     storage = SampledDataset(dataset_home)
     storage.start()
     sample_key, sample_path = storage.get_sample(identifier)
@@ -29,14 +30,16 @@ def run(dataset_home: Path,
     except Exception as message:
         print(str(message))
     storage.metadata.add(sample_key, f"{filename():s}.run", "done")
-    storage.stop()        
+    storage.stop()
 
 
 def main() -> None:
-    with create_app("observatorio_fce_unpsjb", "india", "precios_claros", filename()) as app:
+    with create_app(
+        "observatorio_fce_unpsjb", "india", "precios_claros", filename()
+    ) as app:
         logging.info("instance started!")
         identifier = "20230925163551"
-        run(app.fs.precios_claros, identifier, app.fs.reports) 
+        run(app.fs.precios_claros, identifier, app.fs.reports)
         logging.info("instance stopped!")
 
 

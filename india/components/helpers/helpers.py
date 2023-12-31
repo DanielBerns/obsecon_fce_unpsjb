@@ -11,15 +11,19 @@ from shutil import rmtree
 
 indentation = "    "
 
+
 def classname(thing: Any) -> str:
     return thing.__class__.__name__
+
 
 def i(n: int) -> str:
     return indentation * n
 
+
 def show(message: str) -> None:
     print(message)
     logging.info(message)
+
 
 def get_timestamp() -> str:
     now = datetime.datetime.now()
@@ -45,20 +49,24 @@ def load_json(data_json: Path) -> Dict[str, str]:
         data = json.load(origin)
     return data
 
+
 def read_text(origin: Path) -> str:
     # get text from utf-8 encoded file
-    with open(origin, 'r', encoding='utf-8') as f:
+    with open(origin, "r", encoding="utf-8") as f:
         text = f.read()
     return text
 
+
 def write_text(target: Path, text: str) -> None:
-    with open(target, 'w', encoding="utf-8") as f:
+    with open(target, "w", encoding="utf-8") as f:
         f.write(text)
+
 
 def read_text_lines(origin: Path) -> List[str]:
     with open(origin, "r") as f:
         lines = [line[:-1] for line in f]
     return lines
+
 
 def get_directory(base: Path) -> Path:
     directory = Path(base).expanduser()
@@ -70,28 +78,20 @@ def get_container(base: Path, identifier: str):
     return get_directory(Path(base, identifier))
 
 
-def get_resource(
-    base: Path, 
-    name: str, 
-    suffix: str
-    ) -> Path:
+def get_resource(base: Path, name: str, suffix: str) -> Path:
     return Path(base, name).with_suffix(suffix)
 
-def get_resource_with_timestamp(
-    base: Path, 
-    name: str,
-    suffix: str) -> Path:
+
+def get_resource_with_timestamp(base: Path, name: str, suffix: str) -> Path:
     timestamp = get_timestamp()
-    resource = get_resource(
-        base, f"{name:s}_{timestamp:s}", suffix
-    )
+    resource = get_resource(base, f"{name:s}_{timestamp:s}", suffix)
     return resource
 
 
 def remove_directory(base: Path) -> None:
     rmtree(base)
-    
+
+
 def get_command(name: str) -> bool:
     COMMAND = os.environ.get(name) or "NO"
     return COMMAND == "YES"
-    

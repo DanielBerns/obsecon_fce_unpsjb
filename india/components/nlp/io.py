@@ -6,13 +6,12 @@ from components.helpers import load_json, get_container
 
 
 class TextTXT:
-    filename: str = 'text.txt'
-    
+    filename: str = "text.txt"
+
     @staticmethod
-    def write(container: Path,
-              content: List[List[str]]) -> None:
+    def write(container: Path, content: List[List[str]]) -> None:
         text_txt = Path(container, TextTXT.filename)
-        with open(text_txt, 'w') as target:
+        with open(text_txt, "w") as target:
             for event in content:
                 for data in event:
                     target.write(str(data) + "\n")
@@ -30,34 +29,33 @@ class TextTXT:
         text_txt = Path(container, TextTXT.filename)
         with open(text_txt, "r") as source:
             for line in source:
-                if not line.startswith('#'):
+                if not line.startswith("#"):
                     yield line
-   
+
 
 def get_sorted_characters(some_characters: List[str]) -> str:
-   return "".join(sorted(some_characters))
+    return "".join(sorted(some_characters))
 
 
 class NLPContainer:
     separator: str = "::::"
-    
+
     @staticmethod
     def get(base: Path) -> Path:
-        return get_container(base, 'nlp')
+        return get_container(base, "nlp")
 
-    
+
 class CharactersMD:
     filename: str = "characters.md"
     title: str = "# Characters\n"
-    
+
     @staticmethod
     def write(base: Path, characters: Counter) -> None:
         container = NLPContainer.get(base)
         characters_md = Path(container, CharactersMD.filename)
         with open(characters_md, "w") as target:
             target.write(CharactersMD.title)
-            characters = get_sorted_characters(
-                [cc for cc in characters.keys()])
+            characters = get_sorted_characters([cc for cc in characters.keys()])
             for key in characters:
                 value = characters[key]
                 if ord(key) < 32:
@@ -71,26 +69,26 @@ class CharactersMD:
 class TokensMD:
     filename: str = "tokens.md"
     title: str = "# Tokens\n"
-    
+
     @staticmethod
     def write(base: Path, tokens: Counter) -> None:
-        container = NLPContainer.get(base)        
+        container = NLPContainer.get(base)
         tokens_md = Path(container, TokensMD.filename)
-        with open(tokens_md, "w") as target:        
+        with open(tokens_md, "w") as target:
             target.write(TokensMD.title)
             max_token_length = 0
-            for key, value in sorted(tokens.items(), 
-                                     key=lambda pair: pair[1],
-                                     reverse=True):
+            for key, value in sorted(
+                tokens.items(), key=lambda pair: pair[1], reverse=True
+            ):
                 target.write(f"{key:<25s}{NLPContainer.separator:s}{value:d}\n")
                 token_length = len(key)
                 if token_length > max_token_length:
                     max_token_length = token_length
-                    
+
     @staticmethod
     def read(base: Path) -> Dict[str, int]:
         tokens: Dict[str, int] = dict()
-        container = NLPContainer.get(base)        
+        container = NLPContainer.get(base)
         tokens_md = Path(container, TokensMD.filename)
         with open(tokens_md, "r") as target:
             title = target.readline()
@@ -104,4 +102,3 @@ class TokensMD:
                 except AssertionError:
                     print(number, line)
         return tokens
- 

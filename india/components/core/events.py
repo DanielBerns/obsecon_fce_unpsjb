@@ -6,22 +6,22 @@ from typing import DefaultDict, List, Dict, Protocol, Generator, Optional
 
 from components.helpers import get_directory, get_resource, classname
 
+
 class Events:
     @staticmethod
     def lower_values(event: Dict[str, str]) -> Dict[str, str]:
         return {str(key): str(value).lower() for key, value in event.items()}
 
 
-
 class EventsOrigin(Protocol):
     def events(self) -> Generator[Dict[str, str], None, None]:
-        yield from ()
+        ...
 
 
 class EventsProcessor(Protocol):
     def events(self, x: Dict[str, str]) -> Generator[Dict[str, str], None, None]:
-        yield from ()
-     
+        ...
+
 
 class EventsException(Exception):
     pass
@@ -53,13 +53,10 @@ class EventsStats:
         return [key for key in self.counters.keys()]
 
 
-    
 class EventsDocument:
-            
-    def __init__(self, 
-                 directory: Path, 
-                 name: str = "store",
-                 suffix: str = ".json") -> None:
+    def __init__(
+        self, directory: Path, name: str = "store", suffix: str = ".json"
+    ) -> None:
         self._directory: Path = get_directory(directory)
         self._store: Path = get_resource(self.directory, name, suffix)
         self._events_stats = EventsStats()
@@ -104,10 +101,10 @@ class CompositeEventsOrigin:
     def __init__(self) -> None:
         self._events_origin: Optional[EventsOrigin] = None
 
-    @property        
+    @property
     def events_origin(self) -> Optional[EventsOrigin]:
         return self._events_origin
-    
+
     @events_origin.setter
     def events_origin(self, value: EventsOrigin) -> None:
         self._events_origin = value
@@ -123,18 +120,18 @@ class CompositeEventsDriver:
         self._events_origin: Optional[EventsOrigin] = None
         self._events_processor: Optional[EventsProcessor] = None
 
-    @property        
+    @property
     def events_origin(self) -> Optional[EventsOrigin]:
         return self._events_origin
-    
+
     @events_origin.setter
     def events_origin(self, value: EventsOrigin) -> None:
         self._events_origin = value
 
-    @property        
+    @property
     def events_processor(self) -> Optional[EventsProcessor]:
         return self._events_processor
-    
+
     @events_processor.setter
     def events_processor(self, value: EventsProcessor) -> None:
         self._events_processor = value
@@ -149,7 +146,7 @@ class CompositeEventsDriver:
 class SelectedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
-    
+
     def select_event(self, event: Dict[str, str]) -> bool:
         # This is the base class
         # Change this in the child class
@@ -164,7 +161,7 @@ class SelectedEventsOrigin(CompositeEventsOrigin):
 class ProcessedEventsOrigin(CompositeEventsOrigin):
     def __init__(self):
         super().__init__()
-    
+
     def process_event(self, event: Dict[str, str]) -> Dict[str, str]:
         # This is the base class
         # Change this in the child class

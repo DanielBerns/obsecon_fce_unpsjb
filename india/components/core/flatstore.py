@@ -24,42 +24,30 @@ class FlatStore(SampleStore):
 
     def stop(self) -> None:
         self.metadata.stop()
-        
+
     def walk_the_samples(self) -> Generator[Path, None, None]:
         for root, dirs, files in os.walk(self.home):
             for dd in dirs:
                 yield Path(self.home, dd)
 
-    def create_sample(
-        self, 
-        key: Optional[str] = None, 
-        number: int = -1
-        ) -> Path:
+    def create_sample(self, key: Optional[str] = None, number: int = -1) -> Path:
         identifier = key if key else get_timestamp()
         sample = get_container(self.base, identifier)
         self.metadata.add("samples", identifier, str(self.index.value))
         return sample
 
-    def get_sample(
-        self, 
-        key: Optional[str] = None, 
-        number: int = -1
-        ) -> Path:
+    def get_sample(self, key: Optional[str] = None, number: int = -1) -> Path:
         if key is None:
             error(f"{classname(self):s}.get_sample: 1")
-            raise FlatStoreError(
-                f"{classname(self):s}.get_sample: key is None"
-                )
+            raise FlatStoreError(f"{classname(self):s}.get_sample: key is None")
         sample = Path(self.base, key)
         if sample.exists():
             pass
         else:
-            error(f"{classname(self):s}.get_sample: 2")            
-            raise FlatStoreError(
-                f"{classname(self):s}.get_sample: invalid key {key:s}"
-                )
+            error(f"{classname(self):s}.get_sample: 2")
+            raise FlatStoreError(f"{classname(self):s}.get_sample: invalid key {key:s}")
         return sample
-    
+
     def samples(self) -> Generator[Path, None, None]:
         all_the_samples = self.metadata.events["samples"]
         for identifier, index in all_the_samples.items():

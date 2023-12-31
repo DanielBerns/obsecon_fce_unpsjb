@@ -9,14 +9,14 @@ class TargetTemplate(Protocol):
 
     @property
     def template(self) -> Template:
-        return Template("Empty TargetTemplate")        
+        return Template("Empty TargetTemplate")
 
     @property
     def suffix(self) -> str:
         return ".txt"
 
 
-class FromFileTargetTemplate:    
+class FromFileTargetTemplate:
     def __init__(self, resource: Path) -> None:
         self._resource = resource
 
@@ -26,24 +26,22 @@ class FromFileTargetTemplate:
 
     @property
     def template(self) -> Template:
-        with open(self.resource, 'r') as origin:
-            return Template(origin.read())        
+        with open(self.resource, "r") as origin:
+            return Template(origin.read())
 
     @property
     def suffix(self) -> str:
         return self.resource.suffix
- 
 
-class FromStringTargetTemplate:    
-    def __init__(self, 
-                 string: str, 
-                 suffix: str = ".txt") -> None:
+
+class FromStringTargetTemplate:
+    def __init__(self, string: str, suffix: str = ".txt") -> None:
         self._template = Template(string)
         self._suffix = suffix
 
     @property
     def template(self) -> Template:
-        return self._template        
+        return self._template
 
     @property
     def suffix(self) -> str:

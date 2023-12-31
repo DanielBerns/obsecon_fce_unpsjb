@@ -76,6 +76,7 @@ def write_text_lines(target: Path) -> Generator[int, str, None]:
             target.write(text_line + '\n')
 
 def get_directory(base: Path) -> Path:
+    """Ensures the existence of a directory and returns its path."""
     directory = Path(base).expanduser()
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     return directory
@@ -93,12 +94,10 @@ def get_home(root: str,
 def get_container(base: Path, identifier: str):
     return get_directory(Path(base, identifier))
 
-def get_resource(
-    base: Path, 
-    name: str, 
-    suffix: str
-    ) -> Path:
+def get_resource(base: Path, name: str, suffix: str) -> Path:
+    """Constructs a resource path within a directory."""
     return get_directory(Path(base, name)).with_suffix(suffix)
+
 
 def get_resource_with_timestamp(
     base: Path, 

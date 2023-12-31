@@ -12,14 +12,13 @@ from components.helpers import (
     get_resource,
 )
 
+
 class Metadata:
     chrF = chr(15)
 
     def __init__(self, directory: Path) -> None:
         self._directory: Path = get_directory(directory)
-        self._resource: Path = get_resource(
-            self.directory, "store", ".json"
-        )
+        self._resource: Path = get_resource(self.directory, "store", ".json")
         self._events: DefaultDict[str, DefaultDict[str, str]] = defaultdict(
             lambda: defaultdict(str)
         )
@@ -56,18 +55,17 @@ class Metadata:
                         event[k] = v
                 except IndexError:
                     logging.warning("components.core.Metadata.load_events")
-                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")  
+                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")
                     logging.warning(f"  {line:s}")
                 except AttributeError:
                     logging.warning("components.core.Metadata.load_events")
-                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")  
-                    logging.warning(f"  {value_json}")                    
+                    logging.warning(f"  error at {str(self.resource):s} #{number:d}")
+                    logging.warning(f"  {value_json}")
 
     def save_events(self) -> None:
         with open(self.resource, "w") as target:
             for identifier, value in self.events.items():
-                target.write(
-                    f"{identifier:s}{Metadata.chrF:s}{json.dumps(value):s}\n")
+                target.write(f"{identifier:s}{Metadata.chrF:s}{json.dumps(value):s}\n")
 
     def start(self) -> None:
         pass
@@ -80,8 +78,5 @@ class Metadata:
             for attribute, value in sample.items():
                 yield identifier, attribute, value
 
-    def add(self, 
-            identifier: str, 
-            attribute: str, 
-            value: str) -> None:
+    def add(self, identifier: str, attribute: str, value: str) -> None:
         self.events[identifier][attribute] = value

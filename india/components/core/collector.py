@@ -11,11 +11,11 @@ class Collector:
     @property
     def label(self) -> str:
         return self._label
-        
+
     @property
     def attributes(self) -> Tuple[str, ...]:
         return self._attributes
-    
+
     @property
     def counters(self) -> Counter:
         return self._counters
@@ -32,5 +32,3 @@ class Collector:
     def keys_and_counts(self) -> List[Tuple[Any, int]]:
         items = ((key, count) for key, count in self.counters.items())
         return sorted(items, key=lambda x: x[1])
-
- 

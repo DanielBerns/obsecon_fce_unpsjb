@@ -6,31 +6,35 @@ from typing import Dict, Generator, Optional, List, Tuple
 from components.helpers import classname, i, get_container, get_timestamp
 from components.core import EventsDocument
 
+
 class LocalScraperError(Exception):
     pass
 
+
 import pdb
+
 
 class LocalScraper:
     def __init__(self, home: Path) -> None:
         self._home: Path = home
         self._cache_index: Dict[str, Tuple[int, int]] = dict()
-        container = get_container(self.home, 'articles_per_point_of_sale')
+        container = get_container(self.home, "articles_per_point_of_sale")
         doc = EventsDocument(container, "info", ".json.csv")
         self._cache: List[Dict[str, str]] = [
-            {str(key): str(value).lower() for key, value in event.items()} \
-            for event in doc.events()]
+            {str(key): str(value).lower() for key, value in event.items()}
+            for event in doc.events()
+        ]
         if self.cache:
             first_event = self.cache[0]
-            current_key = first_event['point_of_sale']
+            current_key = first_event["point_of_sale"]
             cursor = begin = end = 0
             for event in self.cache[1:]:
-                if event['point_of_sale'] != current_key:
+                if event["point_of_sale"] != current_key:
                     cursor += 1
                     end = cursor
                     self.cache_index[current_key] = (begin, end)
                     print(current_key, begin, end)
-                    current_key = event['point_of_sale']
+                    current_key = event["point_of_sale"]
                     begin = end = cursor
                 else:
                     cursor += 1
@@ -39,8 +43,8 @@ class LocalScraper:
             print(current_key, begin, end)
         else:
             raise LocalScraperError(f"{classname(self):s}.__init__: no cache.")
-        
-    @property    
+
+    @property
     def home(self) -> Path:
         return self._home
 
@@ -62,43 +66,42 @@ class LocalScraper:
 
     def start(self) -> None:
         logging.info(f"{classname(self):s}.start")
-    
+
     def stop(self) -> None:
         logging.info(f"{classname(self):s}.stop")
 
     def points_of_sale(self) -> Generator[Dict[str, str], None, None]:
-        logging.info(f"{classname(self):s}.points_of_sale")        
-        container = get_container(self.home, 'points_of_sale')
+        logging.info(f"{classname(self):s}.points_of_sale")
+        container = get_container(self.home, "points_of_sale")
         doc = EventsDocument(container, "info", ".json.csv")
         for event in doc.events():
             pos = {str(key): str(value).lower() for key, value in event.items()}
-            yield pos 
-            
+            yield pos
+
     def selected_points_of_sale(self) -> Generator[Dict[str, str], None, None]:
-        logging.info(f"{classname(self):s}.selected_points_of_sale")        
-        container = get_container(self.home, 'selected_points_of_sale')
+        logging.info(f"{classname(self):s}.selected_points_of_sale")
+        container = get_container(self.home, "selected_points_of_sale")
         doc = EventsDocument(container, "info", ".json.csv")
         for event in doc.events():
             pos = {str(key): str(value).lower() for key, value in event.items()}
-            yield pos         
+            yield pos
 
     def articles_per_point_of_sale(
-        self, 
-        point_of_sale: Dict[str, str]
-        ) -> Generator[Dict[str, str], None, None]:
+        self, point_of_sale: Dict[str, str]
+    ) -> Generator[Dict[str, str], None, None]:
         logging.info(f"{classname(self):s}.articles_per_point_of_sale")
-        identifier = point_of_sale['identifier']
+        identifier = point_of_sale["identifier"]
         begin, end = self.cache_index.get(identifier, (-1, -1))
         if begin > -1:
-            for event in self.cache[begin: end]:
-                appos = {str(key): str(value).lower() 
-                         for key, value in event.items()}
-                yield appos 
+            for event in self.cache[begin:end]:
+                appos = {str(key): str(value).lower() for key, value in event.items()}
+                yield appos
         else:
             logging.error(
-                f"{classname(self):s}.articles_per_point_of_sale error: {identifier:s}")
-            
-            
+                f"{classname(self):s}.articles_per_point_of_sale error: {identifier:s}"
+            )
+
+
 @contextmanager
 def create_local_scraper():
     resource = LocalScraper()

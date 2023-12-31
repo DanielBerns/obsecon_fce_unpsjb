@@ -6,13 +6,8 @@ from typing import Tuple, Generator, Protocol, List, Optional
 from contextlib import contextmanager
 
 from components.core.metadata import Metadata
-from components.core.sample_store import (SampleStore, 
-                                          Pipeline,
-                                          NextToProcessMetadata)
-from components.helpers import (get_container, 
-                                get_resource, 
-                                get_timestamp, 
-                                classname)
+from components.core.sample_store import SampleStore, Pipeline, NextToProcessMetadata
+from components.helpers import get_container, get_resource, get_timestamp, classname
 
 
 class TreeStoreError(Exception):
@@ -66,8 +61,8 @@ class TreeStore(SampleStore):
         else:
             raise TreeStoreError(
                 f"{classname(self):s}.get_sample: {number:d} out of range [0,{self.index.value:d})"
-                )
-                                                                         
+            )
+
     def samples(self, first: int = 0) -> Generator[Path, None, None]:
         for k in range(first, self.index.value):
             first_digit, second_digit, third_digit = base_256(k)
@@ -78,8 +73,6 @@ class TreeStore(SampleStore):
                 f"{third_digit:>03d}",
             )
             yield sample
-
-
 
 
 class TreeStoreDriver:
@@ -99,46 +92,46 @@ class TreeStoreDriver:
     @property
     def pipeline(self) -> Pipeline:
         return self._pipeline
-    
+
     @pipeline.setter
     def pipeline(self, value: Pipeline) -> None:
         self._pipeline = value
 
     @property
     def get_target_container(self):
-        return get_container(self.store.base, 'target')
+        return get_container(self.store.base, "target")
 
     def create_sample(self) -> None:
-        sample = self.store.create_sample()        
+        sample = self.store.create_sample()
         for sample_task in self.pipeline.tasks():
             sample_task.execute(sample)
-    
+
     def process_samples(self, reset_next_to_process: bool) -> None:
         if reset_next_to_process:
             self.metadata.next_to_process = 0
         next_to_process = self.metadata.next_to_process
         self.metadata.next_to_process = self.store.index.value
-        logging.info(f"{classname(self):s}.process_samples: start")        
+        logging.info(f"{classname(self):s}.process_samples: start")
         for sample_task in self.pipeline.tasks():
             sample_task.start(self.store.base)
-        logging.info(f"{classname(self):s}.process_samples: execute")        
+        logging.info(f"{classname(self):s}.process_samples: execute")
         for sample in self.store.samples(first=next_to_process):
             for sample_task in self.pipeline.tasks():
                 try:
                     sample_task.execute(sample)
                 except Exception as message:
                     logging.error(f"{classname(self):s}.process_samples: error")
-                    logging.error(f"  {str(sample):s}")                    
+                    logging.error(f"  {str(sample):s}")
                     logging.error(f"  {str(message):s}")
-        logging.info(f"{classname(self):s}.process_samples: stop")                        
+        logging.info(f"{classname(self):s}.process_samples: stop")
         for sample_task in self.pipeline.tasks():
             sample_task.stop(self.store.base)
 
 
 @contextmanager
 def create_treestore_driver(
-    treestore_home: Path, 
-    identifier: str) -> Generator[TreeStoreDriver, None, None]:
+    treestore_home: Path, identifier: str
+) -> Generator[TreeStoreDriver, None, None]:
     logging.info(f"start run: {str(treestore_home):s}")
     logging.info(f"  identifier: {identifier:s}")
     store = TreeStore(treestore_home, identifier)
@@ -151,4 +144,3 @@ def create_treestore_driver(
     store.stop()
     logging.info(f"  done: {identifier:s}")
     logging.info(f"done run: {str(treestore_home):s}")
-

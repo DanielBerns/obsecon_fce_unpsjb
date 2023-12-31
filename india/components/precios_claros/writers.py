@@ -4,35 +4,38 @@ from pathlib import Path
 from typing import TextIO, Protocol, Tuple, List, Generator, Optional
 from jinja2 import Template
 
-from components.precios_claros.models import (Article, 
-                                              PointOfSale, 
-                                              ArticleWithPricesTable, 
-                                              PointsOfSaleTable, 
-                                              PreciosClarosTask)
+from components.precios_claros.models import (
+    Article,
+    PointOfSale,
+    ArticleWithPricesTable,
+    PointsOfSaleTable,
+)
 from components.helpers import get_container, get_resource, i, classname
+
 
 def filename() -> str:
     return __file__[:-3]
 
+
 class WriterError(Exception):
     pass
 
+
 class TargetFormat(Protocol):
-    
     @property
     def selectors(self) -> bool:
         return False
-    
-    @property    
+
+    @property
     def template(self) -> Template:
         return Template("")
 
-    @property    
+    @property
     def suffix(self) -> str:
         return ""
 
-    
-class FromFileTargetFormat:    
+
+class FromFileTargetFormat:
     def __init__(self, resource: Path) -> None:
         self._resource = resource
 
@@ -42,8 +45,8 @@ class FromFileTargetFormat:
 
     @property
     def template(self) -> Template:
-        with open(self.resource, 'r') as origin:
-            return Template(origin.read())        
+        with open(self.resource, "r") as origin:
+            return Template(origin.read())
 
     @property
     def suffix(self) -> str:
@@ -54,66 +57,67 @@ class WriterWithTargetFormat:
     def __init__(self, home: Path) -> None:
         self._home = home
         self._target_format: Optional[TargetFormat] = None
-        
+
     @property
     def home(self) -> Path:
         return self._home
-    
+
     @property
     def target_format(self) -> Optional[TargetFormat]:
         return self._target_format
-    
+
     @target_format.setter
     def target_format(self, value: TargetFormat) -> None:
         self._target_format = value
-    
+
     def start(self) -> None:
         pass
-    
+
     def stop(self) -> None:
         pass
 
     def get_city(self, text: str) -> str:
-        parts = text.split(' ')
-        return ' '.join([pp.capitalize() for pp in parts])
+        parts = text.split(" ")
+        return " ".join([pp.capitalize() for pp in parts])
 
-    def execute(self, 
-                place: str,
-                category: str,
-                article_with_prices: ArticleWithPricesTable,
-                points_of_sale: List[PointOfSale]
-                ) -> None:
+    def execute(
+        self,
+        place: str,
+        category: str,
+        article_with_prices: ArticleWithPricesTable,
+        points_of_sale: List[PointOfSale],
+    ) -> None:
         if self.target_format is None:
             raise WriterError(f"classname(self).execute: target_format is None")
-        container = get_container(Path(self.home, 'article_with_prices'), category)
+        container = get_container(Path(self.home, "article_with_prices"), category)
         if article_with_prices.place != place:
             logging.debug("article_with_prices.place != place")
             logging.debug(f"  article_with_prices.place {article_with_prices.place:s}")
-            logging.debug(f"  place {place:s}")    
+            logging.debug(f"  place {place:s}")
             raise WriterError(f"{classname(self):s} bad place 1")
         if self.target_format.selectors:
             article_with_prices.load_selectors(category)
-        parts = (place).split(':')
+        parts = (place).split(":")
         city = self.get_city(parts[1])
         timestamp = (article_with_prices.timestamp)[:8]
         year, month, day = timestamp[:4], timestamp[4:6], timestamp[6:]
         if category == "acba":
             title = f"Artículos de la canasta básica de alimentos en {city:s} {year:s}/{month:s}/{day:s}"
         else:
-            title = f"{category.replace('_',' '):s} en {city:s} - {year:s}/{month:s}/{day:s}"        
-        city_in_filename = parts[1].replace(' ', '_')
+            title = f"{category.replace('_',' '):s} en {city:s} - {year:s}/{month:s}/{day:s}"
+        city_in_filename = parts[1].replace(" ", "_")
         template = self.target_format.template
         page = template.render(
-            awpt=article_with_prices, 
-            pos=points_of_sale, 
+            awpt=article_with_prices,
+            pos=points_of_sale,
             ttl=title,
-            this_city=city_in_filename)
+            this_city=city_in_filename,
+        )
         article_with_prices_file = get_resource(
-            container, city_in_filename, self.target_format.suffix)        
-        with open(article_with_prices_file, 'w') as target:
+            container, city_in_filename, self.target_format.suffix
+        )
+        with open(article_with_prices_file, "w") as target:
             target.write(page)
-
-
 
 
 TABLE_HTML = """
@@ -257,22 +261,22 @@ function filterHTML(id, sel, filter) {
 </html> 
 """
 
+
 class ArticleWithPricesTableHTML:
     def __init__(self, selectors: bool = True) -> None:
         self._selectors: bool = selectors
-        
+
     @property
     def selectors(self) -> bool:
         return self._selectors
-    
+
     @property
     def template(self) -> Template:
         return Template(TABLE_HTML)
-               
+
     @property
     def suffix(self) -> str:
         return ".html"
-
 
 
 FULL_INFO_MD = """
@@ -286,14 +290,16 @@ PREFIXES_MD = """
 {% endfor %}
 """
 
+
 class ArticleWithPricesTableMD:
-    def __init__(self, 
-                 text: str,
-                 selectors: bool = False,
-                 ) -> None:
+    def __init__(
+        self,
+        text: str,
+        selectors: bool = False,
+    ) -> None:
         self._selectors: bool = selectors
         self._text: str = text
-        
+
     @property
     def selectors(self) -> bool:
         return self._selectors
@@ -301,11 +307,11 @@ class ArticleWithPricesTableMD:
     @property
     def text(self) -> str:
         return self._text
-    
+
     @property
     def template(self) -> Template:
         return Template(self._text)
-               
+
     @property
     def suffix(self) -> str:
         return ".csv"

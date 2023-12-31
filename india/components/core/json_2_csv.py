@@ -7,18 +7,18 @@ class JSON2CSV:
     @property
     def container(self) -> Path:
         return self._container
-    
+
     @property
     def events_json(self) -> JSONDocument:
         return self._events_json
-    
+
     @property
     def rows_csv(self) -> CSVDocument:
         return self._rows_csv
 
     def start(self) -> None:
         pass
-    
+
     def stop(self) -> None:
         pass
 
@@ -27,12 +27,10 @@ class JSON2CSV:
 
     def write_csv(self) -> None:
         self.rows_csv.write(self.events_json)
-    
 
 
 # def csv_to_excel(
-#     csv_identifier: Path, 
+#     csv_identifier: Path,
 #     excel_identifier: Path) -> None:
 #     df = pd.read_csv(csv_identifier, delimiter='|', index_col=None)
 #     df.to_excel(excel_identifier)
- 

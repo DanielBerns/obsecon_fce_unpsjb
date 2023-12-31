@@ -3,21 +3,16 @@ from pathlib import Path
 from typing import List, Dict
 
 from components.core import SampleTask
-from components.nlp.eda import (text_characters_frequency, 
-                                text_characters)
+from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.io import (TextTXT, 
-                               CharactersMD, 
-                               TokensMD, 
-                               NLPContainer)
+from components.nlp.io import TextTXT, CharactersMD, TokensMD, NLPContainer
 
-                
+
 class GetTokensSampleTask(SampleTask):
-
     def __init__(self, identifier: str) -> None:
         super().__init__(identifier)
         self._store_characters: Counter = Counter()
-        self._store_tokens: Counter = Counter()        
+        self._store_tokens: Counter = Counter()
         self._tokenizer: Tokenizer = Tokenizer()
 
     @property
@@ -31,7 +26,7 @@ class GetTokensSampleTask(SampleTask):
     @property
     def tokenizer(self) -> Tokenizer:
         return self._tokenizer
-    
+
     def execute(self, sample: Path) -> None:
         super().execute(sample)
         text = TextTXT.read(sample)
@@ -49,7 +44,6 @@ class GetTokensSampleTask(SampleTask):
 class GetTokensSampleTaskFactory:
     def __init__(self):
         self._task = GetTokensSampleTask()
-    
+
     def execute(self) -> SampleTask:
         return self._task
-

@@ -38,7 +38,7 @@ class Metadata:
     
     def initialize_events(self) -> None:
         self.add_item('.', 'creation', {'timestamp': get_timestamp()})
-        save_json(self.store, self.events)
+        write_json(self.store, self.events)
 
     def load_events(self) -> None:
         with open(self.store, 'r') as source:

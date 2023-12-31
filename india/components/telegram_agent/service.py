@@ -25,8 +25,10 @@ from components.telegram_agent.telegram_sample import TelegramSample
 
 from telegram import __version__ as TG_VER
 
+
 def filename():
     return __file__[:-3]
+
 
 try:
     from telegram import __version_info__
@@ -76,6 +78,7 @@ def start_shutdown(command_path: str) -> None:
     if cp.returncode:
         logging.info(f"at returncode {cp.returncode:d}")
 
+
 def start_reboot(command_path: str) -> None:
     os.chmod(command_path, 0o700)
     cp = subprocess.run(
@@ -90,28 +93,25 @@ def start_reboot(command_path: str) -> None:
     )
     if cp.returncode:
         logging.info(f"at returncode {cp.returncode:d}")
-        
+
 
 def interact_with_telegram_api(
-    telegram_home: Path, 
-    bot_identifier: str,
-    authorization_token: str
-    ) -> None:
-    
+    telegram_home: Path, bot_identifier: str, authorization_token: str
+) -> None:
     bot_home = get_container(telegram_home, bot_identifier)
     store = TreeStore(bot_home, "messages")
     shutdown_sh = get_resource(bot_home, "shutdown", ".sh")
     update_repo_sh = get_resource(bot_home, "update_repo", ".sh")
-    reboot_sh = get_resource(bot_home, "reboot", ".sh")        
+    reboot_sh = get_resource(bot_home, "reboot", ".sh")
 
-    # set higher logging level for httpx to avoid all GET and POST 
+    # set higher logging level for httpx to avoid all GET and POST
     # requests being logged
     logging.getLogger("httpx").setLevel(logging.INFO)
-    
+
     # logger = logging.getLogger(__name__)
 
     logging.info(f"PID {os.getpid():d}")
-    
+
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Send a message when the command /start is issued."""
         user = update.effective_user
@@ -119,27 +119,22 @@ def interact_with_telegram_api(
             rf"Hi {user.mention_html()}!",
             reply_markup=ForceReply(selective=True),
         )
-    
+
     async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Send a message when the command /help is issued."""
-        await update.message.reply_text(
-            "/inicio, /ayuda, /telegram, /noticias"
-        )
-    
-    
+        await update.message.reply_text("/inicio, /ayuda, /telegram, /noticias")
+
     async def get_telegram(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Send a message when the command /telegram is issued."""
         logging.debug("get_telegram 1")
         value = store.index.value
         logging.debug(f"get_telegram 2: {value:d}")
         await update.message.reply_text(f"telegram {value:d}")
-    
-    
+
     async def get_news(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Send a message when the command /help is issued."""
         await update.message.reply_text("noticias")
-    
-    
+
     async def process_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Process text message."""
         if update.message is None:
@@ -152,19 +147,17 @@ def interact_with_telegram_api(
             store.start()
             sample = store.create_sample()
             store.stop()
-            logging.info(f"Created sample {str(sample):s}!")            
+            logging.info(f"Created sample {str(sample):s}!")
             user = update.effective_user
             TelegramSample.write_message(
-                sample, 
-                f"{user.full_name:s} - {str(update.effective_chat.id):s}", 
-                update.message.text)
+                sample,
+                f"{user.full_name:s} - {str(update.effective_chat.id):s}",
+                update.message.text,
+            )
             response = f"Gracias por tu mensaje {update.effective_user.full_name:s}!"
-        await update.message.reply_text(response)  
-    
-    async def process_photo(
-        update: Update, 
-        context: ContextTypes.DEFAULT_TYPE
-        ) -> None:
+        await update.message.reply_text(response)
+
+    async def process_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Process photo message."""
         if update.message is None:
             logging.debug("Not found update.message!")
@@ -193,17 +186,15 @@ def interact_with_telegram_api(
             if update.message.caption:
                 logging.info(f"Found caption {update.message.caption:s}!")
                 TelegramSample.write_message_caption(
-                    sample, 
-                    f"{user.full_name:s} - {str(update.effective_chat.id):s}", 
-                    update.message.caption)
+                    sample,
+                    f"{user.full_name:s} - {str(update.effective_chat.id):s}",
+                    update.message.caption,
+                )
             else:
                 logging.info("Not found update.message.caption!")
             await update.message.reply_text(f"Gracias por la foto {user.full_name:s}!")
-    
-    async def shutdown(
-        update: Update, 
-        context: ContextTypes.DEFAULT_TYPE
-        ) -> None:
+
+    async def shutdown(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logging.info(f"PID {os.getpid():d}")
         flag = context.bot_data.get("shutdown", False)
         if flag:
@@ -218,11 +209,7 @@ def interact_with_telegram_api(
             logging.info("executing shutdown")
             await update.message.reply_text("executing shutdown")
 
-
-    async def reboot(
-        update: Update, 
-        context: ContextTypes.DEFAULT_TYPE
-        ) -> None:
+    async def reboot(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logging.info(f"PID {os.getpid():d}")
         flag = context.bot_data.get("reboot", False)
         if flag:
@@ -237,16 +224,13 @@ def interact_with_telegram_api(
             start_shutdown(shutdown_sh)
             logging.info("executing reboot")
             await update.message.reply_text("executing reboot")
-    
+
     async def _update_repo() -> None:
         cp = subprocess.run([update_repo_sh])
         if cp.returncode:
             logging.info(f"returncode {cp.returncode:d}")
-    
-    async def update_repo(
-        update: Update, 
-        context: ContextTypes.DEFAULT_TYPE
-        ) -> None:
+
+    async def update_repo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         flag = context.bot_data.get("update_repo", False)
         if flag:
             logging.info("updating repo")
@@ -264,29 +248,25 @@ def interact_with_telegram_api(
         """Log the error and send a telegram message to notify the developer."""
         # Log the error before we do anything else, so we can see it even if something breaks.
         logging.error("Exception while handling an update:", exc_info=context.error)
-        
+
         # Finally, send the message
         target_id = update.effective_chat.id
-        message = "Error logged"    
-        await context.bot.send_message(
-            chat_id=target_id, text=message
-        )
-
+        message = "Error logged"
+        await context.bot.send_message(chat_id=target_id, text=message)
 
     builder = Application.builder()
     builder.token(authorization_token)
     application = builder.build()
 
-
     application.add_handler(CommandHandler("inicio", start))
-    application.add_handler(CommandHandler("start", start))    
+    application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("ayuda", help_command))
     application.add_handler(CommandHandler("telegram", get_telegram))
     application.add_handler(CommandHandler("noticias", get_news))
     application.add_handler(CommandHandler("sd", shutdown))
     application.add_handler(CommandHandler("ur", update_repo))
     application.add_handler(CommandHandler("rb", reboot))
-    
+
     application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, process_text)
     )
@@ -300,8 +280,8 @@ def interact_with_telegram_api(
     try:
         application.run_polling()
     except Exception as message:
-         logging.debug(f"error: {get_timestamp():s}")        
-         logging.debug(f"{str(message):s}")
+        logging.debug(f"error: {get_timestamp():s}")
+        logging.debug(f"{str(message):s}")
     logging.debug(f"stop: {get_timestamp():s}")
 
 
@@ -309,34 +289,39 @@ class ServiceException(Exception):
     pass
 
 
-def run_bot(secrets_home: Path,
-            telegram_home: Path,
-            bot_identifier: str
-            ) -> None:
+def run_bot(secrets_home: Path, telegram_home: Path, bot_identifier: str) -> None:
     secrets = Secrets.read(Path(secrets_home, bot_identifier))
     if len(secrets) == 0:
-        message = "".join([f"{filename():s}.run_bot({bot_identifier:s}):",
-                           f"no secrets at {str(secrets_home):s}"])
+        message = "".join(
+            [
+                f"{filename():s}.run_bot({bot_identifier:s}):",
+                f"no secrets at {str(secrets_home):s}",
+            ]
+        )
         logging.error(message)
         raise ServiceException(message)
     authorization_token = secrets.get("TELEGRAM_TOKEN", None)
     if authorization_token is None:
-        message = "".join([f"{filename():s}.run_bot({bot_identifier:s}):",
-                           f"no authorization_token at {str(secrets_home):s}"])
+        message = "".join(
+            [
+                f"{filename():s}.run_bot({bot_identifier:s}):",
+                f"no authorization_token at {str(secrets_home):s}",
+            ]
+        )
         logging.error(message)
-        raise ServiceException(message)    
-    message = "".join([
-        f"{filename():s}.run_bot({bot_identifier:s}): ",
-        "before interact_with_telegram_api"]
-        )
+        raise ServiceException(message)
+    message = "".join(
+        [
+            f"{filename():s}.run_bot({bot_identifier:s}): ",
+            "before interact_with_telegram_api",
+        ]
+    )
     logging.info(message)
-    interact_with_telegram_api(
-        telegram_home,
-        bot_identifier,
-        authorization_token
-        )
-    message = "".join([
-        f"{filename():s}.run_bot({bot_identifier:s}): ",
-        "after interact_with_telegram_api"]
-        )
+    interact_with_telegram_api(telegram_home, bot_identifier, authorization_token)
+    message = "".join(
+        [
+            f"{filename():s}.run_bot({bot_identifier:s}): ",
+            "after interact_with_telegram_api",
+        ]
+    )
     logging.info(message)

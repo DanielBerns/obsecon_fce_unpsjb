@@ -8,6 +8,7 @@ from typing import Dict, Tuple
 # https://pypi.org/project/python-dotenv/
 from dotenv import load_dotenv
 
+
 class CLIConfig:
     def __init__(self) -> None:
         self._parser = ArgumentParser()
@@ -21,7 +22,7 @@ class CLIConfig:
         value = vars(self.parser.parse_args())
         return {str(k): str(v) for k, v in value.items()}
 
-    
+
 def build_cli_config() -> CLIConfig:
     cli_config = CLIConfig()
     cli_config.parser.add_argument(
@@ -36,7 +37,8 @@ def build_cli_config() -> CLIConfig:
         "--mode",
         choices=["test", "live"],
         type=str,
-        default="live", required=False,
+        default="live",
+        required=False,
         help="how to run? test or live",
     )
     return cli_config
@@ -66,11 +68,11 @@ class Config:
         load_environment_variables(home, dotenv)
         self._log_level = os.environ.get("LOG_LEVEL") or "DEBUG"
         self._mode = mode if mode in ["test", "live"] else "test"
-        
+
     @property
     def log_level(self) -> int:
         return getattr(logging, self._log_level)
-               
+
     @property
     def mode(self) -> str:
         return self._mode

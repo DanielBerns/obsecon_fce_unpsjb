@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 from random import randint
 
+
 def _execute_command(minutes: int, command: Path) -> None:
     cp = subprocess.run(
         [
@@ -17,13 +18,9 @@ def _execute_command(minutes: int, command: Path) -> None:
     )
     if cp.returncode:
         logging.error(f"at returncode {cp.returncode:d}")
- 
 
-def execute_commands(
-    commands: List[Path], 
-    a: int = 1, 
-    b: int = 10
-    ) -> None:
+
+def execute_commands(commands: List[Path], a: int = 1, b: int = 10) -> None:
     a = 1 if a < 0 else a
     b = 10 if b < a else b
     for a_command in commands:

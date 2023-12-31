@@ -77,7 +77,7 @@ def match_template(image, template):
 class ImageFileProcessor(FileProcessor):
     def __init__(self):
         super().__init__()
-        
+
     def result_to_content(self, result: Dict) -> None:
         pass
 
@@ -86,11 +86,11 @@ class ImageFileProcessorWithTesseractAndPIL(ImageFileProcessor):
     def __init__(self) -> None:
         super().__init__()
         self._image = None
-        
+
     @property
     def image(self):
         return self._image
-    
+
     @image.setter
     def image(self, value):
         self._image = value
@@ -100,9 +100,10 @@ class ImageFileProcessorWithTesseractAndPIL(ImageFileProcessor):
 
     def process(self) -> None:
         result = pytesseract.pytesseract.image_to_data(
-                   self.image, output=pytesseract.Output.DICT)
+            self.image, output=pytesseract.Output.DICT
+        )
         self.result_to_content(result)
-    
+
     def write(self) -> None:
         pass
 
@@ -111,11 +112,11 @@ class ImageFileProcessorWithTesseractAndCV2(ImageFileProcessor):
     def __init__(self):
         super().__init__()
         self._image = None
-        
+
     @property
     def image(self):
         return self._image
-    
+
     @image.setter
     def image(self, value):
         self._image = value
@@ -126,7 +127,8 @@ class ImageFileProcessorWithTesseractAndCV2(ImageFileProcessor):
     def process(self) -> None:
         gray = get_grayscale(self.image)
         result = pytesseract.pytesseract.image_to_data(
-            self.image, output=pytesseract.Output.DICT)
+            self.image, output=pytesseract.Output.DICT
+        )
         self.result_to_content(result)
 
     def write(self) -> None:

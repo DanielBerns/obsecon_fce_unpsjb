@@ -14,11 +14,11 @@ def filename():
 
 def main() -> None:
     with create_app("observatorio_fce_unpsjb", "india", filename()) as app:
-        get_text_task = GetTextFacadeSampleTask("GetTextSampleTask")        
+        get_text_task = GetTextFacadeSampleTask("GetTextSampleTask")
         get_text_task.add(ADNSURGetTextSampleTask())
-        
+
         websites = get_websites()
-        for identifier in websites.keys():        
+        for identifier in websites.keys():
             print(f"  {identifier:s}")
             with create_treestore_driver(app.fs.news, identifier) as driver:
                 driver.pipeline.add(get_text_task)
@@ -26,6 +26,7 @@ def main() -> None:
                 driver.process_samples(True)
                 driver.pipeline.remove("GetTextSampleTask")
                 driver.pipeline.remove("GetTokensSampleTask")
-    
+
+
 if __name__ == "__main__":
     main()
