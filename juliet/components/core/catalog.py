@@ -1,37 +1,48 @@
 from typing import Dict, Optional, TypeVar, Generic
 
+
 class CatalogException(Exception):
     pass
 
+
 T = TypeVar("T")
 
+
 class Catalog(Generic[T]):
-    def __init__(self):
+    def __init__(self) -> None:
         self._table: Dict[str, T] = {}  # Internal table for storing data
 
     @property
     def table(self) -> Dict[str, T]:
-        """Returns a read-only view of the internal table."""
-        return self._table.copy()  # Return a copy to prevent direct modification
+        """Copy the internal table, preventing modifications"""
+        return self._table.copy()
 
     def create(self, key: str, value: T) -> None:
         """Creates a new entry in the catalog."""
-        if key in self._table:
+        try:
+            _ = self._table[key]
             raise CatalogException(f"Entry with key '{key}' already exists.")
-        self._table[key] = value
+        except KeyError:
+            self._table[key] = value
 
     def update(self, key: str, value: T) -> None:
         """Updates an existing entry in the catalog."""
-        if key not in self._table:
-            raise CatalogException(f"Entry with key '{key}' not found.")
-        self._table[key] = value
+        try:
+            _ = self._table[key]
+            self._table[key] = value
+        except KeyError:
+            raise CatalogException(f"Entry with key '{key:s}' not found.")
 
     def delete(self, key: str) -> None:
         """Deletes an entry from the catalog."""
-        if key not in self._table:
-            raise CatalogException(f"Entry with key '{key}' not found.")
+        if key not in self.table:
+            raise CatalogException(f"Entry with key '{key:s}' not found.")
         del self._table[key]
 
-    def get(self, key: str, on_key_error: Optional[T] = None) -> T:
+    def get(self, key: str, on_key_error: Optional[T] = None) -> Optional[T]:
         """Retrieves an entry from the catalog."""
-        return self._table.get(key, on_key_error)
+        try:
+            value: T = self._table[key]
+            return value
+        except KeyError:
+            return on_key_error

@@ -1,5 +1,8 @@
 import unittest
-from catalog import Catalog
+
+from context import components
+from components.core import Catalog, CatalogException
+
 
 class TestCatalog(unittest.TestCase):
 

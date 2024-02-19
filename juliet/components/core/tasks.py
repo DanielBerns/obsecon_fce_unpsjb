@@ -1,11 +1,6 @@
-class Task:
-    def __init__(self, identifier: str) -> None:
-        self._identifier = identifier
-    
-    @property
-    def identifier(self) -> str:
-        return self._identifier
+from typing import Protocol
 
-    def execute(self):
-        pass
 
+class Task(Protocol):
+    def execute(self) -> None:
+        ...

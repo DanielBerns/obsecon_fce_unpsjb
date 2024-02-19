@@ -4,16 +4,13 @@ from typing import Protocol
 
 
 class TargetTemplate(Protocol):
-    def __init__(self) -> None:
-        pass
-
     @property
     def template(self) -> Template:
-        return Template("Empty TargetTemplate")
+        ...
 
     @property
     def suffix(self) -> str:
-        return ".txt"
+        ...
 
 
 class FromFileTargetTemplate:

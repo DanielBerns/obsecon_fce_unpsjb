@@ -1,13 +1,8 @@
 from collections import Counter
-from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Dict, TextIO, Generator
+from typing import List, Dict, Generator
 
-from components.core import SampleTask, TreeStore
-from components.helpers import get_container
-from components.nlp.eda import text_characters_frequency, text_characters
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.io import TextTXT, TokensMD, NLPContainer
 
 
 class TextCode:
@@ -32,9 +27,9 @@ class TextCode:
     def tokenizer(self) -> Tokenizer:
         return self._tokenizer
 
-    def encode(self, sample: Path) -> Generator[List[int], None, None]:
+    def encode(self, text_txt: Path) -> Generator[List[int], None, None]:
         try:
-            for sentence in TextTXT.read_sentences(sample):
+            for sentence in TextTXT.read_sentences(text_txt):
                 encoded_sentence = [
                     self.encoded_tokens[token]
                     for token in self.tokenizer.read(sentence)
@@ -48,13 +43,6 @@ class TextCode:
 
 
 class EncodedText:
-    filename = "encoded_text.json"
-
-    @staticmethod
-    def get_encoded_text_json(base: Path) -> Path:
-        container = NLPContainer.get(base)
-        return Path(container, EncodedText.filename)
-
     @staticmethod
     def serialize(encoded_sentence: List[int]) -> str:
         return "[" + ",".join(str(dd) for dd in encoded_sentence) + "]\n"
@@ -67,25 +55,22 @@ class EncodedText:
         yield numbers
 
     @staticmethod
-    def read(base: Path) -> Generator[List[int], None, None]:
-        encoded_text_json = EncodedText.get_encoded_text_json(base)
-        with open(encoded_text_json, "r") as source:
+    def read(encoded_text_jsonl: Path) -> Generator[List[int], None, None]:
+        with open(encoded_text_jsonl, "r") as source:
             for line in source:
                 yield EncodedText.deserialize(line)
 
     @staticmethod
-    def write(store: TreeStore) -> None:
-        encoded_text_json = EncodedText.get_encoded_text_json(store.base)
-        with open(encoded_text_json, "w") as target:
-            store.start()
-            text_code = TextCode(store.base)
-            for sample in store.samples(first=0):
-                print(str(sample))
-                try:
-                    for encoded_sentence in text_code.encode(sample):
-                        line = EncodedText.serialize(encoded_sentence)
-                        target.write(line)
-                except Exception as message:
-                    print("  ", str(message))
-            store.stop()
-        print("The end!")
+    def encode_text(text_txt: Path, encoded_text_jsonl: Path, text_code: TextCode) -> None:
+        with open(encoded_text_jsonl, 'w') as target: 
+            for encoded_sentence in text_code.encode(text_txt):
+                line = EncodedText.serialize(encoded_sentence)
+                target.write(f"{line:s}\n")
+            
+    @staticmethod
+    def decode_text(encoded_text_jsonl: Path, text_txt: Path, text_code: TextCode) -> None:
+        with open(text_txt, 'w') as target:
+            for encoded_sentence in EncodedText.read(encoded_text_jsonl):
+                sequence = text_code.decode(encoded_sentence)
+                line = ' '.join(sequence)
+                target.write(f"{line:s}\n")            

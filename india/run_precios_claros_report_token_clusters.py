@@ -1,0 +1,3 @@
+from components.precios_claros import run_report_token_clusters
+
+run_report_token_clusters()

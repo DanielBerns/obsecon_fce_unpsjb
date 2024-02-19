@@ -5,9 +5,6 @@ from components.precios_claros.models import PointOfSale, ArticleWithPrices
 
 
 class DeltaWriter(Protocol):
-    @property
-    def target_home(self) -> Path:
-        ...
 
     def start(self) -> None:
         ...
@@ -17,7 +14,7 @@ class DeltaWriter(Protocol):
     ) -> None:
         ...
 
-    def line(self, ref: ArticleWithPrices, cur: ArticleWithPrices) -> None:
+    def card(self, ref: ArticleWithPrices, cur: ArticleWithPrices) -> None:
         ...
 
     def footer(self) -> None:

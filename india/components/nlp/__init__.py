@@ -1,22 +1,22 @@
-from components.nlp.eda import (
-    text_characters,
-    text_characters_frequency,
-    text_characters_to_integers,
-    text_fragments,
-    text_hmm,
-)
-
+# from components.nlp.eda import (
+#     text_characters,
+#     text_characters_frequency,
+#     text_characters_to_integers,
+#     text_fragments,
+#     text_hmm,
+# )
+# 
 from components.nlp.tokenizer import Tokenizer
-from components.nlp.nodes import TokensNode, IDFNode, TFNode
-from components.nlp.nlp_get_text import GetTextSampleTask, GetTextFacadeSampleTask
-from components.nlp.nlp_get_tokens import (
-    GetTokensSampleTask,
-    GetTokensSampleTaskFactory,
-)
-from components.nlp.nlp_encode_text import EncodedText, TextCode
-from components.nlp.nlp_ngram import Bigrams
-from components.nlp.io import TextTXT, CharactersMD, TokensMD, NLPContainer
-from components.nlp.prefixes_chip import PrefixesChip
+# from components.nlp.nodes import TokensNode, IDFNode, TFNode
+# from components.nlp.nlp_get_text import GetTextSampleTask, GetTextFacadeSampleTask
+# from components.nlp.nlp_get_tokens import (
+#     GetTokensSampleTask,
+#     GetTokensSampleTaskFactory,
+# )
+# from components.nlp.nlp_encode_text import EncodedText, TextCode
+# from components.nlp.nlp_ngram import Bigrams
+# from components.nlp.io import TextTXT, CharactersMD, TokensMD, NLPContainer
+# from components.nlp.prefixes_chip import PrefixesChip
 
 # from .dart_dice_and_coins import (simulate_fair_die, simulate_biased_coin,
 #                                   simulate_fair_die_with_biased_coins,

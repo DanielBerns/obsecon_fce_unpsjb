@@ -8,7 +8,9 @@ from components.helpers import show, get_container, get_timestamp, classname
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.report_delta import DeltaReportSample
-from components.precios_claros.delta_writer_xlsx import build_delta_writer_xlsx
+from components.precios_claros.precios_claros_delta_writer import build_delta_writer
+
+
 
 import pdb
 
@@ -134,7 +136,7 @@ class PreciosClarosReportDelta(PreciosClarosDeltaTask):
             delta_report_sample = DeltaReportSample()
             delta_report_sample.execute(
                 target_container,
-                build_delta_writer_xlsx,
+                build_delta_writer,
                 reference_collector,
                 current_collector,
             )

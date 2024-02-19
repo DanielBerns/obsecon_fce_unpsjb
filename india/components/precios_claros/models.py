@@ -120,7 +120,24 @@ class ArticleWithPrices:
             variable = f"precio mínimo de {self.prices_min():s} y un precio máximo de {self.prices_max():s}"
         return "Para este artículo se observó un " + variable
 
+    def __lt__(self, other: "ArticleWithPrices") -> bool:
+        """Less than comparison based on code (primary) and name (secondary)."""
+        if self.article.name != other.article.name:
+            return self.article.name < other.article.name
+        else:
+            return self.article.brand < other.article.brand
 
+    def __eq__(self, other: "ArticleWithPrices") -> bool:
+        """Equality comparison based on both code and name."""
+        return (self.article.code == other.article.code 
+                and self.article.name == other.article.name
+                and self.article.brand == other.article.brand)
+
+    def __gt__(self, other: "ArticleWithPrices") -> bool:
+        """Greater than comparison based on __lt__ and __eq__."""
+        return not (self < other or self == other)
+
+    
 class ArticleWithPricesTable:
     def __init__(self, home: Path, timestamp: str, place: str) -> None:
         self._home: Path = home
@@ -189,7 +206,7 @@ class ArticleWithPricesTable:
                 yield article_with_prices
 
     def all_of_them(self) -> Generator[ArticleWithPrices, None, None]:
-        for code, article_with_prices in self.article_with_prices.items():
+        for article_with_prices in sorted(self.article_with_prices.values()):
             yield article_with_prices
 
 

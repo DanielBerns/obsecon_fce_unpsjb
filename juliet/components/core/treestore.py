@@ -2,17 +2,20 @@ import json
 from pathlib import Path
 from shutil import rmtree
 import logging
-from typing import Tuple
+from typing import Tuple, Dict, Generator
 
-from components.helpers import get_container, get_resource
+from components.core import Store
+from components.helpers import get_container, get_resource, classname
+
 
 class TreeStoreError(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
+    def __init__(self, remark: str) -> None:
+        logging.error(remark)
+        super().__init__(remark)
 
 
 def base_256(number: int) -> Tuple[int, int, int]:
-    assert(0 <= number < 16777216)
+    assert 0 <= number < 16777216
     third_digit = number % 256
     number >>= 8
     second_digit = number % 256
@@ -28,88 +31,97 @@ def erase_directory(base: Path) -> None:
     rmtree(base, ignore_errors=True)
 
 
-class TreeStore:
-    
-    def __init__(self, home: Path, identifier: str) -> None:
-        """
-                 home: path where TreeStore lives
-                 identifier: the name of the TreeStore
-        """
-        base = get_container(home, identifier)
-        metadata_store = get_resource(base, 'index', '.json')
-        self._base = base
-        self._tree = Path(base, 'tree')
-        self._metadata_store = metadata_store
-        self._index = -1
-        if self.metadata_store.exists():
-            # restarting treestore
-            metadata = self.read_metadata()
-            self._index = metadata["index"]
+def _get_sample_home(samples: Path, number: int) -> Path:
+    first_digit, second_digit, third_digit = base_256(number)
+    sample_home = Path(
+        samples, f"{first_digit:>03d}", f"{second_digit:>03d}", f"{third_digit:>03d}"
+    )
+    return sample_home
+
+
+class Index:
+    def __init__(self, resource: Path) -> None:
+        self._resource: Path = resource
+        if self.resource.exists():
+            # restarting Index
+            value = self.read()
+            self._value = int(value["index"])
         else:
-            # creating treestore
-            self._index = 0
-            self.write_metadata()
+            # initialize Index
+            self._value = 0
+            self.write()
 
     @property
-    def base(self) -> Path:
-        return self._base
+    def resource(self) -> Path:
+        return self._resource
 
     @property
-    def tree(self) -> Path:
-        return self._tree
-    
+    def value(self) -> int:
+        return self._value
+
+    @value.setter
+    def value(self, update: int) -> None:
+        self._value = update
+        self.write()
+
+    def write(self) -> None:
+        value = {"index": str(self.value)}
+        with open(self.resource, "w") as target:
+            json.dump(value, target)
+
+    def read(self) -> Dict[str, str]:
+        with open(self.resource, "r") as source:
+            values = json.load(source)
+        return values
+
+
+class TreeStore(Store):
+    def __init__(self, container: Path, identifier: str) -> None:
+        """
+        home: path where TreeStore lives
+        identifier: the name of the TreeStore
+        """
+        super().__init__(container, identifier)
+        self._samples = get_container(self.home, "samples")
+        resource = get_resource(self.home, "index", ".json")
+        self._index = Index(resource)
+
     @property
-    def metadata_store(self) -> Path:
-        return self._metadata_store
+    def samples(self) -> Path:
+        return self._samples
 
     @property
     def index(self) -> int:
-        return self._index
+        return self._index.value
 
-    @index.setter
-    def index(self, value: int) -> None:
-        self._index = value
-        self.write_metadata()
-    
-    def write_metadata(self) -> None:
-        metadata = {'index': self.index}
-        with open(self.metadata_store, 'w') as target:
-            json.dump(metadata, target)
+    def update_index(self) -> None:
+        self._index.value += 1
 
-    def read_metadata(self) -> dict:
-        with open(self.metadata_store, 'r') as source:
-            metadata = json.load(source)
-        return metadata
-
-    def new_sample(self) -> Path:
-        first_digit, second_digit, third_digit = base_256(self.index)
-        self.index += 1
-        sample = Path(self.tree, 
-                      f"{first_digit:>03d}", 
-                      f"{second_digit:>03d}",
-                      f"{third_digit:>03d}")
-        sample.mkdir(mode=0o700, parents=True, exist_ok=False)
-        return sample
+    def create_sample_home(self) -> Path:
+        sample_home = _get_sample_home(self.samples, self.index)
+        sample_home.mkdir(mode=0o700, parents=True, exist_ok=False)
+        self.update_index()
+        return sample_home
 
     def start(self):
-        logging.info(f'treestore.start() with index {self.index:d}')
-        
+        logging.info(f"treestore.start() with index {self.index:d}")
+
     def stop(self):
-        self.write_metadata()
-        
-    def samples(self, top: int =-1) -> Path:
+        logging.info(f"treestore.stop() with index {self.index:d}")
+
+    def iterate(self, top: int = -1) -> Generator[Path, None, None]:
         if top == -1:
             top = self.index
         elif 0 <= top <= self.index:
             pass
         else:
-            raise TreeStoreError(
-                "TreeStore.samples: top {top:d} out of range (-1, {self.index:d})"
-                )
+            remark = (
+                f"{classname(self):s}.samples:"
+                f"top {top:d} out of range (-1, {self.index:d})"
+            )
+            raise TreeStoreError(remark)
         for k in range(top):
-            first_digit, second_digit, third_digit = base_256(k)
-            sample = Path(self.tree, 
-                      f"{first_digit:>03d}", 
-                      f"{second_digit:>03d}",
-                      f"{third_digit:>03d}")
-            yield sample
+            yield _get_sample_home(self.samples, k)
+
+    def get_sample_home(self, k: int) -> Path:
+        return _get_sample_home(self.samples, k)

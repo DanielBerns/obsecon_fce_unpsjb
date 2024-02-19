@@ -280,8 +280,8 @@ class ArticleWithPricesTableHTML:
 
 
 FULL_INFO_MD = """
-# Código ~ artículo ~ indicativo ~ mínimo ~ máximo
-{% for aa in awpt.all_of_them() %} {{aa.label()}} | {{aa.prices_geomean()}} | {{aa.prices_min()}} | {{aa.prices_max()}} 
+# Código ~ artículo ~ mínimo ~ indicativo ~ máximo
+{% for aa in awpt.all_of_them() %} {{aa.label()}} | {{aa.prices_min()}} | {{aa.prices_geomean()}} | {{aa.prices_max()}} 
 {% endfor %}
 """
 

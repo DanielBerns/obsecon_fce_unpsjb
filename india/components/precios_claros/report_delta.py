@@ -10,6 +10,9 @@ from components.helpers import get_resource, get_container, i, classname
 from components.precios_claros.sampler import PreciosClarosSample
 from components.precios_claros.report_sample import SampleCollector
 from components.precios_claros.models import PointOfSale, ArticleWithPrices
+from components.precios_claros.delta_doc import DeltaDoc
+from components.precios_claros.delta_writer import DeltaWriter
+from components.precios_claros.html_delta_doc import HTMLDeltaDoc
 
 from components.precios_claros.writers import (
     WriterWithTargetFormat,
@@ -55,14 +58,14 @@ class DeltaReportSample:
     def execute(
         self,
         target_home: Path,
-        build_writer: Callable[[Path, str], DeltaWriter],
+        build_writer: Callable[[Path, str, DeltaDoc], DeltaWriter],
         reference_collector: SampleCollector,
         current_collector: SampleCollector,
     ) -> None:
         for ref_place, ref_awp_table, cur_awp_table in self.next_comparison(
             target_home, reference_collector, current_collector
         ):
-            writer = build_writer(target_home, ref_place)
+            writer = build_writer(target_home, ref_place, HTMLDeltaDoc())
             writer.start()
             writer.header(
                 reference_collector.sample, 
@@ -72,10 +75,7 @@ class DeltaReportSample:
                     ref_awp.article.code, None
                 )
                 if cur_awp:
-                    writer.line(ref_awp, cur_awp)
-            # print(f"{ref_awp.article.code:s} - {ref_awp.article.name:s} {ref_awp.article.brand:s}")
-            # print(f"   {str(ref_ps[0]):s} - {str(ref_ps[1]):s} - {str(ref_ps[2]):s}")
-            # print(f"   {str(cur_ps[0]):s} - {str(cur_ps[1]):s} - {str(cur_ps[2]):s}")
+                    writer.card(ref_awp, cur_awp)
             writer.footer()
             writer.stop()
 

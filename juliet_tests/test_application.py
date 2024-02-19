@@ -5,7 +5,7 @@ from pathlib import Path
 
 from context import components, TEST_ROOT
 from components.configuration import (CLI, Settings, Constants)
-from components.helpers import (get_home, get_resource_with_timestamp)
+from components.helpers import (get_home, get_resource_with_timestamp, show)
 from components.core import (application, create_application)
 
 import unittest

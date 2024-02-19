@@ -1,15 +1,23 @@
-from typing import Dict, Protocol, TypeVar, Generic
+from typing import Dict, Protocol, TypeVar, Generic, Callable, Optional, Any
+import logging
 
+def classname(thing: Any) -> str:
+    return thing.__class__.__name__
 
 class Node(Protocol):
+    @property
+    def key(self) -> str:
+        ...
+    
     @property
     def render(self) -> str:
         ...
 
-    def update(self, message: Dict[str, str]) -> None:
+    def update(self, request: Dict[str, str]) -> Dict[str, str]:
         ...
         
-    
+EMPTY_MESSAGE = {}
+
 class Attribute:
     def __init__(self, name: str, value: str) -> None:
         self._name: str = name
@@ -27,12 +35,13 @@ class Attribute:
     def render(self) -> str:
         return f'{self.name}="{self.value:s}"'
         
-    def update(self, message: Dict[str, str]) -> None:
-        pass
+    def update(self, request: Dict[str, str]) -> Dict[str, str]:
+        return EMPTY_MESSAGE
 
 
 class Text:
-    def __init__(self, value: str) -> None:
+    def __init__(self, key: str, value: str) -> None:
+        self._key: str = value
         self._value: str = value
         
     @property
@@ -43,16 +52,21 @@ class Text:
     def render(self) -> str:
         return self.value
 
-    def update(self, message: Dict[str, str]) -> None:
-        pass
+    def update(self, request: Dict[str, str]) -> Dict[str, str]:
+        return EMPTY_MESSAGE
 
 
 class Tag:
-    def __init__(self, prefix: str, name: str, suffix: str) -> None:
+    def __init__(self, key: str, prefix: str, name: str, suffix: str) -> None:
+        self._key = key
         self._prefix: str = prefix
         self._name: str = name
         self._suffix: str = suffix
         self._attributes: Dict[str, Attribute] = {}
+
+    @property
+    def key(self) -> str:
+        return self._key
         
     @property
     def prefix(self) -> str:
@@ -66,9 +80,6 @@ class Tag:
     def suffix(self) -> str:
         return self._suffix
     
-    def bind(self, action: Callable[[Tag], Tag]) -> Tag:
-        return action(self)
-
     @property
     def attributes(self) -> Dict[str, Attribute]:
         return self._attributes
@@ -80,27 +91,31 @@ class Tag:
         )
         return prefix + body + suffix
     
-    def update(self, message: Dict[str, str]) -> None:
-        pass
+    def update(self, request: Dict[str, str]) -> Dict[str, str]:
+        return EMPTY_MESSAGE
    
 
 class Block:
-    def __init__(self) -> None:
-        self._nodes: Dict[str, Node]
-        
+    def __init__(self, key: str) -> None:
+        self._key: str = key
+        self._nodes: Dict[str, Node] = {}
+
+    @property
+    def key(self) -> str:
+        return self._key
+
     @property
     def nodes(self) -> Dict[str, Node]:
         return self._nodes
     
-    def add_node(self) -> None
     @property
     def render(self) -> str:
         return "".join([value.render for key, value in self.nodes.items()])
     
-    def update(self, message: Dict[str, str]) -> None:
-        pass
+    def update(self, request: Dict[str, str]) -> Dict[str, str]:
+        return EMPTY_MESSAGE
 
-    
+ 
 
 T = TypeVar('T')
 
@@ -113,19 +128,17 @@ class Processor(Generic[T]):
     def value(self) -> Optional[T]:
         return self._value
     
-    @element.setter
+    @value.setter
     def value(self, update: Optional[T]) -> None:
         self._value = update
         
-    def bind(self, action: Callable[[Optional[T]], Optional[T]) -> 'Processor':
+    def bind(self, action: Callable[[Optional[T]], Optional[T]]) -> 'Processor':
         try:
             result = action(self.value)
         except Exception as message:
             logging.error(
                 f"{classname(self):s}.bind({classname(action)}): {str(message):s}"
             )
-            
         else:
             self.value = result
-                    
         return self

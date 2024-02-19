@@ -20,7 +20,6 @@ from components.core import (
 )
 from components.helpers import get_container, i, classname
 
-import pdb
 
 
 class PointsOfSale:
@@ -228,6 +227,7 @@ class PreciosClarosSampleBuilder:
 def create_sample_with_web_content(
     selectors: List[Dict[str, str]]
 ) -> Generator[PreciosClarosSampleBuilder, None, None]:
+    # pdb.set_trace()
     try:
         scraper = WebScraper()
         pos = PointsOfSale(scraper)

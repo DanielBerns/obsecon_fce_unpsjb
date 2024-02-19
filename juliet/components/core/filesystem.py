@@ -13,27 +13,24 @@ from components.helpers import (
 from components.core.metadata import Metadata
 from components.core.catalog import Catalog
 
-import pdb
 
 class FileSystem:
-   
-    def __init__(self, settings: Dict[str, str]) -> None:    
+    def __init__(self, settings: Dict[str, str]) -> None:
         info_home = get_directory(Path(settings["info_home"]))
         software_home = get_directory(Path(settings["software_home"]))
         self._templates = get_container(software_home, "templates")
         self._commands = get_container(info_home, "Commands")
-        self._storage  = get_container(info_home, "Storage")
-        self._secrets  = get_container(info_home, "Secrets")        
-        self._results  = get_container(info_home, "Results")
-        self._reports  = get_container(info_home, "Reports")
-        self._logs     = get_container(info_home, "Logs")
-        pdb.set_trace()
-        self._metadata = Metadata(get_container(info_home, "metadata"))        
+        self._storage = get_container(info_home, "Storage")
+        self._secrets = get_container(info_home, "Secrets")
+        self._results = get_container(info_home, "Results")
+        self._reports = get_container(info_home, "Reports")
+        self._logs = get_container(info_home, "Logs")
+        self._metadata = Metadata(get_container(info_home, "metadata"))
         self._catalog: Catalog[Path] = Catalog()
-        
+
         self._info_home: Path = info_home
         self._software_home: Path = software_home
-        
+
     @property
     def info_home(self) -> Path:
         return self._info_home
@@ -80,7 +77,7 @@ class FileSystem:
 
     def start(self) -> None:
         self.metadata.start()
-    
+
     def stop(self) -> None:
         self.metadata.stop()
 

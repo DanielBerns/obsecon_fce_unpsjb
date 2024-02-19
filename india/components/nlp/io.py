@@ -1,32 +1,25 @@
 from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Tuple, Generator
-
-from components.helpers import load_json, get_container
+from typing import Dict, List, Tuple, Generator, Any
 
 
 class TextTXT:
-    filename: str = "text.txt"
-
     @staticmethod
-    def write(container: Path, content: List[List[str]]) -> None:
-        text_txt = Path(container, TextTXT.filename)
+    def write(text_txt: Path, content: List[List[Any]]) -> None:
         with open(text_txt, "w") as target:
-            for event in content:
-                for data in event:
-                    target.write(str(data) + "\n")
+            for row in content:
+                for value in row:
+                    target.write(f"{str(value):s}\n")
 
     @staticmethod
-    def read(container: Path) -> str:
-        text_txt = Path(container, TextTXT.filename)
+    def read(text_txt: Path) -> str:
         with open(text_txt, "r") as source:
             lines = [line[:-1] for line in source if not line.startswith("#")]
             text = "\n".join(lines)
         return text
 
     @staticmethod
-    def read_sentences(container: Path) -> Generator[str, None, None]:
-        text_txt = Path(container, TextTXT.filename)
+    def read_sentences(text_txt: Path) -> Generator[str, None, None]:
         with open(text_txt, "r") as source:
             for line in source:
                 if not line.startswith("#"):
@@ -37,22 +30,11 @@ def get_sorted_characters(some_characters: List[str]) -> str:
     return "".join(sorted(some_characters))
 
 
-class NLPContainer:
-    separator: str = "::::"
-
-    @staticmethod
-    def get(base: Path) -> Path:
-        return get_container(base, "nlp")
-
-
 class CharactersMD:
-    filename: str = "characters.md"
     title: str = "# Characters\n"
 
     @staticmethod
-    def write(base: Path, characters: Counter) -> None:
-        container = NLPContainer.get(base)
-        characters_md = Path(container, CharactersMD.filename)
+    def write(characters_md: Path, characters: Counter) -> None:
         with open(characters_md, "w") as target:
             target.write(CharactersMD.title)
             characters = get_sorted_characters([cc for cc in characters.keys()])
@@ -67,34 +49,30 @@ class CharactersMD:
 
 
 class TokensMD:
-    filename: str = "tokens.md"
+    separator: str = "::::"
     title: str = "# Tokens\n"
 
     @staticmethod
-    def write(base: Path, tokens: Counter) -> None:
-        container = NLPContainer.get(base)
-        tokens_md = Path(container, TokensMD.filename)
+    def write(tokens_md: Path, tokens: Counter) -> None:
         with open(tokens_md, "w") as target:
             target.write(TokensMD.title)
             max_token_length = 0
             for key, value in sorted(
                 tokens.items(), key=lambda pair: pair[1], reverse=True
             ):
-                target.write(f"{key:<25s}{NLPContainer.separator:s}{value:d}\n")
+                target.write(f"{key:<25s}{TokensMD.separator:s}{value:d}\n")
                 token_length = len(key)
                 if token_length > max_token_length:
                     max_token_length = token_length
 
     @staticmethod
-    def read(base: Path) -> Dict[str, int]:
-        tokens: Dict[str, int] = dict()
-        container = NLPContainer.get(base)
-        tokens_md = Path(container, TokensMD.filename)
+    def read(tokens_md: Path) -> Dict[str, int]:
+        tokens: Dict[str, int] = {}
         with open(tokens_md, "r") as target:
             title = target.readline()
             assert title == TokensMD.title
             for number, line in enumerate(target):
-                parts = line.split(NLPContainer.separator)
+                parts = line.split(TokensMD.separator)
                 try:
                     assert len(parts) == 2
                     word = parts[0].strip()

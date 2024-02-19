@@ -14,3 +14,6 @@ from components.precios_claros.precios_claros_report_groupby import (
 )
 from components.precios_claros.precios_claros_delta_task import PreciosClarosDeltaTask
 from components.precios_claros.precios_claros_task import PreciosClarosTask
+from components.precios_claros.precios_claros_report_token_clusters import (
+    PreciosClarosReportTokenClusters,run_report_token_clusters,
+)
