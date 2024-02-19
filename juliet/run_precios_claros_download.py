@@ -1,6 +1,7 @@
 from typing import Dict
 
-from components.core import CLI, create_application, show
+from components.configuration import CLI
+from components.core import create_application, show
 from components.precios_claros import Actions
 
 def get_arguments() -> Dict[str, str]:
