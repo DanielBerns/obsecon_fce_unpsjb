@@ -9,41 +9,22 @@ from components.helpers import get_container, get_resource, classname, read_text
 class ReportSequences:
     def __init__(
         self, 
-        origin: Path,
-        target: Path
+        origin_container: Path,
+        target_container: Path
     ) -> None:
-        self._origin: Path = origin
-        self._target: Path = target
+        self._origin_container: Path = origin_container
+        self._target_container: Path = target_container
         
     @property
-    def origin(self) -> Path:
-        return self._origin
+    def origin_container(self) -> Path:
+        return self._origin_container
 
     @property
-    def target(self) -> Path:
-        return self._target
+    def target_container(self) -> Path:
+        return self._target_container
     
     def execute() -> None:
         container = Path('.')
-        nlp = build_NLP(self.origin)
-        nlp.process(container, display_name, max_length=2)
+        nlp = build_NLP(self.origin_container)
+        nlp.process(self.target_container, max_length=2)
 
-
-    @property
-    def sample_collector(self) -> SampleCollector:
-        return self._sample_collector
-
-    def execute(self, home: Path) -> None:
-        sample_key = self.sample_collector.sample.sample_key
-        for (
-            place,
-            article_with_prices_table,
-            points_of_sale_table,
-        ) in self.sample_collector.sample_items(home):
-            token_clusters_container = get_container(
-                Path(home, sample_key), "token_clusters"
-            )
-            TokenClustersChip.execute(
-                token_clusters_container, 
-                place, article_with_prices_table, points_of_sale_table
-            )
