@@ -37,11 +37,20 @@ class Actions:
         sample_home = store.sample_home(sample_key)
         sample = IO.build(sample_key, sample_home)
         show(f"sample_key: {sample_key:s}")
-        for place, article_with_prices_table, points_of_sale_table in IO.read(sample):
-            print(f"place: {place:s}")
-            pdb.set_trace()
-            for article_with_prices in article_with_prices_table.values():
-                print(f"  {article_with_prices.article.name:s}")
+        points_of_sale_table, articles_reader = IO.read(sample)
+        for key, value in articles_reader.articles_counter.items():
+            print(f"{key:<60s}: {value:d}")
+        print(len(articles_reader.articles_counter))
+        showit = False
+        if showit:
+            for place, article_with_prices_table, points_of_sale_table in IO.iterate(
+                sample, 
+                points_of_sale_table, 
+                articles_reader
+            ):
+                print(f"place: {place:s}")
+                for article_with_prices in article_with_prices_table.values():
+                    print(f"  {article_with_prices.article.name:s}")
         store.stop()
 
     @staticmethod

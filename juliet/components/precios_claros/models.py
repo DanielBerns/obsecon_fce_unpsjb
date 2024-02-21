@@ -91,27 +91,6 @@ def get_price_descriptors(prices: List[PointOfSaleAndPrice]) -> Tuple[int, int, 
         return f2i(prices_min), f2i(prices_geomean), f2i(prices_max)
 
 
-# class PricesTable:
-#     def __init__(self) -> None:
-#         self._point_of_sale_and_price: DefaultDict[
-#             str, List[PointOfSaleAndPrice]
-#         ] = defaultdict(list)
-#
-#     @property
-#     def point_of_sale_and_price(self) -> DefaultDict[str, List[PointOfSaleAndPrice]]:
-#         return self._point_of_sale_and_price
-#
-#     def add(self, article_code: str, point_of_sale: PointOfSale, price: int) -> None:
-#         self.point_of_sale_and_price[article_code].append((point_of_sale, price))
-#
-#     def values(self) -> Generator[List[Tuple[str, PointOfSale, int]], None, None]:
-#         for (
-#             article_code,
-#             point_of_sale_with_price,
-#         ) in self.point_of_sale_and_price.items():
-#             yield article_code, point_of_sale_with_price
-#
-
 
 class ArticleWithPrices:
     def __init__(self, article: Article, prices: List[PointOfSaleAndPrice]) -> None:

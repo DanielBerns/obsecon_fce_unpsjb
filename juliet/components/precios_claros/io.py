@@ -17,6 +17,7 @@ from components.precios_claros.models import (
 )
 from components.precios_claros import WebScraper
 
+import pdb
 
 class PreciosClarosError(Exception):
     def __init__(self, remark: str) -> None:
@@ -188,9 +189,7 @@ class ArticlesReader:
         self._points_of_sale_table: PointsOfSaleTable = points_of_sale_table
         self._articles_counter: Counter = Counter()
         self._articles: Dict[str, Article] = {}
-        self._prices: DefaultDict[str, List[Tuple[PointOfSale, int]]] = defaultdict(
-            list
-        )
+        self._prices: DefaultDict[str, List[Tuple[PointOfSale, int]]] = defaultdict(list)
 
     @property
     def points_of_sale_table(self) -> PointsOfSaleTable:
@@ -323,9 +322,18 @@ class IO:
     @staticmethod
     def read(
         sample: Sample,
-    ) -> Generator[Tuple[str, ArticleWithPricesTable, PointsOfSaleTable], None, None]:
+    ) -> Tuple[PointsOfSaleTable, ArticlesReader]:
         points_of_sale_table = IO.get_points_of_sale_table(sample)
         articles_reader = ArticlesReader(points_of_sale_table)
+        articles_reader.update(sample.articles_per_point_of_sale)
+        return points_of_sale_table, articles_reader
+
+    @staticmethod
+    def iterate(
+        sample: Sample,
+        points_of_sale_table: PointsOfSaleTable,
+        articles_reader: ArticlesReader
+    ) -> Generator[Tuple[str, ArticleWithPricesTable, PointsOfSaleTable], None, None]:
         for place in points_of_sale_table.per_place.keys():
             article_with_prices_table = IO.get_article_with_prices_table(
                 sample, place, articles_reader
