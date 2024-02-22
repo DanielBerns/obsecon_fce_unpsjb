@@ -175,7 +175,12 @@ class NLP:
             sequence_map[key].append(self.line(sequence))
         return sequence_counter, sequence_map
         
-    def as_html(target_container: Path) -> None:
+    def tree_of_html_pages(
+        self, 
+        target_container: Path,
+        sequence_counter: Counter,
+        sequence_map: DefaultDict[List[str]]
+    ) -> None:
         root_name = Path(target_container, "root.html") 
         with open(root_name, "w") as root:
             root.write('<html>\n')
@@ -204,6 +209,7 @@ class NLP:
             root.write('</body>\n')                    
             root.write('</html>\n')
             
+        display_name = Path(target_container, "display.txt")
         with open(display_name, "w") as target:
             for sequence in self.collapsed_sequences():
                 line = self.line(sequence)
