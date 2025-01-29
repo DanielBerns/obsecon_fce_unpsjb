@@ -1,7 +1,13 @@
 import logging
 from pathlib import Path
 
-from typing import Dict, Generator, Protocol, Tuple, DefaultDict, List, Callable
+from typing import (Dict, 
+                    Generator, 
+                    Protocol, 
+                    Tuple, 
+                    DefaultDict, 
+                    List, 
+                    Callable)
 from collections import Counter, defaultdict
 
 from components.helpers import get_container, i, classname
@@ -122,7 +128,7 @@ class PointsOfSaleReader:
 
     def get(self, message: Dict[str, str]) -> Tuple[str, str, str, str, str]:
         identifier = message["identifier"]
-        name = (message["comercio"]).lower()
+        name = (message["bandera"]).lower()
         province = (message["provincia"]).lower()
         city = (message["localidad"]).lower()
         address = (message["direccion"]).lower()
@@ -299,13 +305,20 @@ class IO:
 
     @staticmethod
     def get_article_with_prices_table(
-        sample: Sample, place: str, articles_reader: ArticlesReader
+        sample: Sample, 
+        place: str, 
+        points_of_sale: List[PointOfSale], 
+        articles_reader: ArticlesReader
     ) -> ArticleWithPricesTable:
-        article_with_prices_table = ArticleWithPricesTable(place)
+        article_with_prices_table = ArticleWithPricesTable()
         for article_code, prices_per_point_of_sale in articles_reader.prices.items():
             try:
-                article = articles_reader.articles[article_code]
-                article_with_prices_table.add(article, prices_per_point_of_sale)
+                selected = [(a_point_of_sale, price) 
+                            for a_point_of_sale, price in prices_per_point_of_sale 
+                            if a_point_of_sale in points_of_sale]
+                if selected:
+                    article = articles_reader.articles[article_code]
+                    article_with_prices_table.add(article, selected)
             except KeyError:
                 remark = (
                     f"get_article_with_prices_table: bad article_code {article_code:s}"
@@ -333,9 +346,9 @@ class IO:
         sample: Sample,
         points_of_sale_table: PointsOfSaleTable,
         articles_reader: ArticlesReader
-    ) -> Generator[Tuple[str, ArticleWithPricesTable, PointsOfSaleTable], None, None]:
-        for place in points_of_sale_table.per_place.keys():
+    ) -> Generator[Tuple[str, ArticleWithPricesTable, PointOfSale], None, None]:
+        for place, points_of_sale in points_of_sale_table.per_place.items():
             article_with_prices_table = IO.get_article_with_prices_table(
-                sample, place, articles_reader
+                sample, place, points_of_sale, articles_reader
             )
-            yield place, article_with_prices_table, points_of_sale_table
+            yield place, article_with_prices_table, points_of_sale

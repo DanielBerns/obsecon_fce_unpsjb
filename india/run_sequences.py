@@ -16,7 +16,7 @@ def main() -> None:
     display_name = str(Path(container, display).expanduser())    
     transform_origin(original_name, transformed_name)
     nlp = build_NLP(transformed_name)
-    nlp.process(container, display_name, max_length=2)
+    nlp.process(container, display_name, max_length=1)
 
 
 if __name__ == '__main__':

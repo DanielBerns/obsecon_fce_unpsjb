@@ -1,3 +1,3 @@
-from components.sequences.sequences import (transform_origin, NLP, build_NLP)
+from components.nlp.sequences import get_patterns
                                             
                                             

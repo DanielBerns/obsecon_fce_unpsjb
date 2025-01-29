@@ -188,11 +188,13 @@ class NLP:
             root.write('</head>\n')            
             root.write('<body>\n')
             root.write('<ul>\n')
+            home = "/static/"
             for number, (key, value) in enumerate(sequence_counter.items()):
                 first, second = number // 256, number % 256
                 child = Path(parent, f"{first:>03d}", f"{second:>03d}")
+                web = f"/static/html/comodoro_rivadavia/{first:>03d}/{second:>03d}/"
                 child.mkdir(mode=0o700, parents=True, exist_ok=True)
-                root.write(f'<li><a href="{str(child):s}/child.html">{key:s}</a></li>\n')
+                root.write(f'<li><a href="{web:s}/child.html">{key:s}</a></li>\n')
                 target_child = Path(child, "child.html")
                 with open(target_child, 'w') as child:
                     child.write('<html>\n')

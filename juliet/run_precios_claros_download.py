@@ -39,6 +39,7 @@ def main() -> None:
         {"provincia": "ar-u", "localidad": "esquel"},
         {"provincia": "ar-u", "localidad": "puerto madryn"},
         {"provincia": "ar-u", "localidad": "rawson"},
+        {"provincia": "ar-v", "localidad": "ushuaia"},        
     ]
 
     def select(message: Dict[str, str]) -> bool:
@@ -50,8 +51,9 @@ def main() -> None:
     with create_application(application_name, arguments) as application:
         show(f"{application_name:s} 1")
         sample = Actions.create_sample(application, select)
-        Actions.report_sample(application, sample, "dev")
-        show(f"{application_name:s} 2")
+        show(f"{application_name:s} 2")        
+        Actions.report_sample(application, sample)
+        show(f"{application_name:s} 3")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,11 @@
 from typing import Dict
+from pathlib import Path
+import time
 
 from components.configuration import CLI
 from components.core import create_application, show
 from components.precios_claros import Actions
 
-import pdb
 
 def get_arguments() -> Dict[str, str]:
     cli = CLI()
@@ -27,24 +28,30 @@ def get_arguments() -> Dict[str, str]:
     )
     cli.add_arguments(
         "-s",
-        "--sample",
+        "--samplelist",
         type=str,
-        default="20240217183349",
-        required=False,
-        help="sample key is a timestamp",
+        required=True,
+        help="text file with a list of sample_key",
     )
     return cli.arguments
 
-    
 def main() -> None:
-    application_name: str = "run_precios_claros_download"
+    application_name: str = "run_precios_claros_report_sample"
     arguments = get_arguments()
 
     with create_application(application_name, arguments) as application:
         show(f"{application_name:s} 1")
-        sample_key = arguments["sample"]
-        report_key = "dev"
-        Actions.report_sample(application, sample_key, report_key)
+        samplelist = Path(arguments["samplelist"]).expanduser()
+        show(f"{application_name:s} 2: samplelist {str(samplelist):s}")
+        if samplelist.exists():
+            with open(samplelist, 'r') as source:
+                for sample_key in source:
+                    try:
+                        Actions.report_sample(application, sample_key[:-1])
+                        time.sleep(10)
+                    except Exception as panic:
+                        show(f"{application_name:s} 3: {str(panic):s}")
+                        show(f"{application_name:s} 3: {str(sample_key):s}")                        
         show(f"{application_name:s} 2")
 
 

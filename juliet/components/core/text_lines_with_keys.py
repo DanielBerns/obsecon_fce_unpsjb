@@ -2,7 +2,7 @@ import logging
 from typing import Dict
 
 
-class TextGenerator:
+class TextLinesWithKeys:
     def __init__(self) -> None:
         self._lines_with_keys: Dict[str, str] = dict()
 

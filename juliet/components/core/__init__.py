@@ -8,8 +8,5 @@ from components.core.store import Store
 from components.core.flatstore import FlatStore
 from components.core.treestore import TreeStore
 from components.core.tasks import Task
-from components.core.target_template import (TargetTemplate,
-                                             FromStringTargetTemplate,
-                                             FromFileTargetTemplate)
-from components.core.text_generator import TextGenerator
+from components.core.text_lines_with_keys import TextLinesWithKeys
 from components.core.webclient import open_webclient, WebClient
